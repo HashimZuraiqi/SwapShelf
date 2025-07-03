@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/473c5494b9.js" crossorigin="anonymous"></script>
+    <title>Home</title>
+</head>
+<body class="home-page">
+ <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container">
+    <!-- Brand/logo left -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <span class="logo-icon mr-2" style="display:flex;align-items:center;">
+        <!-- Book SVG ICON -->
+        <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+          <defs>
+            <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3BB7FB"/>
+              <stop offset="1" stop-color="#F6B443"/>
+            </linearGradient>
+          </defs>
+          <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
+          <g>
+            <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </span>
+      <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
+          <li class="nav-item home-center-link">
+          <a class="nav-link" href="home.html"><i class="bi bi-house-door"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="login.html">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-gradient signup-btn ml-2" href="register.html">Sign Up</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+ <section id="home">
+            <div class="container-fluid">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <h1 class="exchange"> Exchange Books,</h1>
+                        <h1 class="share"> Share Stories</h1>
+                        <p class="lead home-desc">Turn your unused books into new adventures.
+                            Connect with fellow readers and build a sustainable reading community.</p>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="button-group-home mb-5 d-flex flex-column flex-sm-row justify-content-center align-items-center">
+                            <a href="register.html" class="btn btn-gradient mr-sm-3 mb-3 mb-sm-0 start-swapping-btn">
+                                Start Swapping <i class="bi bi-arrow-right"></i>
+                            </a>
+                            <a href="login.html" class="btn btn-outline-light sign-in-btn"> Sign In </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="row w-100 mt-4 stats-row">
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">10,000+</div>
+                        <div class="stat-label">Books Exchanged</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">2,500+</div>
+                        <div class="stat-label">Active Swappers</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">150+</div>
+                        <div class="stat-label">Cities Covered</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">98%</div>
+                        <div class="stat-label">Satisfaction Rate</div>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+</body>
+</html>

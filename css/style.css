@@ -41,23 +41,110 @@ body {
     background-clip: text;
     font-weight: 700;
 }
-
-/* Sign Up button styles */
-.signup-btn {
+/* Home Page CSS Start */
+.home-page h1 {
+    font-size: 4.5rem;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: bold;
+    text-align: center;
+    margin-top: 20px;
+}
+.exchange {
     background: linear-gradient(to right, #3BB7FB, #F6B443);
-    color: #14161A !important;
-    width: 100px;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+}
+.share
+{
+    color: #ffffff;
+}
+.home-desc {
+    color: #929BA2;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 1.35rem;
+    font-weight: 500;
+    text-align: center;
+    margin: 1.5rem auto 2.5rem auto;
+    max-width: 600px;
+    line-height: 1.6;
+}
+/* Buttons section CSS */
+.button-group-home .btn {
+    font-size: 1.2rem;
+    font-weight: 600;
+    padding: 0.6rem 2rem;
+    border-radius: 8px;
+}
+
+.button-group-home .start-swapping-btn {
+    margin-right: 0;
+    margin-bottom: 1rem;
+}
+.button-group-home .sign-in-btn {
+ border: #929BA2;
+background-color: #181B20;
+color: #fff;
+transition: box-shadow 0.2s, background 0.2s, color 0.2s;
+box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67, 0.12);
+}
+.button-group-home .sign-in-btn:hover {
+    /* box-shadow: 0 6px 24px 0 rgba(63, 183, 251, 0.28), 0 4px 16px 0 rgba(246, 180, 67, 0.18); */
+    background-color: #23242a;
+    transform: scale(1.07);
+    color: #fff !important;
+}
+.btn-gradient {
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    color: #33363B !important;
     font-weight: 600;
     border-radius: 8px;
-    padding: 6px 18px;
     border: none;
     transition: transform 0.2s;
+    box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67, 0.12);
+
 }
-.signup-btn:hover {
+.btn-gradient:hover {
     transform: scale(1.07);
     color: #fff !important;
     background: linear-gradient(to right, #3BB7FB 80%, #F6B443 100%);
 }
+/* Stats section styles */
+.stats-row {
+    margin-top: 2rem;
+}
+
+.stat-number {
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    color: transparent;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-weight: 700;
+    font-size: 2.1rem;
+    margin-left: 5px;
+}
+
+.stat-label {
+    color: #929BA2 !important;
+    font-family: 'Montserrat', Arial, sans-serif;
+    font-size: 1.05rem;
+}
+/* Home Page CSS End */
+
+/* Register Page Specific CSS Start */
+.sign-in-button
+{
+    transition: transform 0.3s;
+}
+.sign-in-button:hover
+{
+     transform: scale(1.07);
+    color: #fff !important;
+}
+/* Register Page Specific CSS End */
 
 /* Navbar links */
 .navbar-nav .nav-link {
@@ -73,6 +160,22 @@ body {
 }
 .navbar-nav .nav-link:hover {
     color: #fff !important;
+}
+/*  Navigation Sign Up button styles */
+.signup-btn {
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    color: #14161A !important;
+    width: 100px;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 6px 18px;
+    border: none;
+    transition: transform 0.2s;
+}
+.signup-btn:hover {
+    transform: scale(1.07);
+    color: #fff !important;
+    background: linear-gradient(to right, #3BB7FB 80%, #F6B443 100%);
 }
 
 /* Navbar layout and centering */
@@ -212,9 +315,6 @@ body {
     text-decoration: underline;
     cursor: pointer;
 }
-/* #login-box:hover {
-    transform: scale(1.01);
-} */
 
 /* ========== Login Logo & Welcome Section ========== */
 .login-logo {
@@ -289,11 +389,20 @@ body {
     .form-container input {
         width: 100%;
     }
+    .home-page h1 {
+        font-size: 3.5rem;
+    }
 }
 
 @media only screen and (min-width: 768px) and (max-width: 1024px) {
     .login-page {
         transform: scale(1.7);
         transform-origin: top center;
+    }
+}
+@media (min-width: 576px) {
+    .button-group-home .start-swapping-btn {
+        margin-right: 1rem;
+        margin-bottom: 0;
     }
 }
