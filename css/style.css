@@ -1,0 +1,299 @@
+/* ========== Base Styles ========== */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    height: 100vh;
+    margin: 0;
+    background: linear-gradient(135deg, #18191E, #15181D, #0D0E10);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: #ffffff;
+    font-family: 'Segoe UI', sans-serif;
+}
+
+/* ========== Navbar Styles ========== */
+.custom-navbar {
+    background: #18191E;
+    border-bottom: 1px solid #23242a;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    z-index: 1000;
+}
+
+/* Logo text and gradient */
+.logo-text {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #3BB7FB;
+    letter-spacing: 0.5px;
+}
+.logo-text .swap {
+    color: #F6B443;
+}
+.gradient-text {
+    background: linear-gradient(90deg, #3BB7FB 0%, #F6B443 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    font-weight: 700;
+}
+
+/* Sign Up button styles */
+.signup-btn {
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    color: #14161A !important;
+    width: 100px;
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 6px 18px;
+    border: none;
+    transition: transform 0.2s;
+}
+.signup-btn:hover {
+    transform: scale(1.07);
+    color: #fff !important;
+    background: linear-gradient(to right, #3BB7FB 80%, #F6B443 100%);
+}
+
+/* Navbar links */
+.navbar-nav .nav-link {
+    color: #cccccc !important;
+    font-weight: 500;
+    font-size: 1.08rem;
+    margin-right: 0.5rem;
+    transition: color 0.2s;
+}
+.navbar-toggler:focus {
+    outline: none;
+    box-shadow: none;
+}
+.navbar-nav .nav-link:hover {
+    color: #fff !important;
+}
+
+/* Navbar layout and centering */
+.navbar-nav {
+    width: 100%;
+    justify-content: center;
+    align-items: center;
+    transition: all 0.3s cubic-bezier(.4,0,.2,1);
+}
+
+/* Home link centering and order */
+.home-center-link {
+    flex: 1 1 auto;
+    display: flex;
+    justify-content: center;
+    transition: background 0.3s, color 0.3s;
+    order: 1;
+}
+.navbar-nav .nav-item:nth-child(2) {
+    order: 2;
+}
+.navbar-nav .nav-item:nth-child(3) {
+    order: 3;
+}
+/* Nav bar styling ends here (More in Media queries) */
+
+/* ========== Form Styles ========== */
+.form-container .form-group {
+    text-align: left;
+    margin-bottom: 18px;
+}
+
+.form-container .form-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 500;
+    color: #D5D8DF;
+    margin-bottom: 6px;
+    margin-left: 2px;
+}
+
+.form-container .form-control {
+    width: 100%;
+    height: 45px;
+    padding: 10px;
+    border: 2px solid #33363D;
+    background-color: #181B22;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+/* General form container styling for login and signup pages */
+.form-container {
+    min-height: 65vh;  
+    height: auto;   
+    width: 90%;
+    max-width: 600px;
+    margin: 100px auto;
+    background-color: #1F2229;
+    padding: 40px;
+    border-radius: 20px;
+    text-align: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    background-color: #181B22;
+    transition: transform 0.5s ease-in-out;
+    box-sizing: border-box; /* Ensure padding is included in width/height */
+    overflow-wrap: break-word; /* Prevent long words from overflowing */
+    word-break: break-word;
+    overflow: hidden; /* Hide accidental overflow */
+}
+.form-container .form-control:not(:placeholder-shown) {
+    /* background-color: #fff; */
+    color: #fff;
+    transition: background 0.3s, color 0.3s;
+}
+/* Force dark background and text color for autofilled inputs */
+.form-container input:-webkit-autofill,
+.form-container input:-webkit-autofill:focus,
+.form-container input:-webkit-autofill:hover,
+.form-container input:-webkit-autofill:active {
+    -webkit-box-shadow: 0 0 0 1000px #181B22 inset !important;
+    box-shadow: 0 0 0 1000px #181B22 inset !important;
+    -webkit-text-fill-color: #fff !important;
+    caret-color: #fff !important;
+    transition: background-color 5000s ease-in-out 0s;
+}
+.form-container h2, .form-container h3 {
+    text-align: center;
+    color: #D5D8DF;
+    margin-bottom: 20px;
+}
+.form-container form p {
+    text-align: center;
+    color: #b0b3b8;
+    margin-top: 18px;
+    font-size: 1.3rem;
+}
+.form-control::placeholder {
+    font-size: 1.08em;
+    font-weight: 600;
+    opacity: 1;
+}
+.form-container button {
+    display: block;
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    color: #14161A;
+    width: 100%;
+    margin: 18px auto;
+    padding: 10px;
+    font-size: 20px;
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    font-weight: bold;
+}
+.form-container button:hover {
+    backface-visibility: hidden;
+    will-change: transform;
+    transform: scale(1.05);
+    transition: all 0.3s ease-in-out;
+}
+
+/* Forgot password link */
+.forgot-password {
+    font-size: 1.3rem;
+    text-decoration: underline;
+}
+.form-container a:hover {
+    text-decoration: underline;
+}
+
+/* Login box label and link styles */
+#login-box label {
+    font-size: 13px;
+}
+#login-box a {
+    text-decoration: underline;
+    cursor: pointer;
+}
+#login-box:hover {
+    transform: scale(1.01);
+}
+
+/* ========== Login Logo & Welcome Section ========== */
+.login-logo {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 18px;
+}
+.welcome-section {
+    margin-bottom: 28px;
+}
+.welcome-title {
+    color: #222;
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin-bottom: 6px;
+    text-align: center;
+}
+.welcome-desc {
+    color: #D5D8DF;
+    font-size: 1rem;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+/* ========== Input Icon Styles ========== */
+.input-icon {
+    position: relative;
+}
+.input-icon-left {
+    position: absolute;
+    left: 10px;
+    top: 68%;
+    transform: translateY(-50%);
+    color: #b0b3b8;
+    pointer-events: none;
+    font-size: 1.1em;
+}
+.input-icon input.form-control {
+    padding-left: 40px; /* Make space for the icon */
+}
+
+/* ========== Responsive Styles ========== */
+@media (max-width: 991.98px) {
+    .navbar-nav {
+        flex-direction: column !important;
+        align-items: stretch !important;
+    }
+    .navbar-nav .nav-item {
+        width: 100%;
+        text-align: center !important;
+        margin: 0.3rem 0;
+    }
+    .home-center-link {
+        width: 100%;
+        justify-content: center;
+        margin: 0.5rem 0;
+    }
+    .signup-btn {
+        margin-left: 0 !important;
+        margin-top: 0.5rem;
+    }
+}
+
+@media (max-width: 956px) {
+    .form-container {
+        /* height: 85vh; */
+        height: 95%;
+        width: 95%;
+        padding: 20px;
+    }
+    .form-container input {
+        width: 100%;
+    }
+}
+
+@media only screen and (min-width: 768px) and (max-width: 1024px) {
+    .login-page {
+        transform: scale(1.7);
+        transform-origin: top center;
+    }
+}
