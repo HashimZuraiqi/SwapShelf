@@ -189,10 +189,10 @@ body {
     font-weight: bold;
 }
 .form-container button:hover {
-    backface-visibility: hidden;
-    will-change: transform;
-    transform: scale(1.05);
-    transition: all 0.3s ease-in-out;
+    background: linear-gradient(to right, #3BB7FB, #F6B443); /* keep gradient bright */
+    color: #14161A;
+    box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.10), 0 2px 8px 0 rgba(246, 180, 67, 0.10);
+    transition: box-shadow 0.2s, background 0.3s, color 0.3s;
 }
 
 /* Forgot password link */
@@ -212,9 +212,9 @@ body {
     text-decoration: underline;
     cursor: pointer;
 }
-#login-box:hover {
+/* #login-box:hover {
     transform: scale(1.01);
-}
+} */
 
 /* ========== Login Logo & Welcome Section ========== */
 .login-logo {
