@@ -41,11 +41,9 @@ A simple platform where users can:
 ```bash
 git clone https://github.com/HashimZuraiqi/SwapShelf.git
 cd SwapShelf
-
+```
 2. configuration of dependencies
-```bash
 npm install
 
 3. run the code
-```bash
 npm start
