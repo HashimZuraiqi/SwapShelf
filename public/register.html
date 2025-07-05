@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/473c5494b9.js" crossorigin="anonymous"></script>
+     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <title>Register</title>
+</head>
+<body class="register-page">
+
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container">
+    <!-- Brand/logo left -->
+    <a class="navbar-brand d-flex align-items-center" href="#">
+      <span class="logo-icon mr-2" style="display:flex;align-items:center;">
+        <!-- Book SVG ICON -->
+        <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+          <defs>
+            <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3BB7FB"/>
+              <stop offset="1" stop-color="#F6B443"/>
+            </linearGradient>
+          </defs>
+          <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
+          <g>
+            <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </span>
+      <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
+          <li class="nav-item home-center-link">
+          <a class="nav-link" href="index.html"><i class="bi bi-house-door"></i> Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="login.html">Login</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-gradient signup-btn ml-2" href="register.html">Sign Up</a>
+        </li>
+      </ul>
+    </div>  
+  </div>
+</nav>
+    <!-- Login Form -->
+<div class="container-fluid">
+        <div class="row justify-content-center">
+            <div class="form-container login-box">
+                <div class="login-logo">
+  <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+    <defs>
+      <linearGradient id="loginGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#3BB7FB"/>
+        <stop offset="1" stop-color="#F6B443"/>
+      </linearGradient>
+    </defs>
+    <circle cx="28" cy="28" r="28" fill="url(#loginGrad)"/>
+    <g>
+      <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+      <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
+      <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+    </g>
+  </svg>
+</div>
+<div class="welcome-section">
+  <h2 class="welcome-title">Join BookSwap</h2>
+  <p class="welcome-desc">Create your account and start swapping books today</p>
+</div>
+      <!-- Full Name -->
+  <div class="form-group input-icon">
+    <label for="fullname" class="form-label">Full Name</label>
+    <span class="input-icon-left"><i class="fa-regular fa-user fa-lg"></i></span>
+    <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Enter your full name" required />
+  </div>
+   <!-- Email -->
+   <form action="" method="post">
+    <div class="form-group input-icon">
+    <label for="email" class="form-label">Email Address</label>
+    <span class="input-icon-left"><i class="fa-regular fa-envelope fa-lg"></i></span>
+    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required />
+</div>
+<!-- Location -->
+  <div class="form-group input-icon">
+    <label for="location" class="form-label">Location</label>
+    <span class="input-icon-left"><i class="fa-solid fa-location-dot"></i></span>
+    <input type="text" name="location" id="location" class="form-control" placeholder="City, State" required />
+  </div>
+   <!-- Password -->
+    <div class="form-group input-icon">
+        <label for="password" class="form-label">Password</label>
+        <span class="input-icon-left"><i class="bi bi-lock"></i></span>
+        <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required />
+    </div>
+    <!-- Confirm Password -->
+  <div class="form-group input-icon">
+    <label for="confirm-password" class="form-label">Confirm Password</label>
+    <span class="input-icon-left"><i class="bi bi-lock"></i></span>
+    <input type="password" name="confirm-password" id="confirm-password" class="form-control" placeholder="Confirm your password" required />
+  </div>
+  <!-- Create Account Button -->
+<button type="submit" class="btn btn-gradient w-100 create-account-btn">Create Account</button>
+  <!-- Already have an account -->
+        <p class="already-account-text mt-3 mb-0">
+          Already have an account?
+          <a href="login.html" class="sign-in-link">Sign in here</a>
+        </p>
+ 
+</form>            
+</div>
+  </div>
+    </div>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+
+    
+</body>
+</html>
