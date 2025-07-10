@@ -3,9 +3,134 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Dashboard | BookSwap</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
-<body>
-    
+<body class="dashboard-bg">
+    <!-- Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container">
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="logo-icon mr-2">📚</span>
+                <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
+                    <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+                    <li class="nav-item active"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/library">My Library</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/swap-matcher">Swap Matcher</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/nearby">Nearby</a></li>
+                    <li class="nav-item"><a class="nav-link" href="/rewards">Rewards</a></li>
+                </ul>
+                <div class="navbar-user">
+                    <span class="user-icon">👤</span>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <main class="dashboard-main container mt-5">
+        <div class="dashboard-content mx-auto" style="max-width: 1200px;">
+            <!-- Welcome Section -->
+            <section class="dashboard-welcome mb-4 p-4">
+                <h1>Welcome back, <%= user %>! <span>👋</span></h1>
+                <p>Ready to discover your next great read?</p>
+                <div class="row dashboard-stats">
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="stat-card text-center">
+                            <div class="stat-label">My Books</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="stat-card wishlist text-center">
+                            <div class="stat-label">Wishlist</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="stat-card swaps text-center">
+                            <div class="stat-label">Active Swaps</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-3">
+                        <div class="stat-card points text-center">
+                            <div class="stat-label">Points Earned</div>
+                            <div class="stat-value">0</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Quick Actions & Recent Activity -->
+            <section class="dashboard-actions row mb-5 p-4">
+                <div class="quick-actions col-md-9 mb-4 h-100">
+                    <h2>Quick Actions</h2>
+                    <p>Get started with these popular actions</p>
+                    <div class="row actions-grid">
+                        <!-- Each action is a col-md-4 for equal width -->
+                        <div class="col-12 col-md-4 mb-3 d-flex">
+                            <a href="/add-book" class="action-card flex-fill">
+                                <span class="action-icon">+</span>
+                                <span>Add New Book</span>
+                            </a>
+                        </div>
+                        <div class="col-12 col-md-4 mb-3 d-flex">
+                            <a href="/find-swaps" class="action-card flex-fill">
+                                <span class="action-icon">👥</span>
+                                <span>Find Swaps</span>
+                            </a>
+                        </div>
+                        <div class="col-12 col-md-4 mb-3 d-flex">
+                            <a href="/nearby" class="action-card flex-fill">
+                                <span class="action-icon">📍</span>
+                                <span>Nearby Swappers</span>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                <div class="recent-activity col-md-3 h-100">
+                    <h2>Recent Activity</h2>
+                    <p>Your latest BookSwap actions</p>
+                    <ul>
+                        <li>Added "The Great Gatsby" to library <span class="activity-time">2 hours ago</span></li>
+                        <li>Matched with Sarah for book swap <span class="activity-time">1 day ago</span></li>
+                        <li>Completed swap with Mike <span class="activity-time">3 days ago</span></li>
+                        <li>Added "1984" to wishlist <span class="activity-time">1 week ago</span></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Trending Books Section -->
+            <section class="trending-books mb-5 p-4">
+                <h2>Trending Books in Your Area</h2>
+                <p>Popular books that other swappers are looking for</p>
+                <div class="row book-cards">
+                    <% trendingBooks.forEach(function(book) { %>
+                        <div class="col-6 col-md-3 mb-4 d-flex">
+                            <div class="book-card flex-fill">
+                                <img src="<%= book.image %>" alt="<%= book.title %>" class="img-fluid rounded book-img">
+                                <div class="book-title mt-2 text-center"><%= book.title %></div>
+                            </div>
+                        </div>
+                    <% }); %>
+                    <!-- To add more books, add more objects to trendingBooks in your backend -->
+                </div>
+            </section>
+        </div>
+    </main>
+    <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
 </body>
 </html>
