@@ -206,6 +206,94 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     font-size: 2rem;
     line-height: 1;
 }
+/* Why Choose BookSwap section styles start */
+/* How It Works Section Styles */
+.how-it-works-section {
+    padding: 3rem 0 2rem 0;
+    max-width: 1100px;
+    margin: 0 auto;
+}
+.how-title {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+.how-desc {
+    color: #b0b3b8;
+    font-size: 1.2rem;
+    margin-bottom: 2.5rem;
+}
+.steps-row {
+    margin-bottom: 3rem;
+}
+.step-box {
+    padding: 1.5rem 1rem;
+}
+.step-number {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #F6F7E2;
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 0.5rem;
+}
+.step-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: #fff;
+}
+.step-desc {
+    color: #b0b3b8;
+    font-size: 1rem;
+}
+.cta-box {
+    background: #23242a;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px 0 rgba(63, 183, 251, 0.06), 0 1px 4px 0 rgba(246, 180, 67, 0.06);
+    padding: 2.5rem 1.5rem;
+    max-width: 700px;
+    margin: 0 auto;
+}
+.cta-title {
+    font-size: 2.2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: #fff;
+}
+.cta-desc {
+    color: #b0b3b8;
+    font-size: 1.15rem;
+    margin-bottom: 2rem;
+}
+.cta-btn {
+    font-size: 1.15rem;
+    font-weight: 600;
+    padding: 0.7rem 2rem;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67, 0.12);
+    border-color: #23242A;
+    margin: 0 0.5rem;
+}
+.btn-gradient {
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    color: #33363B !important;
+    font-weight: 600;
+    border-radius: 8px;
+    border: none;
+    transition: transform 0.2s;
+    box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67, 0.12);
+}
+.btn-gradient:hover {
+    transform: scale(1.07);
+    color: #fff !important;
+    background: linear-gradient(to right, #3BB7FB 80%, #F6B443 100%);
+}
+/* Why Choose BookSwap section styles end */
+
+
 /* Home Page CSS End */
 
 /* Register Page Specific CSS Start */
@@ -321,7 +409,6 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     overflow: hidden; /* Hide accidental overflow */
 }
 .form-container .form-control:not(:placeholder-shown) {
-    /* background-color: #fff; */
     color: #fff;
     transition: background 0.3s, color 0.3s;
 }
@@ -480,6 +567,23 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
         margin-bottom: 0;
     }
 }
+/* WE SHOULD MODIFY IT TO MAKE IT RESPONSIVE AND PRETTIER HASHIM*/
+@media (max-width: 575.98px) {
+     .cta-btn {
+        width: 50%;
+        height: 6rem;
+     }
+}
+@media (max-width: 991.98px) {
+    .how-title { font-size: 2.2rem; }
+    .cta-title { font-size: 1.5rem; }
+    .cta-box { padding: 1.5rem 0.5rem; }
+    .step-number { font-size: 2rem; }
+
+}
+
+
+
 /* 
 Commented temporarily
 @media (max-width: 991.98px) {
