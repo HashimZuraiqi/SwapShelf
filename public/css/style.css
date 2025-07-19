@@ -519,43 +519,58 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
 }
 
 /* ========== Dashboard Styles ========== */
+/* Dashboard Background */
+.dashboard-bg {
+    background: linear-gradient(135deg, #18191E, #15181D, #0D0E10);
+    background-attachment: fixed;
+    min-height: 100vh;
+}
+
 /* Dashboard Stat Cards */
 .dashboard-stats .stat-card {
-    border-radius: 16px;
-    padding: 1.2rem 0.5rem;
+    background: #23242a;
+    border: 1px solid rgba(120,130,150,0.10);
+    border-radius: 18px;
+    padding: 1.5rem 1rem;
     margin-bottom: 1rem;
-    box-shadow: 0 2px 12px rgba(63,183,251,0.08), 0 1px 6px rgba(246,180,67,0.08);
+    box-shadow: 0 2px 16px 0 rgba(63, 183, 251, 0.06), 0 1px 4px 0 rgba(246, 180, 67, 0.06);
     color: #fff;
     font-weight: 600;
     font-size: 1.1rem;
-    transition: transform 0.18s, box-shadow 0.18s, border 0.18s;
+    transition: transform 0.18s, box-shadow 0.18s;
     cursor: pointer;
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
 }
 .dashboard-stats .stat-card:hover {
-    transform: translateY(-4px) scale(1.03);
-    box-shadow: 0 8px 32px 0 rgba(63,183,251,0.14), 0 4px 16px 0 rgba(246,180,67,0.14);
-    border-color: #3BB7FB;
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 32px 0 rgba(63, 183, 251, 0.13), 0 4px 16px 0 rgba(246, 180, 67, 0.13);
 }
 .dashboard-stats .stat-card .stat-value {
-    font-size: 2rem;
-    font-weight: bold;
+    font-size: 2.1rem;
+    font-weight: 700;
     margin-top: 0.5rem;
     background: linear-gradient(to right, #3BB7FB, #F6B443);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;
     color: transparent;
+    font-family: 'Montserrat', Arial, sans-serif;
+}
+.dashboard-stats .stat-card .stat-label {
+    color: #b0b3b8;
+    font-size: 1rem;
+    font-weight: 500;
 }
 
 /* Dashboard layout and section cards */
 .dashboard-main {
     min-height: 100vh;
     padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding-bottom: 3rem;
     background: transparent;
 }
 .dashboard-content {
@@ -564,14 +579,43 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     padding: 0 1rem;
 }
 
-/* Section "card" backgrounds */
+/* Section "card" backgrounds - matching the home page design */
 .dashboard-welcome,
 .dashboard-actions,
 .trending-books {
+    background: #23242a;
+    border: none;
     border-radius: 18px;
+    box-shadow: 0 2px 16px 0 rgba(63, 183, 251, 0.06), 0 1px 4px 0 rgba(246, 180, 67, 0.06);
     padding: 2.5rem 2rem;
     margin-bottom: 2.5rem;
-    box-shadow: 0 2px 16px rgba(63,183,251,0.10), 0 1px 8px rgba(246,180,67,0.08);
+    transition: transform 0.18s, box-shadow 0.18s;
+}
+
+/* Dashboard headings - consistent with home page */
+.dashboard-welcome h1,
+.dashboard-actions h2,
+.trending-books h2,
+.recent-activity h2 {
+    color: #fff;
+    font-weight: 700;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    margin-bottom: 1rem;
+}
+.dashboard-welcome h1 {
+    font-size: 2.8rem;
+    margin-bottom: 0.5rem;
+}
+.dashboard-actions h2,
+.trending-books h2 {
+    font-size: 2.2rem;
+}
+.dashboard-welcome p,
+.dashboard-actions p,
+.trending-books p {
+    color: #b0b3b8;
+    font-size: 1.15rem;
+    margin-bottom: 2rem;
 }
 
 /* ========== Quick Actions ========== */
@@ -581,16 +625,18 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     gap: 0;
 }
 .actions-grid .action-card {
-    background: linear-gradient(120deg, #23242a 60%, #23243a 100%);
-    border-radius: 16px;
+    background: #23242a;
+    border-radius: 18px;
     border: 1px solid rgba(120,130,150,0.10);
-    box-shadow: 0 2px 12px rgba(63,183,251,0.08), 0 1px 6px rgba(246,180,67,0.08);
-    transition: transform 0.18s, box-shadow 0.18s, border 0.18s, background 0.18s;
+    box-shadow: 0 2px 16px 0 rgba(63, 183, 251, 0.06), 0 1px 4px 0 rgba(246, 180, 67, 0.06);
+    transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
     color: #fff;
-    width: 100%;
+    width: 90%;
     height: 150px;
     margin-bottom: 0;
     font-size: 1.25rem;
+    font-weight: 600;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
     text-decoration: none;
     display: flex;
     flex-direction: column;
@@ -598,33 +644,46 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     align-items: center;
 }
 .actions-grid .action-card:hover {
-    background: linear-gradient(120deg, #3BB7FB 60%, #F6B443 100%);
-    color: #23242a;
-    border-color: #F6B443;
-    transform: scale(1.04);
-    box-shadow: 0 8px 32px 0 rgba(63,183,251,0.14), 0 4px 16px 0 rgba(246,180,67,0.14);
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    color: #14161A;
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 32px 0 rgba(63, 183, 251, 0.13), 0 4px 16px 0 rgba(246, 180, 67, 0.13);
+    text-decoration: none;
 }
 .actions-grid .action-card .action-icon {
-    font-size: 2.2rem;
-    margin-bottom: 0.5rem;
-    animation: bounce 1.2s infinite alternate;
+    font-size: 2.5rem;
+    margin-bottom: 0.8rem;
+    transition: transform 0.18s;
 }
-@keyframes bounce {
-    0% { transform: translateY(0);}
-    100% { transform: translateY(-8px);}
+.actions-grid .action-card:hover .action-icon {
+    transform: scale(1.1);
 }
 
 /* ========== Recent Activity ========== */
 .recent-activity {
-    background: linear-gradient(135deg, #23243a 80%, #1b1c22 100%);
-    border-radius: 16px;
-    box-shadow: 0 2px 12px rgba(63,183,251,0.08), 0 1px 6px rgba(246,180,67,0.08);
-    padding: 1.2rem 1rem;
+    background: #23242a;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px 0 rgba(63, 183, 251, 0.06), 0 1px 4px 0 rgba(246, 180, 67, 0.06);
+    padding: 2rem 1.5rem;
     color: #fff;
     width: 100%;
-    min-height: 150px;
-    align-items: flex-start;
+    min-height: 200px;
     font-size: 1rem;
+    font-family: 'Segoe UI', sans-serif;
+    transition: transform 0.18s, box-shadow 0.18s;
+}
+.recent-activity:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 32px 0 rgba(63, 183, 251, 0.08), 0 4px 16px 0 rgba(246, 180, 67, 0.08);
+}
+.recent-activity h2 {
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+.recent-activity p {
+    color: #b0b3b8;
+    font-size: 1rem;
+    margin-bottom: 1.5rem;
 }
 .recent-activity ul {
     list-style: none;
@@ -632,23 +691,28 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     width: 100%;
 }
 .recent-activity li {
-    margin-bottom: 0.7rem;
-    font-size: 1rem;
+    margin-bottom: 1rem;
+    font-size: 0.95rem;
     position: relative;
-    padding-left: 1.2em;
+    padding-left: 1.5em;
+    line-height: 1.4;
+    color: #d5d8df;
 }
 .recent-activity li::before {
     content: "•";
     color: #3BB7FB;
     position: absolute;
     left: 0;
-    font-size: 1.2em;
-    top: 0;
+    font-size: 1.4em;
+    top: -2px;
+    font-weight: bold;
 }
 .activity-time {
-    color: #3BB7FB;
-    font-size: 0.9em;
-    margin-left: 0.5em;
+    color: #F6B443;
+    font-size: 0.85em;
+    font-weight: 500;
+    display: block;
+    margin-top: 0.2rem;
 }
 
 /* ========== Trending Books ========== */
@@ -665,43 +729,45 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     display: flex;
 }
 .book-card {
-    background: linear-gradient(135deg, #23243a 80%, #18191E 100%);
-    border-radius: 14px;
-    box-shadow: 0 2px 12px rgba(63,183,251,0.08), 0 1px 6px rgba(246,180,67,0.08);
+    background: #23242a;
+    border-radius: 18px;
+    box-shadow: 0 2px 16px 0 rgba(63, 183, 251, 0.06), 0 1px 4px 0 rgba(246, 180, 67, 0.06);
     border: 1px solid rgba(120,130,150,0.10);
-    padding: 1rem;
+    padding: 1.5rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: flex-start;
-    transition: transform 0.18s, box-shadow 0.18s, border 0.18s, background 0.18s;
+    transition: transform 0.18s, box-shadow 0.18s, background 0.18s;
     cursor: pointer;
     width: 100%;
-    height: 230px;
+    height: 250px;
     margin-bottom: 0;
 }
 .book-card:hover {
-    background: linear-gradient(120deg, #3BB7FB 60%, #F6B443 100%);
-    color: #23242a;
-    border-color: #3BB7FB;
-    box-shadow: 0 8px 32px 0 rgba(63,183,251,0.14), 0 4px 16px 0 rgba(246,180,67,0.14);
+    background: linear-gradient(to right, #3BB7FB, #F6B443);
+    color: #14161A;
+    transform: translateY(-6px) scale(1.03);
+    box-shadow: 0 8px 32px 0 rgba(63, 183, 251, 0.13), 0 4px 16px 0 rgba(246, 180, 67, 0.13);
 }
 .book-card:hover .book-title {
-    color: #23242a;
+    color: #14161A;
+    font-weight: 700;
 }
 .book-img {
     width: 100%;
-    max-width: 110px;
-    height: 140px;
+    max-width: 120px;
+    height: 150px;
     object-fit: cover;
-    border-radius: 10px;
-    margin-bottom: 0.7rem;
-    background: #23242a;
-    box-shadow: 0 2px 8px rgba(63, 183, 251, 0.10);
-    transition: transform 0.18s;
+    border-radius: 12px;
+    margin-bottom: 1rem;
+    background: #18191E;
+    box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.06), 0 2px 8px 0 rgba(246, 180, 67, 0.06);
+    transition: transform 0.18s, box-shadow 0.18s;
 }
 .book-card:hover .book-img {
-    transform: scale(1.08);
+    transform: scale(1.05);
+    box-shadow: 0 8px 24px 0 rgba(63, 183, 251, 0.12), 0 4px 12px 0 rgba(246, 180, 67, 0.12);
 }
 .book-title {
     font-size: 1rem;
@@ -709,24 +775,46 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     color: #fff;
     text-align: center;
     margin-top: 0.5rem;
-    transition: color 0.18s;
+    transition: color 0.18s, font-weight 0.18s;
+    font-family: 'Montserrat', 'Segoe UI', sans-serif;
+    line-height: 1.3;
 }
 
-/* ========== Headings ========== */
-.dashboard-welcome h1,
-.dashboard-actions h2,
-.trending-books h2 {
-    color: #fff;
-    font-weight: 700;
-    margin-bottom: 1rem;
+/* ========== Responsive Design ========== */
+/* Large screens and below */
+@media (max-width: 1199.98px) {
+    .dashboard-welcome h1 {
+        font-size: 2.5rem;
+    }
+    .dashboard-actions h2,
+    .trending-books h2 {
+        font-size: 2rem;
+    }
 }
 
-/* ========== Responsive ========== */
+/* Medium screens and below */
 @media (max-width: 991.98px) {
+    .dashboard-main {
+        padding: 1rem 0.5rem 2rem 0.5rem;
+    }
+    .dashboard-welcome,
+    .dashboard-actions,
+    .trending-books {
+        padding: 2rem 1.5rem;
+        margin-bottom: 2rem;
+    }
+    .dashboard-welcome h1 {
+        font-size: 2.2rem;
+    }
+    .dashboard-actions h2,
+    .trending-books h2 {
+        font-size: 1.8rem;
+    }
     .dashboard-actions .quick-actions,
     .dashboard-actions .recent-activity {
         min-width: 100%;
         margin-right: 0;
+        margin-bottom: 2rem;
     }
     .dashboard-stats .stat-card,
     .actions-grid .action-card,
@@ -735,18 +823,83 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
         min-width: 100%;
         margin-right: 0;
     }
-    .trending-books .book-cards {
-        gap: 1rem;
+    .recent-activity {
+        min-height: 180px;
+        padding: 1.5rem 1.2rem;
     }
 }
+
+/* Small screens and below */
 @media (max-width: 767.98px) {
     .dashboard-main {
-        padding: 0 0.5rem;
+        padding: 0.5rem 0.25rem 1.5rem 0.25rem;
+    }
+    .dashboard-welcome,
+    .dashboard-actions,
+    .trending-books {
+        padding: 1.5rem 1rem;
+        margin-bottom: 1.5rem;
+    }
+    .dashboard-welcome h1 {
+        font-size: 2rem;
+    }
+    .dashboard-actions h2,
+    .trending-books h2 {
+        font-size: 1.6rem;
     }
     .dashboard-stats .stat-card {
         font-size: 1rem;
-        padding: 1rem 0.3rem;
+        padding: 1.2rem 0.8rem;
+        height: 100px;
+    }
+    .dashboard-stats .stat-card .stat-value {
+        font-size: 1.8rem;
+    }
+    .actions-grid .action-card {
+        height: 120px;
+        font-size: 1.1rem;
+        padding: 1rem 0.5rem;
+    }
+    .actions-grid .action-card .action-icon {
+        font-size: 2rem;
+        margin-bottom: 0.5rem;
+    }
+    .book-card {
+        height: 180px;
+        padding: 1rem 0.8rem;
+    }
+    .book-img {
+        max-width: 80px;
+        height: 100px;
+    }
+    .book-title {
+        font-size: 0.9rem;
+    }
+    .recent-activity {
+        min-height: 160px;
+        padding: 1.2rem 1rem;
+    }
+    .recent-activity li {
+        font-size: 0.9rem;
+        margin-bottom: 0.8rem;
+    }
+}
+
+/* Extra small screens */
+@media (max-width: 575.98px) {
+    .dashboard-welcome h1 {
+        font-size: 1.8rem;
+    }
+    .dashboard-actions h2,
+    .trending-books h2 {
+        font-size: 1.4rem;
+    }
+    .dashboard-stats .stat-card {
+        padding: 1rem 0.5rem;
         height: 90px;
+    }
+    .dashboard-stats .stat-card .stat-value {
+        font-size: 1.6rem;
     }
     .actions-grid .action-card {
         height: 110px;
@@ -759,27 +912,17 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
         max-width: 70px;
         height: 80px;
     }
-}
-
-/* --- COMMENTS FOR CUSTOMIZATION ---
-- To change Quick Actions: edit the .action-card blocks in dashboard.ejs
-- To add/remove trending books: edit trendingBooks array in your backend
-- To change card size: adjust height/font-size in .action-card and .book-card
-- To change hover effect: edit .book-card:hover and .action-card:hover
------------------------------------ */
-/* WE SHOULD MODIFY IT TO MAKE IT RESPONSIVE AND PRETTIER HASHIM*/
-@media (max-width: 575.98px) {
-     .cta-btn {
+    .cta-btn {
         width: 50%;
         height: 6rem;
-     }
+    }
 }
+
 @media (max-width: 991.98px) {
     .how-title { font-size: 2.2rem; }
     .cta-title { font-size: 1.5rem; }
     .cta-box { padding: 1.5rem 0.5rem; }
     .step-number { font-size: 2rem; }
-
 }
 
 
