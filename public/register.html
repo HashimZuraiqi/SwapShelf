@@ -42,13 +42,13 @@
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
           <li class="nav-item home-center-link">
-          <a class="nav-link" href="index.html"><i class="bi bi-house-door"></i> Home</a>
+          <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="login.html">Login</a>
+          <a class="nav-link" href="/login">Login</a>
         </li>
         <li class="nav-item">
-          <a class="btn btn-gradient signup-btn ml-2" href="register.html">Sign Up</a>
+          <a class="btn btn-gradient signup-btn ml-2" href="/register">Sign Up</a>
         </li>
       </ul>
     </div>  
@@ -76,48 +76,46 @@
 </div>
 <div class="welcome-section">
   <h2 class="welcome-title">Join BookSwap</h2>
-  <p class="welcome-desc">Create your account and start swapping books today</p>
-</div>
-      <!-- Full Name -->
-  <div class="form-group input-icon">
-    <label for="fullname" class="form-label">Full Name</label>
-    <span class="input-icon-left"><i class="fa-regular fa-user fa-lg"></i></span>
-    <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Enter your full name" required />
-  </div>
-   <!-- Email -->
-   <form action="/register" method="post">
-    <div class="form-group input-icon">
-    <label for="email" class="form-label">Email Address</label>
-    <span class="input-icon-left"><i class="fa-regular fa-envelope fa-lg"></i></span>
-    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required />
-</div>
-<!-- Location -->
-  <div class="form-group input-icon">
-    <label for="location" class="form-label">Location</label>
-    <span class="input-icon-left"><i class="fa-solid fa-location-dot"></i></span>
-    <input type="text" name="location" id="location" class="form-control" placeholder="City, State" required />
-  </div>
-   <!-- Password -->
-    <div class="form-group input-icon">
-        <label for="password" class="form-label">Password</label>
-        <span class="input-icon-left"><i class="bi bi-lock"></i></span>
-        <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required />
-    </div>
-    <!-- Confirm Password -->
-  <div class="form-group input-icon">
-    <label for="confirm-password" class="form-label">Confirm Password</label>
-    <span class="input-icon-left"><i class="bi bi-lock"></i></span>
-    <input type="password" name="confirm-password" id="confirm-password" class="form-control" placeholder="Confirm your password" required />
-  </div>
-  <!-- Create Account Button -->
-<button type="submit" class="btn btn-gradient w-100 create-account-btn">Create Account</button>
-  <!-- Already have an account -->
-        <p class="already-account-text mt-3 mb-0">
-          Already have an account?
-          <a href="login.html" class="sign-in-link">Sign in here</a>
-        </p>
- 
-</form>            
+  <p class="welcome-desc">Create your account and start swapping books today</p>            </div>
+            <form action="/register" method="post">
+                <!-- Full Name -->
+                <div class="form-group input-icon">
+                    <label for="fullname" class="form-label">Full Name</label>
+                    <span class="input-icon-left"><i class="fa-regular fa-user fa-lg"></i></span>
+                    <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Enter your full name" required />
+                </div>
+                <!-- Email -->
+                <div class="form-group input-icon">
+                    <label for="email" class="form-label">Email Address</label>
+                    <span class="input-icon-left"><i class="fa-regular fa-envelope fa-lg"></i></span>
+                    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required />
+                </div>
+                <!-- Location -->
+                <div class="form-group input-icon">
+                    <label for="location" class="form-label">Location</label>
+                    <span class="input-icon-left"><i class="fa-solid fa-location-dot"></i></span>
+                    <input type="text" name="location" id="location" class="form-control" placeholder="City, State" required />
+                </div>
+                <!-- Password -->
+                <div class="form-group input-icon">
+                    <label for="password" class="form-label">Password</label>
+                    <span class="input-icon-left"><i class="bi bi-lock"></i></span>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required />
+                </div>
+                <!-- Confirm Password -->
+                <div class="form-group input-icon">
+                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                    <span class="input-icon-left"><i class="bi bi-lock"></i></span>
+                    <input type="password" name="confirm-password" id="confirm-password" class="form-control" placeholder="Confirm your password" required />
+                </div>
+                <!-- Create Account Button -->
+                <button type="submit" class="btn btn-gradient w-100 create-account-btn">Create Account</button>
+                <!-- Already have an account -->
+                <p class="already-account-text mt-3 mb-0">
+                    Already have an account?
+                    <a href="/login" class="sign-in-link">Sign in here</a>
+                </p>
+            </form>
 </div>
   </div>
     </div>
