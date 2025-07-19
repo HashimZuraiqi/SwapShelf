@@ -56,18 +56,34 @@ app.get('/', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
+    const userName = req.query.user || 'Reader';
     res.render('dashboard', {
-        user: 'Reader', // You can make this dynamic later
+        user: userName,
         trendingBooks: sampleTrendingBooks
     });
 });
 
 app.get('/login', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'login.html'));
+    const error = req.query.error;
+    let errorMessage = '';
+    
+    if (error === 'invalid') {
+        errorMessage = 'Invalid email or password. Please try again.';
+    } else if (error === 'server') {
+        errorMessage = 'Server error. Please try again later.';
+    }
+    
+    console.log('Login page accessed with error:', error, 'Message:', errorMessage);
+    res.render('login', { errorMessage });
 });
 
 app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'register.html'));
+});
+
+// Test route for login error
+app.get('/test-login-error', (req, res) => {
+    res.redirect('/login?error=invalid');
 });
 
 // POST Routes - Authentication
@@ -109,20 +125,20 @@ app.post('/login', async (req, res) => {
     if (mongoose.connection.readyState !== 1) {
       console.warn("⚠️ MongoDB not connected - simulating login");
       console.log(`✅ Would login user: ${email}`);
-      res.redirect('/dashboard');
+      res.redirect('/dashboard?user=' + encodeURIComponent(email.split('@')[0]));
       return;
     }
 
     const user = await User.findOne({ email });
     if (!user || !(await bcrypt.compare(password, user.password))) {
-      return res.status(401).send('Invalid credentials');
+      return res.redirect('/login?error=invalid');
     }
 
     console.log("✅ Login successful:", email);
-    res.redirect('/dashboard');
+    res.redirect('/dashboard?user=' + encodeURIComponent(user.fullname || user.email.split('@')[0]));
   } catch (err) {
     console.error("Login error:", err);
-    res.status(500).send('Server error');
+    res.redirect('/login?error=server');
   }
 });
 

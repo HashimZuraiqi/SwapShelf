@@ -361,6 +361,33 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
 /* Nav bar styling ends here (More in Media queries) */
 
 /* ========== Form Styles ========== */
+/* Error Message Styles */
+.error-message {
+    background-color: #dc3545 !important;
+    border: 2px solid #b02a37 !important;
+    color: #ffffff !important;
+    border-radius: 10px;
+    padding: 15px 20px;
+    margin-bottom: 25px;
+    font-size: 15px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);
+    animation: shake 0.5s ease-in-out;
+}
+.error-message i {
+    margin-right: 10px;
+    font-size: 18px;
+}
+
+/* Shake animation for error messages */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    75% { transform: translateX(5px); }
+}
+
 .form-container .form-group {
     text-align: left;
     margin-bottom: 18px;
