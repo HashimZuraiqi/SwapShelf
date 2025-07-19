@@ -6,7 +6,7 @@
     <title>Dashboard | BookSwap</title>
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="../public/css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 <body class="dashboard-bg">
@@ -116,14 +116,24 @@
                 <h2>Trending Books in Your Area</h2>
                 <p>Popular books that other swappers are looking for</p>
                 <div class="row book-cards">
-                    <% trendingBooks.forEach(function(book) { %>
-                        <div class="col-6 col-md-3 mb-4 d-flex">
-                            <div class="book-card flex-fill">
-                                <img src="<%= book.image %>" alt="<%= book.title %>" class="img-fluid rounded book-img">
-                                <div class="book-title mt-2 text-center"><%= book.title %></div>
+                    <% if (typeof trendingBooks !== 'undefined' && trendingBooks && trendingBooks.length > 0) { %>
+                        <% trendingBooks.forEach(function(book) { %>
+                            <div class="col-6 col-md-3 mb-4 d-flex">
+                                <div class="book-card flex-fill">
+                                    <img src="<%= book.image || '/images/placeholder-book.jpg' %>" alt="<%= book.title || 'Book Cover' %>" class="img-fluid book-img">
+                                    <div class="book-title mt-2 text-center"><%= book.title || 'Unknown Title' %></div>
+                                </div>
+                            </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-12 text-center">
+                            <div class="no-books-placeholder">
+                                <div class="placeholder-icon mb-3">📚</div>
+                                <h4>No Trending Books Available</h4>
+                                <p class="text-muted">Check back later for popular book recommendations!</p>
                             </div>
                         </div>
-                    <% }); %>
+                    <% } %>
                     <!-- To add more books, add more objects to trendingBooks in your backend -->
                 </div>
             </section>
