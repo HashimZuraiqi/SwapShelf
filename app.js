@@ -59,33 +59,47 @@ mongoose.connect(process.env.MONGO_URI)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Session middleware
+// Session middleware with proper cookie configuration
 app.use(session({
     secret: process.env.SESSION_SECRET || 'fallback-secret-key-for-development',
     resave: false,
     saveUninitialized: false,
-    name: 'sessionId',
+    name: 'bookswap.sid', // Custom session name
     cookie: { 
-        secure: process.env.NODE_ENV === 'production' ? false : false, // Set to true if using HTTPS
+        secure: process.env.NODE_ENV === 'production', // true in production with HTTPS
         httpOnly: true,
-        maxAge: 24 * 60 * 60 * 1000, // 24 hours
-        sameSite: 'lax'
+        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+        sameSite: 'lax', // Important for cross-site requests
+        path: '/' // Ensure cookie is sent for all paths
     }
 }));
 
-// Middleware to prevent caching for all routes (helps with logout)
+// Enhanced session debugging middleware
 app.use((req, res, next) => {
-    // Debug session info
+    // Debug session info for development
     if (process.env.NODE_ENV !== 'production') {
-        console.log('Session ID:', req.sessionID);
-        console.log('Session User:', req.session?.user?.email);
+        console.log(`${req.method} ${req.path}:`, {
+            sessionID: req.sessionID,
+            hasSession: !!req.session,
+            hasUser: !!(req.session && req.session.user),
+            userEmail: req.session?.user?.email,
+            cookies: req.headers.cookie ? 'Present' : 'Missing'
+        });
     }
     
-    res.set({
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-    });
+    // Prevent caching for protected routes
+    if (req.path.startsWith('/dashboard') || 
+        req.path.startsWith('/me') || 
+        req.path.startsWith('/library') ||
+        req.path.startsWith('/wishlist') ||
+        req.path.startsWith('/profile')) {
+        res.set({
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        });
+    }
+    
     next();
 });
 
@@ -254,6 +268,11 @@ app.get('/me', (req, res) => {
     });
 });
 
+// Redirect old profile route to new one for consistency
+app.get('/profile', (req, res) => {
+    res.redirect('/me');
+});
+
 // Library page - user's personal book collection
 app.get('/library', (req, res) => {
     if (!req.session || !req.session.user) {
@@ -339,7 +358,7 @@ app.get('/test-login-error', (req, res) => {
 });
 
 app.get('/logout', (req, res) => {
-    console.log('User logged out');
+    console.log('User logging out:', req.session?.user?.email);
     
     // Clear session
     req.session.destroy((err) => {
@@ -348,8 +367,13 @@ app.get('/logout', (req, res) => {
             return res.redirect('/dashboard');
         }
         
-        // Clear cookie
-        res.clearCookie('connect.sid');
+        // Clear the session cookie with the correct name
+        res.clearCookie('bookswap.sid', {
+            path: '/',
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production',
+            sameSite: 'lax'
+        });
         
         // Set headers to prevent caching
         res.set({
@@ -358,8 +382,19 @@ app.get('/logout', (req, res) => {
             'Expires': '0'
         });
         
-        // Redirect to login page instead of home to make logout clear
+        console.log('✅ User logged out successfully');
         res.redirect('/login?message=You have been successfully logged out');
+    });
+});
+
+// Test route to check session status
+app.get('/test-session', (req, res) => {
+    res.json({
+        sessionID: req.sessionID,
+        hasSession: !!req.session,
+        hasUser: !!(req.session && req.session.user),
+        user: req.session?.user || null,
+        cookies: req.headers.cookie
     });
 });
 
@@ -398,19 +433,31 @@ app.post('/login', async (req, res) => {
   const { email, password } = req.body;
 
   try {
+    console.log("🔐 Login attempt:", email);
+
     // Check if MongoDB is connected
     if (mongoose.connection.readyState !== 1) {
       console.warn("⚠️ MongoDB not connected - simulating login");
       console.log(`✅ Would login user: ${email}`);
       
-      // Allow test login with any email and password for testing
+      // Set session for test login
       req.session.user = {
+        id: 'test-' + Date.now(),
         email: email,
         name: email.split('@')[0],
-        fullname: email.split('@')[0]
+        fullname: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+        photo: '/images/default-avatar.png'
       };
-      console.log('Session set for user:', req.session.user);
-      res.redirect('/dashboard');
+
+      // Save session explicitly
+      req.session.save((err) => {
+        if (err) {
+          console.error('Session save error:', err);
+          return res.redirect('/login?error=session');
+        }
+        console.log('✅ Session saved successfully:', req.session.user);
+        res.redirect('/dashboard');
+      });
       return;
     }
 
@@ -424,11 +471,20 @@ app.post('/login', async (req, res) => {
       id: user._id,
       email: user.email,
       name: user.fullname,
-      fullname: user.fullname
+      fullname: user.fullname,
+      photo: user.photo || '/images/default-avatar.png'
     };
 
-    console.log("✅ Login successful:", email);
-    res.redirect('/dashboard');
+    // Save session explicitly
+    req.session.save((err) => {
+      if (err) {
+        console.error('Session save error:', err);
+        return res.redirect('/login?error=session');
+      }
+      console.log("✅ Login successful:", email);
+      res.redirect('/dashboard');
+    });
+
   } catch (err) {
     console.error("Login error:", err);
     res.redirect('/login?error=server');
