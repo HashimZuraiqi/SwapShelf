@@ -61,14 +61,26 @@ app.set('views', path.join(__dirname, 'views'));
 
 // Session middleware
 app.use(session({
-    secret: 'your-secret-key',
+    secret: process.env.SESSION_SECRET || 'fallback-secret-key-for-development',
     resave: false,
-    saveUninitialized: true,
-    cookie: { secure: false } // Set to true in production with HTTPS
+    saveUninitialized: false,
+    name: 'sessionId',
+    cookie: { 
+        secure: process.env.NODE_ENV === 'production' ? false : false, // Set to true if using HTTPS
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000, // 24 hours
+        sameSite: 'lax'
+    }
 }));
 
 // Middleware to prevent caching for all routes (helps with logout)
 app.use((req, res, next) => {
+    // Debug session info
+    if (process.env.NODE_ENV !== 'production') {
+        console.log('Session ID:', req.sessionID);
+        console.log('Session User:', req.session?.user?.email);
+    }
+    
     res.set({
         'Cache-Control': 'no-cache, no-store, must-revalidate',
         'Pragma': 'no-cache',
@@ -122,9 +134,18 @@ app.get('/home', (req, res) => {
 });
 
 app.get('/dashboard', (req, res) => {
+    console.log('Dashboard access attempt:', {
+        sessionID: req.sessionID,
+        session: req.session,
+        hasUser: !!(req.session && req.session.user),
+        cookies: req.headers.cookie
+    });
+    
     if (!req.session || !req.session.user) {
-        return res.redirect('/login');
+        console.log('Dashboard: No session/user, redirecting to login');
+        return res.redirect('/login?error=session');
     }
+    
     const userLoggedIn = req.session && req.session.user;
     const user = req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
     
@@ -162,8 +183,16 @@ app.get('/register', (req, res) => {
 
 // Profile photo upload route
 app.post('/profile/upload-photo', upload.single('profilePhoto'), (req, res) => {
-    if (!req.session.user) {
-        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    console.log('Profile photo upload attempt:', {
+        sessionID: req.sessionID,
+        hasSession: !!req.session,
+        hasUser: !!(req.session && req.session.user),
+        file: req.file ? 'File received' : 'No file'
+    });
+    
+    if (!req.session || !req.session.user) {
+        console.log('Profile upload: No session/user, returning unauthorized');
+        return res.status(401).json({ success: false, error: 'Unauthorized - Please login again' });
     }
 
     try {
@@ -191,9 +220,17 @@ app.post('/profile/upload-photo', upload.single('profilePhoto'), (req, res) => {
 });
 
 app.get('/me', (req, res) => {
+    console.log('Profile access attempt:', {
+        sessionID: req.sessionID,
+        session: req.session,
+        hasUser: !!(req.session && req.session.user),
+        cookies: req.headers.cookie
+    });
+    
     // Check if user is logged in
     if (!req.session || !req.session.user) {
-        return res.redirect('/login');
+        console.log('Profile: No session/user, redirecting to login');
+        return res.redirect('/login?error=session');
     }
 
     const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
@@ -217,7 +254,7 @@ app.get('/me', (req, res) => {
     });
 });
 
-// Additional navigation routes (placeholder pages for features under development)
+// Library page - user's personal book collection
 app.get('/library', (req, res) => {
     if (!req.session || !req.session.user) {
         return res.redirect('/login');
@@ -225,10 +262,14 @@ app.get('/library', (req, res) => {
     const userLoggedIn = req.session && req.session.user;
     const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
     
-    res.render('placeholder', { 
+    // TODO: Fetch user's actual books from database
+    const books = []; // Placeholder for user's book collection
+    
+    res.render('library', { 
         userLoggedIn, 
         activePage: 'library',
-        user: user
+        user: user,
+        books: books
     });
 });
 
@@ -395,7 +436,12 @@ app.post('/login', async (req, res) => {
 });
 
 // Start Server
-app.listen(3000, () => {
-    console.log('Server is running at http://localhost:3000');
-    console.log('Dashboard available at: http://localhost:3000/dashboard');
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(3000, () => {
+        console.log('Server is running at http://localhost:3000');
+        console.log('Dashboard available at: http://localhost:3000/dashboard');
+    });
+}
+
+// Export for Vercel
+module.exports = app;
