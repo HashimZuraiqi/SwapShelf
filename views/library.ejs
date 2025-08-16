@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Library - SwapShelf</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container-fluid">
+            <!-- Logo on far left -->
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="logo-icon mr-2">📚</span>
+                <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Navigation options in the center with correct order -->
+                <!-- Debug: activePage = <%= activePage %> -->
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item <%= activePage === 'home' ? 'active' : '' %>" data-page="home">
+                        <a class="nav-link" href="/home"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+                        <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+                        <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+                        <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+                        <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'nearby' ? 'active' : '' %>" data-page="nearby">
+                        <a class="nav-link" href="/nearby"><i class="bi bi-geo-alt"></i> Nearby</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+                        <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+                    </li>
+                </ul>
+                
+                <!-- Profile dropdown on far right -->
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                            <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <main class="dashboard-main container mt-5">
+        <div class="dashboard-content mx-auto" style="max-width: 1200px;">
+            <!-- Welcome Section -->
+            <section class="dashboard-welcome mb-4 p-4">
+                <h1><i class="bi bi-book text-primary"></i> My Library <span>📚</span></h1>
+                <p>Manage your personal book collection</p>
+                <div class="text-right mb-3">
+                    <button class="btn btn-gradient" data-toggle="modal" data-target="#addBookModal">
+                        <i class="bi bi-plus-circle"></i> Add New Book
+                    </button>
+                </div>
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-section mb-4 p-4">
+                <div class="row">
+                    <div class="col-md-8">
+                        <div class="input-group">
+                            <input type="text" class="form-control search-input" placeholder="Search your books...">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary search-btn" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <select class="form-control filter-select">
+                            <option>All Books</option>
+                            <option>Available</option>
+                            <option>Reading</option>
+                            <option>Not Available</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Books Section -->
+            <section class="books-section mb-5 p-4">
+                <h2>Your Book Collection</h2>
+                <p>Books in your personal library</p>
+                <div class="row book-cards">
+                    <% if (userBooks && userBooks.length > 0) { %>
+                        <% userBooks.forEach(function(book) { %>
+                        <div class="col-6 col-md-4 mb-4 d-flex">
+                            <div class="book-card flex-fill">
+                                <div class="book-img-placeholder mb-3">📖</div>
+                                <div class="book-details">
+                                    <div class="book-title"><%= book.title %></div>
+                                    <div class="book-author text-muted">by <%= book.author %></div>
+                                    <div class="book-meta mt-2">
+                                        <span class="badge status-<%= book.status.toLowerCase().replace(' ', '-') %>">
+                                            <%= book.status %>
+                                        </span>
+                                        <div class="book-condition text-muted mt-1">
+                                            <strong>Condition:</strong> <%= book.condition %>
+                                        </div>
+                                        <div class="book-genre text-muted">
+                                            <strong>Genre:</strong> <%= book.genre %>
+                                        </div>
+                                    </div>
+                                    <div class="book-actions mt-3">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-pencil"></i> Edit
+                                        </button>
+                                        <% if (book.status === 'Available') { %>
+                                        <button class="btn btn-sm btn-success">
+                                            <i class="bi bi-arrow-left-right"></i> Available
+                                        </button>
+                                        <% } else { %>
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="bi bi-eye-slash"></i> Not Available
+                                        </button>
+                                        <% } %>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% }); %>
+                    <% } else { %>
+                        <div class="col-12 text-center">
+                            <div class="no-books-placeholder">
+                                <div class="placeholder-icon mb-3">📚</div>
+                                <h4>No books in your library yet</h4>
+                                <p class="text-muted">Start building your collection by adding your first book!</p>
+                                <button class="btn btn-gradient mt-3" data-toggle="modal" data-target="#addBookModal">
+                                    <i class="bi bi-plus-circle"></i> Add Your First Book
+                                </button>
+                            </div>
+                        </div>
+                    <% } %>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Add Book Modal -->
+    <div class="modal fade" id="addBookModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Add New Book</h5>
+                    <button type="button" class="close" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="form-group">
+                            <label>Book Title</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Author</label>
+                            <input type="text" class="form-control" required>
+                        </div>
+                        <div class="form-row">
+                            <div class="form-group col-md-6">
+                                <label>Genre</label>
+                                <select class="form-control">
+                                    <option>Fiction</option>
+                                    <option>Non-Fiction</option>
+                                    <option>Science Fiction</option>
+                                    <option>Fantasy</option>
+                                    <option>Mystery</option>
+                                    <option>Romance</option>
+                                    <option>Biography</option>
+                                    <option>History</option>
+                                    <option>Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group col-md-6">
+                                <label>Condition</label>
+                                <select class="form-control">
+                                    <option>Excellent</option>
+                                    <option>Good</option>
+                                    <option>Fair</option>
+                                    <option>Poor</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Status</label>
+                            <select class="form-control">
+                                <option>Available</option>
+                                <option>Reading</option>
+                                <option>Not Available</option>
+                            </select>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary">Add Book</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/navigation.js"></script>
+</body>
+</html>

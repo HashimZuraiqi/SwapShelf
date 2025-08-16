@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Swap Matcher - SwapShelf</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container-fluid">
+            <!-- Logo on far left -->
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="logo-icon mr-2">📚</span>
+                <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Navigation options in the center with correct order -->
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item <%= activePage === 'home' ? 'active' : '' %>" data-page="home">
+                        <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+                        <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+                        <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+                        <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+                        <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'nearby' ? 'active' : '' %>" data-page="nearby">
+                        <a class="nav-link" href="/nearby"><i class="bi bi-geo-alt"></i> Nearby</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+                        <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+                    </li>
+                </ul>
+                
+                <!-- Profile dropdown on far right -->
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                            <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Header -->
+    <main class="dashboard-main container mt-5">
+        <div class="dashboard-content mx-auto" style="max-width: 1200px;">
+            <!-- Welcome Section -->
+            <section class="dashboard-welcome mb-4 p-4">
+                <h1><i class="bi bi-arrow-left-right text-success"></i> Swap Matcher <span>🔄</span></h1>
+                <p>Find perfect book swap partners and discover new reads</p>
+                <div class="text-right mb-3">
+                    <div class="btn-group" role="group">
+                        <button class="btn btn-gradient active" id="browseTab">
+                            <i class="bi bi-grid"></i> Browse Books
+                        </button>
+                        <button class="btn btn-outline-primary" id="matchesTab">
+                            <i class="bi bi-heart"></i> Smart Matches
+                        </button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Filter Section -->
+            <section class="filter-section mb-4 p-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="input-group">
+                            <input type="text" class="form-control search-input" placeholder="Search for books to swap...">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary search-btn" type="button">
+                                    <i class="bi bi-search"></i>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <select class="form-control filter-select">
+                            <option>All Genres</option>
+                            <option>Fiction</option>
+                            <option>Science Fiction</option>
+                            <option>Fantasy</option>
+                            <option>Mystery</option>
+                            <option>Romance</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control filter-select">
+                            <option>All Conditions</option>
+                            <option>Excellent</option>
+                            <option>Good</option>
+                            <option>Fair</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <select class="form-control filter-select">
+                            <option>Any Distance</option>
+                            <option>5 miles</option>
+                            <option>10 miles</option>
+                            <option>25 miles</option>
+                            <option>50 miles</option>
+                        </select>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Browse Books Section -->
+            <section id="browseContent" class="available-books mb-5 p-4">
+                <h2>Available Books for Swap</h2>
+                <p>Browse books from other users in your area</p>
+                <div class="row book-cards">
+                    <% availableBooks.forEach(function(book, index) { %>
+                    <div class="col-6 col-md-4 mb-4 d-flex">
+                        <div class="book-card flex-fill">
+                            <div class="book-img-placeholder mb-3">🔄</div>
+                            <div class="book-details">
+                                <div class="book-title"><%= book.title %></div>
+                                <div class="book-author text-muted">by <%= book.author %></div>
+                                <div class="book-meta mt-2">
+                                    <span class="badge condition-<%= book.condition.toLowerCase() %>">
+                                        <%= book.condition %>
+                                    </span>
+                                    <div class="owner-info text-muted mt-1">
+                                        <i class="bi bi-person-circle"></i> <%= book.owner %>
+                                    </div>
+                                    <div class="location-info text-muted">
+                                        <i class="bi bi-geo-alt"></i> <%= book.location %> • 4.2 miles away
+                                    </div>
+                                    <div class="rating-info text-muted">
+                                        <i class="bi bi-star-fill text-warning"></i> 4.8 rating • 23 swaps
+                                    </div>
+                                </div>
+                                <div class="book-actions mt-3">
+                                    <button class="btn btn-sm btn-gradient" data-toggle="modal" data-target="#swapModal<%= index %>">
+                                        <i class="bi bi-arrow-left-right"></i> Request Swap
+                                    </button>
+                                    <button class="btn btn-sm btn-outline-primary">
+                                        <i class="bi bi-chat"></i> Message
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <% }); %>
+                </div>
+            </section>
+
+            <!-- Smart Matches Section (Hidden by default) -->
+            <section id="matchesContent" class="smart-matches mb-5 p-4" style="display: none;">
+                <h2>Smart Matches for You</h2>
+                <p>Books from your wishlist available nearby</p>
+                
+                <div class="alert alert-info mb-4">
+                    <h5><i class="bi bi-lightbulb"></i> Smart Matches Based on Your Wishlist</h5>
+                    <p class="mb-0">We found books from your wishlist that are available for swap nearby!</p>
+                </div>
+
+                <div class="row book-cards">
+                    <div class="col-6 col-md-6 mb-4 d-flex">
+                        <div class="book-card flex-fill border-success">
+                            <div class="book-img-placeholder mb-3 text-success">🎯</div>
+                            <div class="book-details">
+                                <div class="badge badge-success mb-2">Perfect Match!</div>
+                                <div class="book-title">Dune</div>
+                                <div class="book-author text-muted">by Frank Herbert</div>
+                                <div class="book-meta mt-2">
+                                    <div class="owner-info text-muted">
+                                        <strong>Available from:</strong> Sarah M. (Brooklyn, NY)
+                                    </div>
+                                    <div class="condition-info text-muted">
+                                        <strong>Condition:</strong> <span class="badge badge-success">Excellent</span>
+                                    </div>
+                                    <div class="distance-info text-muted">
+                                        <strong>Distance:</strong> 2.1 miles away
+                                    </div>
+                                    <div class="priority-info text-success mt-2">
+                                        This book is #1 on your wishlist!
+                                    </div>
+                                </div>
+                                <div class="book-actions mt-3">
+                                    <button class="btn btn-success btn-block">
+                                        <i class="bi bi-arrow-left-right"></i> Request Swap Now
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-6 col-md-6 mb-4 d-flex">
+                        <div class="book-card flex-fill border-warning">
+                            <div class="book-img-placeholder mb-3 text-warning">⭐</div>
+                            <div class="book-details">
+                                <div class="badge badge-warning mb-2">Great Match!</div>
+                                <div class="book-title">The Lord of the Rings</div>
+                                <div class="book-author text-muted">by J.R.R. Tolkien</div>
+                                <div class="book-meta mt-2">
+                                    <div class="owner-info text-muted">
+                                        <strong>Available from:</strong> Mike K. (Queens, NY)
+                                    </div>
+                                    <div class="condition-info text-muted">
+                                        <strong>Condition:</strong> <span class="badge badge-primary">Good</span>
+                                    </div>
+                                    <div class="distance-info text-muted">
+                                        <strong>Distance:</strong> 5.7 miles away
+                                    </div>
+                                    <div class="priority-info text-warning mt-2">
+                                        This book is #2 on your wishlist!
+                                    </div>
+                                </div>
+                                <div class="book-actions mt-3">
+                                    <button class="btn btn-warning btn-block">
+                                        <i class="bi bi-arrow-left-right"></i> Request Swap
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="text-center py-4">
+                    <p class="text-muted">Keep adding books to your wishlist to get better matches!</p>
+                    <a href="/wishlist" class="btn btn-outline-primary">
+                        <i class="bi bi-heart"></i> Manage Wishlist
+                    </a>
+                </div>
+            </section>
+
+            <!-- Current Swap Activity -->
+            <section class="swap-activity mb-5 p-4">
+                <h2>Your Recent Swap Activity</h2>
+                <p>Track your ongoing and completed swaps</p>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <div class="activity-card success">
+                            <div class="activity-header">
+                                <h6 class="text-success">Swap Request Sent</h6>
+                                <small class="text-muted">2 hours ago • Awaiting response</small>
+                            </div>
+                            <div class="activity-details">
+                                <div><strong>You offered:</strong> The Great Gatsby</div>
+                                <div><strong>You want:</strong> Harry Potter (from Alice)</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <div class="activity-card warning">
+                            <div class="activity-header">
+                                <h6 class="text-warning">Swap Request Received</h6>
+                                <small class="text-muted">5 hours ago</small>
+                            </div>
+                            <div class="activity-details">
+                                <div><strong>Bob wants:</strong> 1984</div>
+                                <div><strong>Bob offers:</strong> Brave New World</div>
+                                <div class="mt-2">
+                                    <button class="btn btn-sm btn-success">Accept</button>
+                                    <button class="btn btn-sm btn-outline-secondary">Decline</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <!-- Swap Request Modals -->
+    <% availableBooks.forEach(function(book, index) { %>
+    <div class="modal fade" id="swapModal<%= index %>" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content bg-dark text-white">
+                <div class="modal-header border-secondary">
+                    <h5 class="modal-title">Request Swap: <%= book.title %></h5>
+                    <button type="button" class="close text-white" data-dismiss="modal">
+                        <span>&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p><strong>You want:</strong> <%= book.title %> by <%= book.author %></p>
+                    <p><strong>Owner:</strong> <%= book.owner %> (<%= book.location %>)</p>
+                    
+                    <div class="form-group">
+                        <label>What would you like to offer in return?</label>
+                        <select class="form-control bg-dark text-white border-secondary">
+                            <option>Select a book from your library...</option>
+                            <option>The Great Gatsby - F. Scott Fitzgerald</option>
+                            <option>1984 - George Orwell</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Message to <%= book.owner %> (Optional)</label>
+                        <textarea class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Hi! I'd love to swap for this book..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-secondary">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-gradient">Send Swap Request</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% }); %>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Tab switching functionality
+        $('#browseTab').click(function() {
+            $(this).addClass('active').siblings().removeClass('active');
+            $('#browseContent').show();
+            $('#matchesContent').hide();
+        });
+        
+        $('#matchesTab').click(function() {
+            $(this).addClass('active').siblings().removeClass('active');
+            $('#browseContent').hide();
+            $('#matchesContent').show();
+        });
+    </script>
+    <script src="/js/navigation.js"></script>
+</body>
+</html>
