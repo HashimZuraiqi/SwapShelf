@@ -4,10 +4,47 @@ const path = require('path');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
 const bodyParser = require('body-parser');
+const session = require('express-session');
+const multer = require('multer');
+const fs = require('fs');
 
 const User = require('./models/User'); //Mongoose User model
 
 const app = express();
+
+// Configure multer for file uploads
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(__dirname, 'public', 'uploads', 'profiles');
+        // Create directory if it doesn't exist
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        // Generate unique filename using user email and timestamp
+        const userEmail = req.session.user ? req.session.user.email : 'unknown';
+        const fileExt = path.extname(file.originalname);
+        const fileName = `${userEmail.replace('@', '_at_')}_${Date.now()}${fileExt}`;
+        cb(null, fileName);
+    }
+});
+
+const upload = multer({ 
+    storage: storage,
+    limits: {
+        fileSize: 5 * 1024 * 1024 // 5MB limit
+    },
+    fileFilter: function (req, file, cb) {
+        // Only allow image files
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Only image files are allowed!'), false);
+        }
+    }
+});
 
 // MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
@@ -22,10 +59,26 @@ mongoose.connect(process.env.MONGO_URI)
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Middleware
-app.use(express.static(path.join(__dirname, 'public'), {
-    index: 'index.html'
+// Session middleware
+app.use(session({
+    secret: 'your-secret-key',
+    resave: false,
+    saveUninitialized: true,
+    cookie: { secure: false } // Set to true in production with HTTPS
 }));
+
+// Middleware to prevent caching for all routes (helps with logout)
+app.use((req, res, next) => {
+    res.set({
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+    });
+    next();
+});
+
+// Middleware
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -52,25 +105,51 @@ const sampleTrendingBooks = [
 
 // GET Routes
 app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+    const userLoggedIn = req.session && req.session.user;
+    
+    if (userLoggedIn) {
+        // For logged-in users, render the dynamic EJS template with logged-in navigation
+        res.render('home', { userLoggedIn: true, activePage: 'home' });
+    } else {
+        // For guests, serve the static HTML file with normal navigation
+        res.sendFile(path.join(__dirname, 'public', 'landing.html'));
+    }
+});
+
+// Redirect /home to root path for consistency
+app.get('/home', (req, res) => {
+    res.redirect('/');
 });
 
 app.get('/dashboard', (req, res) => {
-    const userName = req.query.user || 'Reader';
-    res.render('dashboard', {
-        user: userName,
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+    const userLoggedIn = req.session && req.session.user;
+    const user = req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
+    
+    console.log('Dashboard - Session user:', req.session.user);
+    console.log('Dashboard - Resolved user name:', user);
+    
+    res.render('dashboard', { 
+        userLoggedIn, 
+        activePage: 'dashboard',
+        user: user,
         trendingBooks: sampleTrendingBooks
     });
 });
 
 app.get('/login', (req, res) => {
     const error = req.query.error;
+    const message = req.query.message;
     let errorMessage = '';
     
     if (error === 'invalid') {
         errorMessage = 'Invalid email or password. Please try again.';
     } else if (error === 'server') {
         errorMessage = 'Server error. Please try again later.';
+    } else if (message) {
+        errorMessage = message; // This will show the logout success message
     }
     
     console.log('Login page accessed with error:', error, 'Message:', errorMessage);
@@ -81,9 +160,166 @@ app.get('/register', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'register.html'));
 });
 
+// Profile photo upload route
+app.post('/profile/upload-photo', upload.single('profilePhoto'), (req, res) => {
+    if (!req.session.user) {
+        return res.status(401).json({ success: false, error: 'Unauthorized' });
+    }
+
+    try {
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: 'No file uploaded' });
+        }
+
+        // Update the session with the new photo path
+        const photoPath = `/uploads/profiles/${req.file.filename}`;
+        req.session.user.photo = photoPath;
+
+        // In a real app, you would update the database here
+        // await User.findByIdAndUpdate(req.session.user.id, { photo: photoPath });
+
+        res.json({ 
+            success: true, 
+            message: 'Profile photo updated successfully',
+            photoUrl: photoPath
+        });
+
+    } catch (error) {
+        console.error('Photo upload error:', error);
+        res.status(500).json({ success: false, error: 'Failed to upload photo' });
+    }
+});
+
+app.get('/me', (req, res) => {
+    // Check if user is logged in
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+
+    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
+    const userEmail = req.session.user.email || 'user@example.com';
+    const userPhoto = req.session.user.photo || '/images/default-avatar.png'; // Use uploaded photo or default
+    
+    // Mock user books data
+    const userBooks = [
+        { title: 'The Great Gatsby', image: '/images/book1.jpg' },
+        { title: '1984', image: '/images/book2.jpg' },
+        { title: 'To Kill a Mockingbird', image: '/images/book3.jpg' }
+    ];
+
+    console.log('Rendering profile with session data:', { user, userEmail });
+    res.render('profile', {
+        user: user,
+        userEmail: userEmail,
+        userPhoto: userPhoto,
+        userBooks: userBooks,
+        activePage: 'profile'
+    });
+});
+
+// Additional navigation routes (placeholder pages for features under development)
+app.get('/library', (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+    const userLoggedIn = req.session && req.session.user;
+    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
+    
+    res.render('placeholder', { 
+        userLoggedIn, 
+        activePage: 'library',
+        user: user
+    });
+});
+
+app.get('/wishlist', (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+    const userLoggedIn = req.session && req.session.user;
+    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
+    
+    res.render('placeholder', { 
+        userLoggedIn, 
+        activePage: 'wishlist',
+        user: user
+    });
+});
+
+app.get('/swap-matcher', (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+    const userLoggedIn = req.session && req.session.user;
+    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
+    
+    res.render('placeholder', { 
+        userLoggedIn, 
+        activePage: 'swap-matcher',
+        user: user
+    });
+});
+
+app.get('/nearby', (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+    const userLoggedIn = req.session && req.session.user;
+    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
+    res.render('placeholder', { 
+        userLoggedIn, 
+        activePage: 'nearby',
+        user: user,
+        pageTitle: 'Nearby',
+        pageDescription: 'Connect with book lovers near you',
+        pageIcon: 'bi bi-geo-alt'
+    });
+});
+
+app.get('/rewards', (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+    const userLoggedIn = req.session && req.session.user;
+    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
+    res.render('placeholder', { 
+        userLoggedIn, 
+        activePage: 'rewards',
+        user: user,
+        pageTitle: 'Rewards',
+        pageDescription: 'Earn points and unlock achievements',
+        pageIcon: 'bi bi-trophy'
+    });
+});
+
 // Test route for login error
 app.get('/test-login-error', (req, res) => {
     res.redirect('/login?error=invalid');
+});
+
+app.get('/logout', (req, res) => {
+    console.log('User logged out');
+    
+    // Clear session
+    req.session.destroy((err) => {
+        if (err) {
+            console.error('Error destroying session:', err);
+            return res.redirect('/dashboard');
+        }
+        
+        // Clear cookie
+        res.clearCookie('connect.sid');
+        
+        // Set headers to prevent caching
+        res.set({
+            'Cache-Control': 'no-cache, no-store, must-revalidate',
+            'Pragma': 'no-cache',
+            'Expires': '0'
+        });
+        
+        // Redirect to login page instead of home to make logout clear
+        res.redirect('/login?message=You have been successfully logged out');
+    });
 });
 
 // POST Routes - Authentication
@@ -125,7 +361,15 @@ app.post('/login', async (req, res) => {
     if (mongoose.connection.readyState !== 1) {
       console.warn("⚠️ MongoDB not connected - simulating login");
       console.log(`✅ Would login user: ${email}`);
-      res.redirect('/dashboard?user=' + encodeURIComponent(email.split('@')[0]));
+      
+      // Allow test login with any email and password for testing
+      req.session.user = {
+        email: email,
+        name: email.split('@')[0],
+        fullname: email.split('@')[0]
+      };
+      console.log('Session set for user:', req.session.user);
+      res.redirect('/dashboard');
       return;
     }
 
@@ -134,8 +378,16 @@ app.post('/login', async (req, res) => {
       return res.redirect('/login?error=invalid');
     }
 
+    // Set session for real login
+    req.session.user = {
+      id: user._id,
+      email: user.email,
+      name: user.fullname,
+      fullname: user.fullname
+    };
+
     console.log("✅ Login successful:", email);
-    res.redirect('/dashboard?user=' + encodeURIComponent(user.fullname || user.email.split('@')[0]));
+    res.redirect('/dashboard');
   } catch (err) {
     console.error("Login error:", err);
     res.redirect('/login?error=server');
@@ -154,7 +406,12 @@ app.get('/library', (req, res) => {
 
 
 // Start Server
-app.listen(3000, () => {
-    console.log('Server is running at http://localhost:3000');
-    console.log('Dashboard available at: http://localhost:3000/dashboard');
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(3000, () => {
+        console.log('Server is running at http://localhost:3000');
+        console.log('Dashboard available at: http://localhost:3000/dashboard');
+    });
+}
+
+// Export for Vercel
+module.exports = app;

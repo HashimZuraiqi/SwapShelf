@@ -9,13 +9,21 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://kit.fontawesome.com/473c5494b9.js" crossorigin="anonymous"></script>
+    <style>
+        /* Active navigation styling for static page */
+        .nav-item.active .nav-link {
+            color: #3BB7FB !important;
+            background: rgba(59, 183, 251, 0.1);
+            border-radius: 5px;
+            font-weight: 600;
+        }
+    </style>
     <title>Home</title>
 </head>
 <body class="home-page">
  <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
   <div class="container">
-    <!-- Brand/logo left -->
-    <a class="navbar-brand d-flex align-items-center" href="#">
+    <a class="navbar-brand d-flex align-items-center" href="/">
       <span class="logo-icon mr-2" style="display:flex;align-items:center;">
         <!-- Book SVG ICON -->
         <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
@@ -41,14 +49,14 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
-          <li class="nav-item home-center-link">
-          <a class="nav-link" href="index.html"><i class="bi bi-house-door"></i> Home</a>
+        <li class="nav-item home-center-link active">
+          <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="login.html">Login</a>
+          <a class="nav-link" href="/login">Login</a>
         </li>
         <li class="nav-item">
-          <a class="btn btn-gradient signup-btn ml-2" href="register.html">Sign Up</a>
+          <a class="btn btn-gradient signup-btn ml-2" href="/register">Sign Up</a>
         </li>
       </ul>
     </div>
@@ -129,8 +137,6 @@
     <p class="why-card-desc">Our AI finds perfect swap partners based on your library and wishlist preferences.</p>
   </div>
 </div>
-
-<!-- ...existing code... -->
 <div class="col-12 col-md-6 col-lg-3 mb-4">
   <div class="why-card card h-100 text-center p-4">
     <div class="mb-3">
