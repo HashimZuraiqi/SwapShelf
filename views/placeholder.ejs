@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>
+        <% if (activePage === 'library') { %>My Library<% } else if (activePage === 'wishlist') { %>Wishlist<% } else if (activePage === 'nearby') { %>Nearby<% } else if (activePage === 'rewards') { %>Rewards<% } else if (activePage === 'swap-matcher') { %>Swap Matcher<% } else { %>Coming Soon<% } %> - SwapShelf
+    </title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container-fluid">
+            <!-- Logo on far left -->
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="logo-icon mr-2" style="display:flex;align-items:center;">
+                    <!-- Book SVG ICON -->
+                    <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+                      <defs>
+                        <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                          <stop stop-color="#3BB7FB"/>
+                          <stop offset="1" stop-color="#F6B443"/>
+                        </linearGradient>
+                      </defs>
+                      <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
+                      <g>
+                        <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+                        <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
+                        <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+                      </g>
+                    </svg>
+                  </span>
+                <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Navigation options in the center with correct order -->
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item <%= activePage === 'home' ? 'active' : '' %>" data-page="home">
+                        <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+                        <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+                        <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+                        <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+                        <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'nearby' ? 'active' : '' %>" data-page="nearby">
+                        <a class="nav-link" href="/nearby"><i class="bi bi-geo-alt"></i> Nearby</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+                        <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+                    </li>
+                </ul>
+                
+                <!-- Profile dropdown on far right -->
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                            <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                            <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="container mt-6">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <!-- Page Icon and Title -->
+                <div class="text-center mb-5">
+                    <div class="page-icon-large mb-4">
+                        <% if (activePage === 'library') { %>
+                            <i class="bi bi-book"></i>
+                        <% } else if (activePage === 'wishlist') { %>
+                            <i class="bi bi-heart"></i>
+                        <% } else if (activePage === 'nearby') { %>
+                            <i class="bi bi-geo-alt"></i>
+                        <% } else if (activePage === 'rewards') { %>
+                            <i class="bi bi-trophy"></i>
+                        <% } else if (activePage === 'swap-matcher') { %>
+                            <i class="bi bi-arrow-left-right"></i>
+                        <% } else { %>
+                            <i class="bi bi-hourglass-split"></i>
+                        <% } %>
+                    </div>
+                    <h1 class="display-4 mb-3">
+                        <% if (activePage === 'library') { %>
+                            My Library
+                        <% } else if (activePage === 'wishlist') { %>
+                            Wishlist
+                        <% } else if (activePage === 'nearby') { %>
+                            Nearby
+                        <% } else if (activePage === 'rewards') { %>
+                            Rewards
+                        <% } else if (activePage === 'swap-matcher') { %>
+                            Swap Matcher
+                        <% } else { %>
+                            Coming Soon
+                        <% } %>
+                    </h1>
+                    <p class="lead text-muted">
+                        <% if (activePage === 'library') { %>
+                            Manage your personal book collection
+                        <% } else if (activePage === 'wishlist') { %>
+                            Keep track of books you want to read
+                        <% } else if (activePage === 'nearby') { %>
+                            Connect with book lovers in your area
+                        <% } else if (activePage === 'rewards') { %>
+                            Earn rewards for your book swapping activities
+                        <% } else if (activePage === 'swap-matcher') { %>
+                            Find the perfect books to swap with other users
+                        <% } else { %>
+                            This feature is under development
+                        <% } %>
+                    </p>
+                </div>
+
+                <!-- Coming Soon Card -->
+                <div class="coming-soon-card">
+                    <div class="card-body text-center">
+                        <h3 class="mb-4">
+                            <i class="bi bi-tools text-primary me-2"></i>
+                            Under Construction
+                        </h3>
+                        <p class="text-muted mb-4">
+                            We're working hard to bring you this amazing feature. Stay tuned for updates!
+                        </p>
+                        
+                        <!-- Feature Preview -->
+                        <% if (activePage === 'library') { %>
+                            <div class="feature-preview">
+                                <h5 class="mb-3">What's Coming:</h5>
+                                <div class="feature-item">📚 Add books to your collection</div>
+                                <div class="feature-item">📊 Track reading progress</div>
+                                <div class="feature-item">🏷️ Organize with categories</div>
+                                <div class="feature-item">🔄 Mark books for swapping</div>
+                                <div class="feature-item">⭐ Rate and review books</div>
+                            </div>
+                        <% } else if (activePage === 'wishlist') { %>
+                            <div class="feature-preview">
+                                <h5 class="mb-3">What's Coming:</h5>
+                                <div class="feature-item">💝 Save books you want to read</div>
+                                <div class="feature-item">🔔 Get availability notifications</div>
+                                <div class="feature-item">📋 Priority ranking system</div>
+                                <div class="feature-item">👥 Share with friends</div>
+                                <div class="feature-item">📥 Import from other platforms</div>
+                            </div>
+                        <% } else if (activePage === 'nearby') { %>
+                            <div class="feature-preview">
+                                <h5 class="mb-3">What's Coming:</h5>
+                                <div class="feature-item">📍 Find nearby book swappers</div>
+                                <div class="feature-item">🗺️ Interactive map view</div>
+                                <div class="feature-item">👥 Local book communities</div>
+                                <div class="feature-item">📅 Nearby book events</div>
+                            </div>
+                        <% } else if (activePage === 'rewards') { %>
+                            <div class="feature-preview">
+                                <h5 class="mb-3">What's Coming:</h5>
+                                <div class="feature-item">🏆 Earn points for swaps</div>
+                                <div class="feature-item">🎖️ Achievement badges</div>
+                                <div class="feature-item">🎁 Redeem rewards</div>
+                                <div class="feature-item">📊 Progress tracking</div>
+                            </div>
+                        <% } else if (activePage === 'swap-matcher') { %>
+                            <div class="feature-preview">
+                                <h5 class="mb-3">What's Coming:</h5>
+                                <div class="feature-item">🔍 Smart book matching</div>
+                                <div class="feature-item">📚 Browse available books</div>
+                                <div class="feature-item">💬 Messaging system</div>
+                                <div class="feature-item">⭐ User ratings</div>
+                            </div>
+                        <% } %>
+
+                        <!-- Back to Dashboard -->
+                        <div class="mt-4">
+                            <a href="/dashboard" class="btn btn-primary">
+                                <i class="bi bi-arrow-left"></i> Back to Dashboard
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center mt-5 py-4 text-muted">
+        <div class="container">
+            <p>&copy; 2025 SwapShelf. Building the future of book sharing.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/navigation.js"></script>
+</body>
+</html>

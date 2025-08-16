@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/473c5494b9.js" crossorigin="anonymous"></script>
+    <style>
+        /* Active navigation styling for dynamic page */
+        .nav-item.active .nav-link {
+            color: #3BB7FB !important;
+            background: rgba(59, 183, 251, 0.1);
+            border-radius: 5px;
+            font-weight: 600;
+        }
+    </style>
+    <title>Home</title>
+</head>
+<body class="home-page">
+ <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container-fluid">
+    <!-- Logo on far left -->
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <span class="logo-icon mr-2" style="display:flex;align-items:center;">
+        <!-- Book SVG ICON -->
+        <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+          <defs>
+            <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3BB7FB"/>
+              <stop offset="1" stop-color="#F6B443"/>
+            </linearGradient>
+          </defs>
+          <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
+          <g>
+            <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </span>
+      <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <% if (userLoggedIn) { %>
+        <!-- Navigation options in the center with correct order -->
+        <ul class="navbar-nav mx-auto">
+          <li class="nav-item <%= activePage === 'home' ? 'active' : '' %>" data-page="home">
+              <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
+          </li>
+          <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+              <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+          </li>
+          <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+              <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+          </li>
+          <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+              <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+          </li>
+          <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+              <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+          </li>
+          <li class="nav-item <%= activePage === 'nearby' ? 'active' : '' %>" data-page="nearby">
+              <a class="nav-link" href="/nearby"><i class="bi bi-geo-alt"></i> Nearby</a>
+          </li>
+          <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+              <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+          </li>
+        </ul>
+        
+        <!-- Profile dropdown on far right -->
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                  <i class="bi bi-person-circle"></i> Profile
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                  <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                  <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+              </div>
+          </li>
+        </ul>
+      <% } else { %>
+        <!-- Guest navigation -->
+        <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
+          <li class="nav-item home-center-link active">
+            <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/login">Login</a>
+          </li>
+          <li class="nav-item">
+            <a class="btn btn-gradient signup-btn ml-2" href="/register">Sign Up</a>
+          </li>
+        </ul>
+      <% } %>
+    </div>
+  </div>
+</nav>
+ <section id="home">
+            <div class="container">
+                <div class="row">
+                    <div class="col-lg-12">
+                      <h1 class="exchange"> Exchange Books,</h1>
+                        <h1 class="share"> Share Stories</h1>
+                        <p class="lead home-desc">Turn your unused books into new adventures.
+                            Connect with fellow readers and build a sustainable reading community.</p>
+                    </div>
+                    <div class="col-lg-12">
+                        <div class="button-group-home mb-5 d-flex flex-column flex-sm-row justify-content-center align-items-center">
+                            <% if (userLoggedIn) { %>
+                                <a href="/dashboard" class="btn btn-gradient mr-sm-3 mb-3 mb-sm-0 start-swapping-btn">
+                                    Go to Dashboard <i class="bi bi-arrow-right"></i>
+                                </a>
+                                <a href="/library" class="btn btn-outline-light sign-in-btn"> My Library </a>
+                            <% } else { %>
+                                <a href="register.html" class="btn btn-gradient mr-sm-3 mb-3 mb-sm-0 start-swapping-btn">
+                                    Start Swapping <i class="bi bi-arrow-right"></i>
+                                </a>
+                                <a href="login.html" class="btn btn-outline-light sign-in-btn"> Sign In </a>
+                            <% } %>
+                        </div>
+                    </div>
+                </div>
+                <div class="row w-100 mt-4 stats-row">
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">10,000+</div>
+                        <div class="stat-label">Books Exchanged</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">2,500+</div>
+                        <div class="stat-label">Active Swappers</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3 mb-4 mb-md-0">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">150+</div>
+                        <div class="stat-label">Cities Covered</div>
+                        </div>
+                    </div>
+                    <div class="col-6 col-md-3">
+                        <div class="text-center">
+                        <div class="stat-number h3 mb-1">98%</div>
+                        <div class="stat-label">Satisfaction Rate</div>
+                        </div>
+                    </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+<!-- Why Choose Section -->
+<section id="why-choose" class="py-5">
+<div class="row justify-content-center">
+<div class="col-12 col-md-6 col-lg-3 mb-4">
+  <div class="why-card card h-100 text-center p-4">
+    <div class="mb-3">
+      <!-- Gradient Circle with Book Icon -->
+      <span class="why-icon-circle">
+        <i class="bi bi-book"></i>
+      </span>
+    </div>
+    <h5 class="why-card-title">Smart Library Management</h5>
+    <p class="why-card-desc">Add books via Amazon ASIN or barcode scan. Track your reading journey effortlessly.</p>
+  </div>
+</div>
+<div class="col-12 col-md-6 col-lg-3 mb-4">
+  <div class="why-card card h-100 text-center p-4">
+    <div class="mb-3">
+      <!-- Gradient Circle with People Icon -->
+      <span class="why-icon-circle">
+        <i class="bi bi-people-fill"></i>
+      </span>
+    </div>
+    <h5 class="why-card-title">Intelligent Swap Matching</h5>
+    <p class="why-card-desc">Our AI finds perfect swap partners based on your library and wishlist preferences.</p>
+  </div>
+</div>
+<div class="col-12 col-md-6 col-lg-3 mb-4">
+  <div class="why-card card h-100 text-center p-4">
+    <div class="mb-3">
+      <!-- Gradient Circle with Location Icon -->
+  <span class="why-icon-circle">
+  <svg width="32" height="32" viewBox="0 0 16 16" fill="none">
+    <defs>
+      <linearGradient id="iconGradLocation" x1="0" y1="0" x2="16" y2="16" gradientUnits="userSpaceOnUse">
+        <stop stop-color="#3BB7FB"/>
+        <stop offset="1" stop-color="#F6B443"/>
+      </linearGradient>
+    </defs>
+    <path d="M12.166 8.94c-.524 1.062-1.234 2.12-1.96 3.07A32 32 0 0 1 8 14.58a32 32 0 0 1-2.206-2.57c-.726-.95-1.436-2.008-1.96-3.07C3.304 7.867 3 6.862 3 6a5 5 0 0 1 10 0c0 .862-.305 1.867-.834 2.94M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10" fill="#fff"/>
+    <path d="M8 8a2 2 0 1 1 0-4 2 2 0 0 1 0 4m0 1a3 3 0 1 0 0-6 3 3 0 0 0 0 6" fill="#fff"/>
+  </svg>
+</span>
+    </div>
+    <h5 class="why-card-title">Location-Based Discovery</h5>
+    <p class="why-card-desc">Connect with nearby book lovers and arrange convenient local exchanges.</p>
+  </div>
+</div>
+
+<div class="col-12 col-md-6 col-lg-3 mb-4">
+  <div class="why-card card h-100 text-center p-4">
+    <div class="mb-3">
+      <!-- Gradient Circle with Trophy Icon -->
+      <span class="why-icon-circle">
+        <i class="bi bi-trophy"></i>
+      </span>
+    </div>
+    <h5 class="why-card-title">Rewards & Achievements</h5>
+    <p class="why-card-desc">Earn points, unlock badges, and climb the leaderboard as you swap more books.</p>
+  </div>
+</div>
+</section>
+
+<!-- How It Works Section -->
+<section class="how-it-works-section">
+    <h1 class="how-title text-center">How It Works</h1>
+    <p class="how-desc text-center">Get started in just three simple steps and join our thriving community.</p>
+    <div class="row justify-content-center steps-row">
+        <div class="col-12 col-md-4 text-center step-box">
+            <div class="step-number">01</div>
+            <h4 class="step-title">Add Your Books</h4>
+            <p class="step-desc">Upload books from your library using Amazon ASIN or barcode scanning.</p>
+        </div>
+        <div class="col-12 col-md-4 text-center step-box">
+            <div class="step-number">02</div>
+            <h4 class="step-title">Find Matches</h4>
+            <p class="step-desc">Our smart algorithm finds perfect swap partners based on your preferences.</p>
+        </div>
+        <div class="col-12 col-md-4 text-center step-box">
+            <div class="step-number">03</div>
+            <h4 class="step-title">Exchange & Enjoy</h4>
+            <p class="step-desc">Meet up with fellow readers and exchange books in your local area.</p>
+        </div>
+    </div>
+    <div class="cta-box text-center mt-5">
+        <h2 class="cta-title">Ready to Start Your Book Journey?</h2>
+        <p class="cta-desc">Join thousands of book lovers who are already sharing stories and building connections through BookSwap.</p>
+        <div class="cta-buttons d-flex justify-content-center align-items-center">
+            <% if (userLoggedIn) { %>
+                <a href="/dashboard" class="btn btn-gradient cta-btn mr-3">Go to Dashboard <i class="bi bi-speedometer2"></i></a>
+                <a href="/library" class="btn btn-outline-light cta-btn">Manage Library</a>
+            <% } else { %>
+                <a href="register.html" class="btn btn-gradient cta-btn mr-3">Join BookSwap Today <i class="bi bi-star"></i></a>
+                <a href="login.html" class="btn btn-outline-light cta-btn">Already a Member?</a>
+            <% } %>
+        </div>
+    </div>
+</section>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<script src="/js/navigation.js"></script>
+</body>
+</html>
