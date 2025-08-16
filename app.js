@@ -395,7 +395,12 @@ app.post('/login', async (req, res) => {
 });
 
 // Start Server
-app.listen(3000, () => {
-    console.log('Server is running at http://localhost:3000');
-    console.log('Dashboard available at: http://localhost:3000/dashboard');
-});
+if (process.env.NODE_ENV !== 'production') {
+    app.listen(3000, () => {
+        console.log('Server is running at http://localhost:3000');
+        console.log('Dashboard available at: http://localhost:3000/dashboard');
+    });
+}
+
+// Export for Vercel
+module.exports = app;
