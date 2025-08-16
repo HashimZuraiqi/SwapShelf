@@ -198,7 +198,27 @@
               </div>
               <div class="form-group col-md-3">
                 <label>Genre</label>
-                <select class="form-control select-dark">
+                <label for="book-title">Book Title</label>
+                <input type="text" class="form-control input-dark" placeholder="Book Title" name="title" id="book-title">
+              </div>
+              <div class="form-group col-md-5 d-flex flex-column align-items-center justify-content-center">
+                <label class="w-100 text-center">&nbsp;</label>
+                <div class="upload-drop">
+                  <i class="bi bi-image upload-icon"></i>
+                  <div class="upload-text">Upload<br>cover image</div>
+                  <input type="file" accept="image/*" class="upload-input" name="cover" id="book-cover">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label for="book-author">Author</label>
+                <input type="text" class="form-control input-dark" placeholder="Author" name="author" id="book-author">
+              </div>
+              <div class="form-group col-md-3">
+                <label for="book-genre">Genre</label>
+                <select class="form-control select-dark" name="genre" id="book-genre">
                   <option disabled selected>Genre</option>
                   <option>Fiction</option>
                   <option>Non-fiction</option>
