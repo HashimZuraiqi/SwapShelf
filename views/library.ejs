@@ -246,7 +246,7 @@
             <div class="form-row">
               <div class="form-group col-md-4">
                 <label>Publication Year</label>
-                <input type="text" class="form-control input-dark" placeholder="Year">
+                <input type="number" class="form-control input-dark" placeholder="Year" min="1450" max="<%= new Date().getFullYear() %>">
               </div>
               <div class="form-group col-md-4">
                 <label>ISBN</label>
