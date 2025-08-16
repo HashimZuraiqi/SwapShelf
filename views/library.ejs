@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>My Library | BookSwap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+  <!-- your global site styles -->
+
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+   <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+    <div class="container">
+      <a class="navbar-brand d-flex align-items-center" href="/">
+        <span class="logo-icon mr-2">
+          <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+            <defs>
+              <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#3BB7FB"/>
+                <stop offset="1" stop-color="#F6B443"/>
+              </linearGradient>
+            </defs>
+            <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
+            <g>
+              <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+              <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
+              <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+            </g>
+          </svg>
+        </span>
+        <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+      </a>
+
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ml-auto align-items-center">
+          <ul class="navbar-nav ml-auto align-items-center">
+            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="/rewards">Rewards</a></li>
+            <li class="nav-item active"><a class="nav-link" href="/library">My Library</a></li>
+            <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
+            <li class="nav-item"><a class="nav-link" href="/swap-matcher">Swap Matcher</a></li>
+            <li class="nav-item"><a class="nav-link" href="/nearby">Nearby</a></li>
+            <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
+          </ul>
+        </ul>
+
+        <div class="navbar-profile ml-3">
+          <div class="navbar-profile ml-3">
+            <a class="nav-link p-0" href="/profile">
+              <i class="bi bi-person profile-icon"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <main class="container mt-5">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <div>
+        <h1 class="mb-0 page-title">
+          My Library
+          <span class="title-icon">
+            <img src="/css/images/image.png" alt="Library Icon" class="title-icon-img" />
+          </span>
+        </h1>
+        <div class="subtitle">Manage your book collection and share with fellow readers</div>
+      </div>
+
+      <!-- keep href exactly as before; JS below prevents navigation and opens modal -->
+      <a href="/add-book" class="btn btn-gradient header-add-btn">
+        <i class="bi bi-plus"></i> Add Book
+      </a>
+    </div>
+
+    <!-- Search bar -->
+<div class="search-wrap mb-4">
+  <div class="search-box">
+    <span class="search-icon"><i class="bi bi-search"></i></span>
+    <input
+      id="library-search"
+      type="text"
+      class="form-control search-input"
+      placeholder="Search your library..."
+      autocomplete="off"
+    />
+  </div>
+</div>
+
+    <!-- Books Grid / Empty State -->
+    <div id="library-content" data-books='<%- JSON.stringify(books || []) %>'>
+      <% if (!books || books.length === 0) { %>
+        <div id="empty-state" class="text-center my-5">
+          <i class="bi bi-book empty-state-icon"></i>
+          <h4 class="mt-3 empty-title">Your library is empty</h4>
+          <div class="empty-text">Start building your collection by adding your first book!</div>
+          <a href="/add-book" class="btn btn-gradient mt-3 first-book-btn">
+            <i class="bi bi-plus"></i> Add Your First Book
+          </a>
+        </div>
+      <% } %>
+
+      <div id="books-grid" class="row">
+        <% if (books && books.length) { %>
+          <% books.forEach(function(book){ %>
+            <div class="col-6 col-sm-4 col-md-3 mb-4 book-card"
+                 data-title="<%= (book.title||'').toLowerCase() %>"
+                 data-author="<%= (book.author||'').toLowerCase() %>">
+              <div class="card h-100 card-dark">
+                <img src="<%= book.image || '/images/book-placeholder.png' %>" class="card-img-top card-cover" alt="<%= book.title %>">
+                <div class="card-body card-body-compact">
+                  <h6 class="card-title card-title-white"><%= book.title %></h6>
+                  <div class="author-text"><%= book.author %></div>
+                  <div class="d-flex justify-content-between align-items-center">
+                    <small class="text-muted text-muted-light">Condition: <%= book.condition || 'N/A' %></small>
+                    <a href="/books/<%= book.id %>" class="btn btn-sm btn-outline-light">Details</a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          <% }) %>
+        <% } %>
+      </div>
+    </div>
+
+    <!-- Library Statistics (same structure/cols as your original) -->
+<div class="mt-5 stats-container">
+  <div class="p-4 stats-inner">
+    <div class="stats-title text-center mb-3">Library Statistics</div>
+    <div class="row text-center">
+      <div class="col-12 col-md-3 mb-3">
+        <div id="stat-total" class="stat-value"><%= (books && books.length) ? books.length : 0 %></div>
+        <div class="stat-label">Total Books</div>
+      </div>
+      <div class="col-12 col-md-3 mb-3">
+        <div id="stat-available" class="stat-value">0</div>
+        <div class="stat-label">Available</div>
+      </div>
+      <div class="col-12 col-md-3 mb-3">
+        <div id="stat-authors" class="stat-value">0</div>
+        <div class="stat-label">Authors</div>
+      </div>
+      <div class="col-12 col-md-3 mb-3">
+        <div id="stat-excellent" class="stat-value">0</div>
+        <div class="stat-label">Excellent Condition</div>
+      </div>
+    </div>
+  </div>
+</div>
+  </main>
+
+  <!-- Add Book Modal -->
+  <div class="modal fade" id="addBookModal" tabindex="-1" role="dialog" aria-labelledby="addBookModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content modal-dark">
+        <div class="modal-header modal-header-no-border">
+          <h4 class="modal-title font-weight-bold" id="addBookModalLabel">Add Your Book</h4>
+          <button type="button" class="close modal-close" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <form id="add-book-form">
+          <div class="modal-body">
+            <div class="form-row">
+              <div class="form-group col-md-7">
+                <label>Book Title</label>
+                <input type="text" class="form-control input-dark" placeholder="Book Title">
+              </div>
+              <div class="form-group col-md-5 d-flex flex-column align-items-center justify-content-center">
+                <label class="w-100 text-center">&nbsp;</label>
+                <div class="upload-drop">
+                  <i class="bi bi-image upload-icon"></i>
+                  <div class="upload-text">Upload<br>cover image</div>
+                  <input type="file" accept="image/*" class="upload-input">
+                </div>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label>Author</label>
+                <input type="text" class="form-control input-dark" placeholder="Author">
+              </div>
+              <div class="form-group col-md-3">
+                <label>Genre</label>
+                <select class="form-control select-dark">
+                  <option disabled selected>Genre</option>
+                  <option>Fiction</option>
+                  <option>Non-fiction</option>
+                  <option>Science</option>
+                  <option>History</option>
+                  <option>Biography</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group col-md-3">
+                <label>Language</label>
+                <select class="form-control select-dark">
+                  <option disabled selected>Language</option>
+                  <option>English</option>
+                  <option>Arabic</option>
+                  <option>French</option>
+                  <option>Spanish</option>
+                  <option>Other</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-4">
+                <label>Publication Year</label>
+                <input type="text" class="form-control input-dark" placeholder="Year">
+              </div>
+              <div class="form-group col-md-4">
+                <label>ISBN</label>
+                <input type="text" class="form-control input-dark" placeholder="ISBN">
+              </div>
+              <div class="form-group col-md-4">
+                <label>Publisher</label>
+                <input type="text" class="form-control input-dark" placeholder="Publisher">
+              </div>
+            </div>
+
+            <div class="form-row">
+              <div class="form-group col-md-6">
+                <label>Condition</label>
+                <div class="d-flex flex-column condition-stack">
+                  <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input" type="radio" name="condition" id="condNew" value="New" checked>
+                    <label class="form-check-label ml-2" for="condNew">New</label>
+                    <span class="ml-2 condition-emoji">😀</span>
+                  </div>
+                  <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input" type="radio" name="condition" id="condExcellent" value="Excellent">
+                    <label class="form-check-label ml-2" for="condExcellent">Excellent</label>
+                    <span class="ml-2 condition-emoji">🙂</span>
+                  </div>
+                  <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input" type="radio" name="condition" id="condGood" value="Good">
+                    <label class="form-check-label ml-2" for="condGood">Good</label>
+                    <span class="ml-2 condition-emoji">😐</span>
+                  </div>
+                  <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input" type="radio" name="condition" id="condFair" value="Fair">
+                    <label class="form-check-label ml-2" for="condFair">Fair</label>
+                    <span class="ml-2 condition-emoji">🙁</span>
+                  </div>
+                  <div class="form-check d-flex align-items-center">
+                    <input class="form-check-input" type="radio" name="condition" id="condPoor" value="Poor">
+                    <label class="form-check-label ml-2" for="condPoor">Poor</label>
+                    <span class="ml-2 condition-emoji">😢</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="modal-footer modal-footer-no-border">
+            <button type="button" class="btn btn-secondary btn-cancel" data-dismiss="modal">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-submit">Add Book</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- YOUR ORIGINAL JS FOR MODAL TRIGGER (unchanged) -->
+  <script>
+    // Pass server-side books to client for search/filtering via data attribute
+    window.initialBooks = (function(){
+      try {
+        var raw = document.getElementById('library-content').dataset.books || '[]';
+        return JSON.parse(raw);
+      } catch (e) {
+        return [];
+      }
+    })();
+
+    function renderBooks(bookList) {
+      const grid = document.getElementById('books-grid');
+      const empty = document.getElementById('empty-state');
+      grid.innerHTML = '';
+      if (!bookList || bookList.length === 0) {
+        if (empty) empty.style.display = 'block';
+        return;
+      }
+      if (empty) empty.style.display = 'none';
+
+      bookList.forEach(function(book){
+        const col = document.createElement('div');
+        col.className = 'col-6 col-sm-4 col-md-3 mb-4 book-card';
+        col.setAttribute('data-title', (book.title || '').toLowerCase());
+        col.setAttribute('data-author', (book.author || '').toLowerCase());
+
+        const card = document.createElement('div');
+        card.className = 'card h-100 card-dark';
+
+        const img = document.createElement('img');
+        img.className = 'card-img-top card-cover';
+        img.alt = book.title || '';
+        img.src = book.image || '/images/book-placeholder.png';
+
+        const body = document.createElement('div');
+        body.className = 'card-body card-body-compact';
+
+        const h6 = document.createElement('h6');
+        h6.className = 'card-title card-title-white';
+        h6.textContent = book.title || 'Untitled';
+
+        const author = document.createElement('div');
+        author.className = 'author-text';
+        author.textContent = book.author || 'Unknown';
+
+        const footer = document.createElement('div');
+        footer.className = 'd-flex justify-content-between align-items-center';
+
+        const cond = document.createElement('small');
+        cond.className = 'text-muted text-muted-light';
+        cond.textContent = 'Condition: ' + (book.condition || 'N/A');
+
+        const details = document.createElement('a');
+        details.className = 'btn btn-sm btn-outline-light';
+        details.href = '/books/' + (book.id || '');
+        details.textContent = 'Details';
+
+        footer.appendChild(cond);
+        footer.appendChild(details);
+        body.appendChild(h6);
+        body.appendChild(author);
+        body.appendChild(footer);
+
+        card.appendChild(img);
+        card.appendChild(body);
+        col.appendChild(card);
+        grid.appendChild(col);
+      });
+
+      // update simple stats
+      const total = bookList.length;
+      document.getElementById('stat-total').textContent = total;
+      const available = bookList.filter(b => b.available === true).length;
+      document.getElementById('stat-available').textContent = available;
+      const authors = Array.from(new Set(bookList.map(b => b.author).filter(Boolean))).length;
+      document.getElementById('stat-authors').textContent = authors;
+      const excellent = bookList.filter(b => (b.condition||'').toLowerCase() === 'excellent').length;
+      document.getElementById('stat-excellent').textContent = excellent;
+    }
+
+    // initial render + search
+    document.addEventListener('DOMContentLoaded', function(){
+      renderBooks(window.initialBooks);
+
+      const input = document.getElementById('library-search');
+      input.addEventListener('input', function(){
+        const q = this.value.trim().toLowerCase();
+        if (!q) { renderBooks(window.initialBooks); return; }
+        const filtered = window.initialBooks.filter(b => {
+          const title = (b.title||'').toLowerCase();
+          const author = (b.author||'').toLowerCase();
+          return title.includes(q) || author.includes(q);
+        });
+        renderBooks(filtered);
+      });
+    });
+
+    // Add Book modal trigger (ORIGINAL)
+    document.addEventListener('DOMContentLoaded', function(){
+      function showAddBookModal(e){
+        e.preventDefault();
+        $('#addBookModal').modal('show');
+      }
+      var addBookBtn = document.querySelector('a.btn-gradient[href="/add-book"]');
+      if(addBookBtn) addBookBtn.addEventListener('click', showAddBookModal);
+      var firstBookBtn = document.querySelector('a.btn-gradient.mt-3');
+      if(firstBookBtn) firstBookBtn.addEventListener('click', showAddBookModal);
+    });
+  </script>
+
+  <!-- emoji opacity handlers (unchanged logic) -->
+  <script>
+    document.querySelectorAll('input[name="condition"]').forEach(function(radio){
+      radio.addEventListener('change', function(){
+        document.querySelectorAll('.condition-emoji').forEach(function(emoji){ emoji.style.opacity = '0.5'; });
+        var selected = this.parentElement.querySelector('.condition-emoji');
+        if(selected) selected.style.opacity = '1';
+      });
+    });
+  </script>
+
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

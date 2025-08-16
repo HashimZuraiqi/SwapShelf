@@ -142,6 +142,17 @@ app.post('/login', async (req, res) => {
   }
 });
 
+
+ /* Direct To My Library */
+app.get('/library', (req, res) => {
+    const userName = req.query.user || 'Reader';
+    res.render('library', {
+        user: userName,
+        books: [] // Replace with actual books array
+    });
+});
+
+
 // Start Server
 app.listen(3000, () => {
     console.log('Server is running at http://localhost:3000');
