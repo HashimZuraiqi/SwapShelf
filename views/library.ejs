@@ -12,64 +12,77 @@
    <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-    <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <span class="logo-icon mr-2">
-          <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
-            <defs>
-              <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#3BB7FB"/>
-                <stop offset="1" stop-color="#F6B443"/>
-              </linearGradient>
-            </defs>
-            <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
-            <g>
-              <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
-              <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
-              <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
-            </g>
-          </svg>
-        </span>
-        <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
-      </a>
-
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-              aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav ml-auto align-items-center">
-          <ul class="navbar-nav ml-auto align-items-center">
-            <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-            <li class="nav-item"><a class="nav-link" href="/rewards">Rewards</a></li>
-            <li class="nav-item active"><a class="nav-link" href="/library">My Library</a></li>
-            <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
-            <li class="nav-item"><a class="nav-link" href="/swap-matcher">Swap Matcher</a></li>
-            <li class="nav-item"><a class="nav-link" href="/nearby">Nearby</a></li>
-            <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="/">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="/rewards">Rewards</a></li>
-          <li class="nav-item active"><a class="nav-link" href="/library">My Library</a></li>
-          <li class="nav-item"><a class="nav-link" href="/wishlist">Wishlist</a></li>
-          <li class="nav-item"><a class="nav-link" href="/swap-matcher">Swap Matcher</a></li>
-          <li class="nav-item"><a class="nav-link" href="/nearby">Nearby</a></li>
-          <li class="nav-item"><a class="nav-link" href="/dashboard">Dashboard</a></li>
-        </ul>
-
-        <div class="navbar-profile ml-3">
-          <div class="navbar-profile ml-3">
-            <a class="nav-link p-0" href="/profile">
-              <i class="bi bi-person profile-icon"></i>
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container-fluid">
+    <!-- Logo on far left -->
+    <a class="navbar-brand d-flex align-items-center" href="/">
+      <span class="logo-icon mr-2" style="display:flex;align-items:center;">
+        <!-- Book SVG ICON -->
+        <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+          <defs>
+            <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+              <stop stop-color="#3BB7FB"/>
+              <stop offset="1" stop-color="#F6B443"/>
+            </linearGradient>
+          </defs>
+          <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
+          <g>
+            <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
+            <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+          </g>
+        </svg>
+      </span>
+      <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Navigation options in the center with correct order -->
+      <!-- Debug: activePage = <%= activePage %> -->
+      <ul class="navbar-nav mx-auto">
+        <li class="nav-item <%= activePage === 'home' ? 'active' : '' %>" data-page="home">
+            <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
+        </li>
+        <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+            <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+        </li>
+        <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+            <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+        </li>
+        <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+            <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+        </li>
+        <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+            <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+        </li>
+        <li class="nav-item <%= activePage === 'nearby' ? 'active' : '' %>" data-page="nearby">
+            <a class="nav-link" href="/nearby"><i class="bi bi-geo-alt"></i> Nearby</a>
+        </li>
+        <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+            <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+        </li>
+      </ul>
+      
+      <!-- Profile dropdown on far right -->
+      <ul class="navbar-nav ml-auto">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="bi bi-person-circle"></i> Profile
             </a>
-          <a class="nav-link p-0" href="/profile">
-            <i class="bi bi-person profile-icon"></i>
-          </a>
-        </div>
-      </div>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </li>
+      </ul>
     </div>
-  </nav>
+  </div>
+</nav>
 
   <main class="container mt-5">
     <div class="d-flex justify-content-between align-items-center mb-3">
@@ -77,7 +90,7 @@
         <h1 class="mb-0 page-title">
           My Library
           <span class="title-icon">
-            <img src="/css/images/image.png" alt="Library Icon" class="title-icon-img" />
+            <img src="/images/image.png" alt="Library Icon" class="title-icon-img" />
           </span>
         </h1>
         <div class="subtitle">Manage your book collection and share with fellow readers</div>
@@ -179,29 +192,8 @@
           <div class="modal-body">
             <div class="form-row">
               <div class="form-group col-md-7">
-                <label>Book Title</label>
-                <label for="add-book-title">Book Title</label>
-                <input type="text" id="add-book-title" class="form-control input-dark" placeholder="Book Title">
-              </div>
-              <div class="form-group col-md-5 d-flex flex-column align-items-center justify-content-center">
-                <label class="w-100 text-center">&nbsp;</label>
-                <div class="upload-drop">
-                  <i class="bi bi-image upload-icon"></i>
-                  <div class="upload-text">Upload<br>cover image</div>
-                  <input type="file" accept="image/*" class="upload-input" name="coverImage">
-                </div>
-              </div>
-            </div>
-
-            <div class="form-row">
-              <div class="form-group col-md-6">
-                <label>Author</label>
-                <input type="text" class="form-control input-dark" placeholder="Author" name="author">
-              </div>
-              <div class="form-group col-md-3">
-                <label>Genre</label>
                 <label for="book-title">Book Title</label>
-                <input type="text" class="form-control input-dark" placeholder="Book Title" name="title" id="book-title">
+                <input type="text" id="book-title" class="form-control input-dark" placeholder="Book Title" name="title">
               </div>
               <div class="form-group col-md-5 d-flex flex-column align-items-center justify-content-center">
                 <label class="w-100 text-center">&nbsp;</label>
@@ -231,8 +223,8 @@
                 </select>
               </div>
               <div class="form-group col-md-3">
-                <label>Language</label>
-                <select class="form-control select-dark">
+                <label for="book-language">Language</label>
+                <select class="form-control select-dark" name="language" id="book-language">
                   <option disabled selected>Language</option>
                   <option>English</option>
                   <option>Arabic</option>
@@ -245,24 +237,16 @@
 
             <div class="form-row">
               <div class="form-group col-md-4">
-                <label>Publication Year</label>
-                <input type="number" class="form-control input-dark" placeholder="Year" min="1450" max="<%= new Date().getFullYear() %>">
+                <label for="book-year">Publication Year</label>
+                <input type="number" class="form-control input-dark" placeholder="Year" name="year" id="book-year" min="1450" max="<%= new Date().getFullYear() %>">
               </div>
               <div class="form-group col-md-4">
-                <label>ISBN</label>
-                <input type="text" class="form-control input-dark" placeholder="ISBN">
+                <label for="book-isbn">ISBN</label>
+                <input type="text" class="form-control input-dark" placeholder="ISBN" name="isbn" id="book-isbn">
               </div>
               <div class="form-group col-md-4">
-                <label>Publisher</label>
-                <input type="text" class="form-control input-dark" placeholder="Year" name="year">
-              </div>
-              <div class="form-group col-md-4">
-                <label>ISBN</label>
-                <input type="text" class="form-control input-dark" placeholder="ISBN" name="isbn">
-              </div>
-              <div class="form-group col-md-4">
-                <label>Publisher</label>
-                <input type="text" class="form-control input-dark" placeholder="Publisher" name="publisher">
+                <label for="book-publisher">Publisher</label>
+                <input type="text" class="form-control input-dark" placeholder="Publisher" name="publisher" id="book-publisher">
               </div>
             </div>
 
