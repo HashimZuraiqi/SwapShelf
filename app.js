@@ -7,7 +7,7 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const multer = require('multer');
 const fs = require('fs');
-
+const Book = require('./models/Books');
 const User = require('./models/User'); //Mongoose User model
 
 const app = express();
@@ -498,6 +498,59 @@ if (process.env.NODE_ENV !== 'production') {
         console.log('Dashboard available at: http://localhost:3000/dashboard');
     });
 }
+
+
+app.get('/library', async (req, res) => {
+  try {
+    // If you later add auth, filter by owner: { owner: req.session.userId }
+    const books = await Book.find().sort({ createdAt: -1 });
+    res.render('library', { books }); // new view below
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Failed to load library');
+  }
+});
+
+app.post('/books', async (req, res) => {
+  try {
+    const {
+      title,
+      author,
+      genre,
+      language,
+      publicationYear,
+      isbn,
+      publisher,
+      condition,
+      coverUrl
+    } = req.body;
+
+    // If you later add auth: const owner = req.session.userId;
+    const book = await Book.create({
+      title,
+      author,
+      genre,
+      language,
+      publicationYear,
+      isbn,
+      publisher,
+      condition,
+      coverUrl
+      // , owner
+    });
+
+    res.status(201).json({ ok: true, book });
+  } catch (e) {
+    console.error('Create book error:', e);
+    res.status(400).json({ ok: false, message: 'Invalid data' });
+  }
+});
+
+
+app.get('/api/books', async (req, res) => {
+  const books = await Book.find().sort({ createdAt: -1 });
+  res.json(books);
+});
 
 // Export for Vercel
 module.exports = app;
