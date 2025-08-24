@@ -9,6 +9,14 @@ const multer = require('multer');
 const fs = require('fs');
 const Book = require('./models/Books');
 const User = require('./models/User'); //Mongoose User model
+const {
+  awardNightOwlBadge,
+  awardEarlyBirdBadge,
+  awardDailyVisitorBadge,
+  awardBetaTesterBadge,
+  awardWeekendBadge
+} = require('./helpers/badges');
+
 
 const app = express();
 
@@ -474,6 +482,13 @@ app.post('/login', async (req, res) => {
       fullname: user.fullname,
       photo: user.photo || '/images/default-avatar.png'
     };
+
+     //  Award badges
+    await awardNightOwlBadge(user._id);
+    await awardEarlyBirdBadge(user._id);
+    await awardDailyVisitorBadge(user._id);
+    await awardBetaTesterBadge(user._id); 
+    await awardWeekendBadge(user._id);
 
     // Save session explicitly
     req.session.save((err) => {
