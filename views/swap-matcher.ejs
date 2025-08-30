@@ -41,9 +41,6 @@
                     <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
                         <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
                     </li>
-                    <li class="nav-item <%= activePage === 'nearby' ? 'active' : '' %>" data-page="nearby">
-                        <a class="nav-link" href="/nearby"><i class="bi bi-geo-alt"></i> Nearby</a>
-                    </li>
                     <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
                         <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
                     </li>
@@ -171,11 +168,11 @@
             <!-- Smart Matches Section (Hidden by default) -->
             <section id="matchesContent" class="smart-matches mb-5 p-4" style="display: none;">
                 <h2>Smart Matches for You</h2>
-                <p>Books from your wishlist available nearby</p>
+                <p>Books from your wishlist available for swap</p>
                 
                 <div class="alert alert-info mb-4">
                     <h5><i class="bi bi-lightbulb"></i> Smart Matches Based on Your Wishlist</h5>
-                    <p class="mb-0">We found books from your wishlist that are available for swap nearby!</p>
+                    <p class="mb-0">We found books from your wishlist that are available for swap!</p>
                 </div>
 
                 <div class="row book-cards">

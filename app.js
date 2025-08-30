@@ -105,6 +105,7 @@ app.use((req, res, next) => {
 
 // Middleware
 app.use(express.static(path.join(__dirname, 'public')));
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -196,12 +197,13 @@ app.get('/register', (req, res) => {
 });
 
 // Profile photo upload route
-app.post('/profile/upload-photo', upload.single('profilePhoto'), (req, res) => {
+app.post('/profile/upload-photo', upload.single('profilePhoto'), async (req, res) => {
     console.log('Profile photo upload attempt:', {
         sessionID: req.sessionID,
         hasSession: !!req.session,
         hasUser: !!(req.session && req.session.user),
-        file: req.file ? 'File received' : 'No file'
+        file: req.file ? 'File received' : 'No file',
+        userEmail: req.session?.user?.email
     });
     
     if (!req.session || !req.session.user) {
@@ -214,17 +216,50 @@ app.post('/profile/upload-photo', upload.single('profilePhoto'), (req, res) => {
             return res.status(400).json({ success: false, error: 'No file uploaded' });
         }
 
-        // Update the session with the new photo path
         const photoPath = `/uploads/profiles/${req.file.filename}`;
+        
+        // Update session first
         req.session.user.photo = photoPath;
 
-        // In a real app, you would update the database here
-        // await User.findByIdAndUpdate(req.session.user.id, { photo: photoPath });
+        // Update database if connected and user has a real ID
+        if (mongoose.connection.readyState === 1 && req.session.user.id && !req.session.user.id.toString().startsWith('test-')) {
+            try {
+                const updateResult = await User.findByIdAndUpdate(
+                    req.session.user.id, 
+                    { 
+                        photo: photoPath,
+                        updatedAt: new Date()
+                    },
+                    { new: true }
+                );
+                
+                if (updateResult) {
+                    console.log('✅ Photo updated in database for user:', req.session.user.email);
+                } else {
+                    console.warn('⚠️ User not found in database:', req.session.user.id);
+                }
+            } catch (dbError) {
+                console.error('❌ Database update failed:', dbError.message);
+                console.log('User ID:', req.session.user.id);
+            }
+        } else {
+            console.log('📝 Photo updated in session only (test mode or no DB connection)');
+            console.log('Connection state:', mongoose.connection.readyState);
+            console.log('User ID:', req.session.user.id);
+        }
 
-        res.json({ 
-            success: true, 
-            message: 'Profile photo updated successfully',
-            photoUrl: photoPath
+        // Save session to ensure photo persists
+        req.session.save((err) => {
+            if (err) {
+                console.error('Session save error:', err);
+                return res.status(500).json({ success: false, error: 'Failed to save session' });
+            }
+            
+            res.json({ 
+                success: true, 
+                message: 'Profile photo updated successfully',
+                photoUrl: photoPath
+            });
         });
 
     } catch (error) {
@@ -299,10 +334,14 @@ app.get('/wishlist', (req, res) => {
     const userLoggedIn = req.session && req.session.user;
     const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
     
-    res.render('placeholder', { 
+    // TODO: Fetch user's actual wishlist from database
+    const wishlistBooks = []; // Placeholder for user's wishlist
+    
+    res.render('wishlist', { 
         userLoggedIn, 
         activePage: 'wishlist',
-        user: user
+        user: user,
+        wishlistBooks: wishlistBooks
     });
 });
 
@@ -313,28 +352,28 @@ app.get('/swap-matcher', (req, res) => {
     const userLoggedIn = req.session && req.session.user;
     const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
     
-    res.render('placeholder', { 
+    res.render('swap-matcher', { 
         userLoggedIn, 
         activePage: 'swap-matcher',
         user: user
     });
 });
 
-app.get('/nearby', (req, res) => {
-    if (!req.session || !req.session.user) {
-        return res.redirect('/login');
-    }
-    const userLoggedIn = req.session && req.session.user;
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
-    res.render('placeholder', { 
-        userLoggedIn, 
-        activePage: 'nearby',
-        user: user,
-        pageTitle: 'Nearby',
-        pageDescription: 'Connect with book lovers near you',
-        pageIcon: 'bi bi-geo-alt'
-    });
-});
+// app.get('/nearby', (req, res) => {
+//     if (!req.session || !req.session.user) {
+//         return res.redirect('/login');
+//     }
+//     const userLoggedIn = req.session && req.session.user;
+//     const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
+//     res.render('placeholder', { 
+//         userLoggedIn, 
+//         activePage: 'nearby',
+//         user: user,
+//         pageTitle: 'Nearby',
+//         pageDescription: 'Connect with book lovers near you',
+//         pageIcon: 'bi bi-geo-alt'
+//     });
+// });
 
 app.get('/rewards', (req, res) => {
     if (!req.session || !req.session.user) {
