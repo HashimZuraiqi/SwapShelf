@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
@@ -7,421 +8,316 @@ const bodyParser = require('body-parser');
 const session = require('express-session');
 const multer = require('multer');
 const fs = require('fs');
-const Book = require('./models/Books');
-const User = require('./models/User'); //Mongoose User model
+
+const Activity = require('./models/Activity');
+const Book = require('./models/Books');     
+const User = require('./models/User');
 
 const app = express();
 
-// Configure multer for file uploads
 const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        const uploadDir = path.join(__dirname, 'public', 'uploads', 'profiles');
-        // Create directory if it doesn't exist
-        if (!fs.existsSync(uploadDir)) {
-            fs.mkdirSync(uploadDir, { recursive: true });
-        }
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        // Generate unique filename using user email and timestamp
-        const userEmail = req.session.user ? req.session.user.email : 'unknown';
-        const fileExt = path.extname(file.originalname);
-        const fileName = `${userEmail.replace('@', '_at_')}_${Date.now()}${fileExt}`;
-        cb(null, fileName);
-    }
+  destination: function (req, file, cb) {
+    const uploadDir = path.join(__dirname, 'public', 'uploads', 'profiles');
+    if (!fs.existsSync(uploadDir)) fs.mkdirSync(uploadDir, { recursive: true });
+    cb(null, uploadDir);
+  },
+  filename: function (req, file, cb) {
+    const userEmail = req.session.user ? req.session.user.email : 'unknown';
+    const fileExt = path.extname(file.originalname);
+    const fileName = `${userEmail.replace('@', '_at_')}_${Date.now()}${fileExt}`;
+    cb(null, fileName);
+  }
+});
+const upload = multer({
+  storage,
+  limits: { fileSize: 5 * 1024 * 1024 },
+  fileFilter: (req, file, cb) => file.mimetype.startsWith('image/')
+    ? cb(null, true)
+    : cb(new Error('Only image files are allowed!'), false)
 });
 
-const upload = multer({ 
-    storage: storage,
-    limits: {
-        fileSize: 5 * 1024 * 1024 // 5MB limit
-    },
-    fileFilter: function (req, file, cb) {
-        // Only allow image files
-        if (file.mimetype.startsWith('image/')) {
-            cb(null, true);
-        } else {
-            cb(new Error('Only image files are allowed!'), false);
-        }
-    }
-});
-
-// MongoDB Connection
 mongoose.connect(process.env.MONGO_URI)
   .then(() => console.log('✅ MongoDB Connected'))
-  .catch(err => {
+  .catch(() => {
     console.warn('⚠️ MongoDB Connection Failed - Running without database');
     console.warn('Registration and login will be temporarily disabled');
-    // Don't exit the process, just log the warning
   });
 
-// Set EJS as the template engine
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
-// Session middleware with proper cookie configuration
 app.use(session({
-    secret: process.env.SESSION_SECRET || 'fallback-secret-key-for-development',
-    resave: false,
-    saveUninitialized: false,
-    name: 'bookswap.sid', // Custom session name
-    cookie: { 
-        secure: process.env.NODE_ENV === 'production', // true in production with HTTPS
-        httpOnly: true,
-        maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-        sameSite: 'lax', // Important for cross-site requests
-        path: '/' // Ensure cookie is sent for all paths
-    }
+  secret: process.env.SESSION_SECRET || 'fallback-secret-key-for-development',
+  resave: false,
+  saveUninitialized: false,
+  name: 'bookswap.sid',
+  cookie: {
+    secure: process.env.NODE_ENV === 'production',
+    httpOnly: true,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+    sameSite: 'lax',
+    path: '/'
+  }
 }));
 
-// Enhanced session debugging middleware
+// Debug + no-cache on protected pages
 app.use((req, res, next) => {
-    // Debug session info for development
-    if (process.env.NODE_ENV !== 'production') {
-        console.log(`${req.method} ${req.path}:`, {
-            sessionID: req.sessionID,
-            hasSession: !!req.session,
-            hasUser: !!(req.session && req.session.user),
-            userEmail: req.session?.user?.email,
-            cookies: req.headers.cookie ? 'Present' : 'Missing'
-        });
-    }
-    
-    // Prevent caching for protected routes
-    if (req.path.startsWith('/dashboard') || 
-        req.path.startsWith('/me') || 
-        req.path.startsWith('/library') ||
-        req.path.startsWith('/wishlist') ||
-        req.path.startsWith('/profile')) {
-        res.set({
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        });
-    }
-    
-    next();
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(`${req.method} ${req.path}:`, {
+      sessionID: req.sessionID,
+      hasSession: !!req.session,
+      hasUser: !!(req.session && req.session.user),
+      userEmail: req.session?.user?.email,
+      cookies: req.headers.cookie ? 'Present' : 'Missing'
+    });
+  }
+
+  if (
+    req.path.startsWith('/dashboard') ||
+    req.path.startsWith('/me') ||
+    req.path.startsWith('/library') ||
+    req.path.startsWith('/wishlist') ||
+    req.path.startsWith('/profile')
+  ) {
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+  }
+  next();
 });
 
-// Middleware
 app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 
-// Sample trending books data
 const sampleTrendingBooks = [
-    {
-        title: "The Seven Husbands of Evelyn Hugo",
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1618329605i/32620332.jpg"
-    },
-    {
-        title: "Where the Crawdads Sing",
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582135294i/36809135.jpg"
-    },
-    {
-        title: "The Silent Patient",
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582143772i/40097951.jpg"
-    },
-    {
-        title: "Educated",
-        image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1506026635i/35133922.jpg"
-    }
+  {
+    title: "The Seven Husbands of Evelyn Hugo",
+    image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1618329605i/32620332.jpg"
+  },
+  {
+    title: "Where the Crawdads Sing",
+    image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582135294i/36809135.jpg"
+  },
+  {
+    title: "The Silent Patient",
+    image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1582143772i/40097951.jpg"
+  },
+  {
+    title: "Educated",
+    image: "https://images-na.ssl-images-amazon.com/images/S/compressed.photo.goodreads.com/books/1506026635i/35133922.jpg"
+  }
 ];
 
-// GET Routes
+/* --------------------- Helpers --------------------- */
+async function logActivity({ userId, action, message, entityType = null, entityId = null, meta = {} }) {
+  try {
+    await Activity.create({ user: userId, action, message, entityType, entityId, meta });
+  } catch (err) {
+    console.error('Activity log failed:', err.message);
+  }
+}
+
+/* --------------------- Routes --------------------- */
+// Home
 app.get('/', (req, res) => {
-    const userLoggedIn = req.session && req.session.user;
-    
-    if (userLoggedIn) {
-        // For logged-in users, render the dynamic EJS template with logged-in navigation
-        res.render('home', { userLoggedIn: true, activePage: 'home' });
-    } else {
-        // For guests, serve the static HTML file with normal navigation
-        res.sendFile(path.join(__dirname, 'public', 'landing.html'));
-    }
+  const userLoggedIn = !!(req.session && req.session.user);
+  if (userLoggedIn) {
+    res.render('home', { userLoggedIn: true, activePage: 'home' });
+  } else {
+    res.sendFile(path.join(__dirname, 'public', 'landing.html'));
+  }
 });
 
-// Redirect /home to root path for consistency
-app.get('/home', (req, res) => {
-    res.redirect('/');
-});
+app.get('/home', (req, res) => res.redirect('/'));
 
-app.get('/dashboard', (req, res) => {
-    console.log('Dashboard access attempt:', {
-        sessionID: req.sessionID,
-        session: req.session,
-        hasUser: !!(req.session && req.session.user),
-        cookies: req.headers.cookie
+// Dashboard (loads recent activities)
+app.get('/dashboard', async (req, res) => {
+  try {
+    const user = req.session?.user || null;
+    if (!user) return res.redirect('/login?error=session');
+
+    const userId = user._id || user.id; // <— normalize
+    const activities = await Activity.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .limit(10)
+      .lean();
+
+    const displayName =
+      user.name || user.fullname || (user.email ? user.email.split('@')[0] : 'User');
+
+    res.render('dashboard', {
+      activePage: 'dashboard',
+      activities,
+      user: displayName,
+      trendingBooks: sampleTrendingBooks
     });
-    
-    if (!req.session || !req.session.user) {
-        console.log('Dashboard: No session/user, redirecting to login');
-        return res.redirect('/login?error=session');
-    }
-    
-    const userLoggedIn = req.session && req.session.user;
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
-    
-    console.log('Dashboard - Session user:', req.session.user);
-    console.log('Dashboard - Resolved user name:', user);
-    
-    res.render('dashboard', { 
-        userLoggedIn, 
-        activePage: 'dashboard',
-        user: user,
-        trendingBooks: sampleTrendingBooks
-    });
+  } catch (e) {
+    console.error(e);
+    res.status(500).send('Failed to load dashboard');
+  }
 });
 
+// Login / Register / Logout
 app.get('/login', (req, res) => {
-    const error = req.query.error;
-    const message = req.query.message;
-    let errorMessage = '';
-    
-    if (error === 'invalid') {
-        errorMessage = 'Invalid email or password. Please try again.';
-    } else if (error === 'server') {
-        errorMessage = 'Server error. Please try again later.';
-    } else if (message) {
-        errorMessage = message; // This will show the logout success message
-    }
-    
-    console.log('Login page accessed with error:', error, 'Message:', errorMessage);
-    res.render('login', { errorMessage });
+  const error = req.query.error;
+  const message = req.query.message;
+  let errorMessage = '';
+
+  if (error === 'invalid') errorMessage = 'Invalid email or password. Please try again.';
+  else if (error === 'server') errorMessage = 'Server error. Please try again later.';
+  else if (message) errorMessage = message;
+
+  res.render('login', { errorMessage });
 });
 
-app.get('/register', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'register.html'));
-});
+app.get('/register', (req, res) => res.sendFile(path.join(__dirname, 'public', 'register.html')));
 
-// Profile photo upload route
+// Profile photo upload
 app.post('/profile/upload-photo', upload.single('profilePhoto'), (req, res) => {
-    console.log('Profile photo upload attempt:', {
-        sessionID: req.sessionID,
-        hasSession: !!req.session,
-        hasUser: !!(req.session && req.session.user),
-        file: req.file ? 'File received' : 'No file'
-    });
-    
-    if (!req.session || !req.session.user) {
-        console.log('Profile upload: No session/user, returning unauthorized');
-        return res.status(401).json({ success: false, error: 'Unauthorized - Please login again' });
-    }
-
-    try {
-        if (!req.file) {
-            return res.status(400).json({ success: false, error: 'No file uploaded' });
-        }
-
-        // Update the session with the new photo path
-        const photoPath = `/uploads/profiles/${req.file.filename}`;
-        req.session.user.photo = photoPath;
-
-        // In a real app, you would update the database here
-        // await User.findByIdAndUpdate(req.session.user.id, { photo: photoPath });
-
-        res.json({ 
-            success: true, 
-            message: 'Profile photo updated successfully',
-            photoUrl: photoPath
-        });
-
-    } catch (error) {
-        console.error('Photo upload error:', error);
-        res.status(500).json({ success: false, error: 'Failed to upload photo' });
-    }
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ success: false, error: 'Unauthorized - Please login again' });
+  }
+  try {
+    if (!req.file) return res.status(400).json({ success: false, error: 'No file uploaded' });
+    const photoPath = `/uploads/profiles/${req.file.filename}`;
+    req.session.user.photo = photoPath;
+    res.json({ success: true, message: 'Profile photo updated successfully', photoUrl: photoPath });
+  } catch (error) {
+    console.error('Photo upload error:', error);
+    res.status(500).json({ success: false, error: 'Failed to upload photo' });
+  }
 });
 
+// Profile
 app.get('/me', (req, res) => {
-    console.log('Profile access attempt:', {
-        sessionID: req.sessionID,
-        session: req.session,
-        hasUser: !!(req.session && req.session.user),
-        cookies: req.headers.cookie
-    });
-    
-    // Check if user is logged in
-    if (!req.session || !req.session.user) {
-        console.log('Profile: No session/user, redirecting to login');
-        return res.redirect('/login?error=session');
-    }
+  if (!req.session || !req.session.user) return res.redirect('/login?error=session');
 
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
-    const userEmail = req.session.user.email || 'user@example.com';
-    const userPhoto = req.session.user.photo || '/images/default-avatar.png'; // Use uploaded photo or default
-    
-    // Mock user books data
-    const userBooks = [
-        { title: 'The Great Gatsby', image: '/images/book1.jpg' },
-        { title: '1984', image: '/images/book2.jpg' },
-        { title: 'To Kill a Mockingbird', image: '/images/book3.jpg' }
-    ];
+  const user =
+    req.session.user.name ||
+    req.session.user.fullname ||
+    req.session.user.email.split('@')[0] ||
+    'User';
+  const userEmail = req.session.user.email || 'user@example.com';
+  const userPhoto = req.session.user.photo || '/images/default-avatar.png';
 
-    console.log('Rendering profile with session data:', { user, userEmail });
-    res.render('profile', {
-        user: user,
-        userEmail: userEmail,
-        userPhoto: userPhoto,
-        userBooks: userBooks,
-        activePage: 'profile'
-    });
+  const userBooks = [
+    { title: 'The Great Gatsby', image: '/images/book1.jpg' },
+    { title: '1984', image: '/images/book2.jpg' },
+    { title: 'To Kill a Mockingbird', image: '/images/book3.jpg' }
+  ];
+
+  res.render('profile', {
+    user,
+    userEmail,
+    userPhoto,
+    userBooks,
+    activePage: 'profile'
+  });
 });
 
-// Redirect old profile route to new one for consistency
-app.get('/profile', (req, res) => {
-    res.redirect('/me');
-});
+app.get('/profile', (req, res) => res.redirect('/me'));
 
-// Library page - user's personal book collection
-app.get('/library', (req, res) => {
-    if (!req.session || !req.session.user) {
-        return res.redirect('/login');
-    }
-    const userLoggedIn = req.session && req.session.user;
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
-    
-    // TODO: Fetch user's actual books from database
-    const books = []; // Placeholder for user's book collection
-    
-    res.render('library', { 
-        userLoggedIn, 
-        activePage: 'library',
-        user: user,
-        books: books
-    });
-});
-
+// Wishlist / Swap / Nearby / Rewards placeholders
 app.get('/wishlist', (req, res) => {
-    if (!req.session || !req.session.user) {
-        return res.redirect('/login');
-    }
-    const userLoggedIn = req.session && req.session.user;
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
-    
-    res.render('placeholder', { 
-        userLoggedIn, 
-        activePage: 'wishlist',
-        user: user
-    });
+  if (!req.session || !req.session.user) return res.redirect('/login');
+  const user =
+    req.session.user.name ||
+    req.session.user.fullname ||
+    req.session.user.email.split('@')[0] ||
+    'User';
+  res.render('placeholder', { userLoggedIn: true, activePage: 'wishlist', user });
 });
 
 app.get('/swap-matcher', (req, res) => {
-    if (!req.session || !req.session.user) {
-        return res.redirect('/login');
-    }
-    const userLoggedIn = req.session && req.session.user;
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
-    
-    res.render('placeholder', { 
-        userLoggedIn, 
-        activePage: 'swap-matcher',
-        user: user
-    });
+  if (!req.session || !req.session.user) return res.redirect('/login');
+  const user =
+    req.session.user.name ||
+    req.session.user.fullname ||
+    req.session.user.email.split('@')[0] ||
+    'User';
+  res.render('placeholder', { userLoggedIn: true, activePage: 'swap-matcher', user });
 });
 
 app.get('/nearby', (req, res) => {
-    if (!req.session || !req.session.user) {
-        return res.redirect('/login');
-    }
-    const userLoggedIn = req.session && req.session.user;
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
-    res.render('placeholder', { 
-        userLoggedIn, 
-        activePage: 'nearby',
-        user: user,
-        pageTitle: 'Nearby',
-        pageDescription: 'Connect with book lovers near you',
-        pageIcon: 'bi bi-geo-alt'
-    });
+  if (!req.session || !req.session.user) return res.redirect('/login');
+  const user =
+    req.session.user.name ||
+    req.session.user.fullname ||
+    req.session.user.email.split('@')[0] ||
+    'User';
+  res.render('placeholder', {
+    userLoggedIn: true,
+    activePage: 'nearby',
+    user,
+    pageTitle: 'Nearby',
+    pageDescription: 'Connect with book lovers near you',
+    pageIcon: 'bi bi-geo-alt'
+  });
 });
 
 app.get('/rewards', (req, res) => {
-    if (!req.session || !req.session.user) {
-        return res.redirect('/login');
-    }
-    const userLoggedIn = req.session && req.session.user;
-    const user = req.session.user.name || req.session.user.fullname || req.session.user.email.split('@')[0] || 'User';
-    res.render('placeholder', { 
-        userLoggedIn, 
-        activePage: 'rewards',
-        user: user,
-        pageTitle: 'Rewards',
-        pageDescription: 'Earn points and unlock achievements',
-        pageIcon: 'bi bi-trophy'
-    });
+  if (!req.session || !req.session.user) return res.redirect('/login');
+  const user =
+    req.session.user.name ||
+    req.session.user.fullname ||
+    req.session.user.email.split('@')[0] ||
+    'User';
+  res.render('placeholder', {
+    userLoggedIn: true,
+    activePage: 'rewards',
+    user,
+    pageTitle: 'Rewards',
+    pageDescription: 'Earn points and unlock achievements',
+    pageIcon: 'bi bi-trophy'
+  });
 });
 
-// Test route for login error
-app.get('/test-login-error', (req, res) => {
-    res.redirect('/login?error=invalid');
-});
+// Test login error
+app.get('/test-login-error', (req, res) => res.redirect('/login?error=invalid'));
 
+// Logout
 app.get('/logout', (req, res) => {
-    console.log('User logging out:', req.session?.user?.email);
-    
-    // Clear session
-    req.session.destroy((err) => {
-        if (err) {
-            console.error('Error destroying session:', err);
-            return res.redirect('/dashboard');
-        }
-        
-        // Clear the session cookie with the correct name
-        res.clearCookie('bookswap.sid', {
-            path: '/',
-            httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax'
-        });
-        
-        // Set headers to prevent caching
-        res.set({
-            'Cache-Control': 'no-cache, no-store, must-revalidate',
-            'Pragma': 'no-cache',
-            'Expires': '0'
-        });
-        
-        console.log('✅ User logged out successfully');
-        res.redirect('/login?message=You have been successfully logged out');
+  req.session.destroy(err => {
+    if (err) return res.redirect('/dashboard');
+    res.clearCookie('bookswap.sid', {
+      path: '/',
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'lax'
     });
+    res.set({
+      'Cache-Control': 'no-cache, no-store, must-revalidate',
+      'Pragma': 'no-cache',
+      'Expires': '0'
+    });
+    res.redirect('/login?message=You have been successfully logged out');
+  });
 });
 
-// Test route to check session status
+// Test session
 app.get('/test-session', (req, res) => {
-    res.json({
-        sessionID: req.sessionID,
-        hasSession: !!req.session,
-        hasUser: !!(req.session && req.session.user),
-        user: req.session?.user || null,
-        cookies: req.headers.cookie
-    });
+  res.json({
+    sessionID: req.sessionID,
+    hasSession: !!req.session,
+    hasUser: !!(req.session && req.session.user),
+    user: req.session?.user || null,
+    cookies: req.headers.cookie
+  });
 });
 
-// POST Routes - Authentication
 app.post('/register', async (req, res) => {
   const { fullname, email, password, location } = req.body;
-
   try {
-    console.log("📩 Registration data:", req.body);
-
-    // Check if MongoDB is connected
     if (mongoose.connection.readyState !== 1) {
       console.warn("⚠️ MongoDB not connected - simulating registration");
-      console.log(`✅ Would register user: ${fullname} (${email}) from ${location}`);
-      res.redirect('/login?registered=true');
-      return;
+      return res.redirect('/login?registered=true');
     }
-
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({
-      fullname,
-      email,
-      password: hashedPassword,
-      location
-    });
-
-    console.log("User registered successfully!");
+    await User.create({ fullname, email, password: hashedPassword, location });
     res.redirect('/login');
   } catch (err) {
     console.error("Error registering user:", err);
@@ -431,34 +327,19 @@ app.post('/register', async (req, res) => {
 
 app.post('/login', async (req, res) => {
   const { email, password } = req.body;
-
   try {
-    console.log("🔐 Login attempt:", email);
-
-    // Check if MongoDB is connected
     if (mongoose.connection.readyState !== 1) {
-      console.warn("⚠️ MongoDB not connected - simulating login");
-      console.log(`✅ Would login user: ${email}`);
-      
-      // Set session for test login
+      // Simulated login when DB is down
+      const simId = 'sim-' + Date.now();
       req.session.user = {
-        id: 'test-' + Date.now(),
-        email: email,
+        _id: simId,           // normalize: include _id
+        id: simId,
+        email,
         name: email.split('@')[0],
         fullname: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
         photo: '/images/default-avatar.png'
       };
-
-      // Save session explicitly
-      req.session.save((err) => {
-        if (err) {
-          console.error('Session save error:', err);
-          return res.redirect('/login?error=session');
-        }
-        console.log('✅ Session saved successfully:', req.session.user);
-        res.redirect('/dashboard');
-      });
-      return;
+      return req.session.save(() => res.redirect('/dashboard'));
     }
 
     const user = await User.findOne({ email });
@@ -466,91 +347,108 @@ app.post('/login', async (req, res) => {
       return res.redirect('/login?error=invalid');
     }
 
-    // Set session for real login
+    // Real login
     req.session.user = {
+      _id: user._id,         // normalize: include _id
       id: user._id,
       email: user.email,
       name: user.fullname,
       fullname: user.fullname,
       photo: user.photo || '/images/default-avatar.png'
     };
-
-    // Save session explicitly
-    req.session.save((err) => {
-      if (err) {
-        console.error('Session save error:', err);
-        return res.redirect('/login?error=session');
-      }
-      console.log("✅ Login successful:", email);
-      res.redirect('/dashboard');
-    });
-
+    req.session.save(() => res.redirect('/dashboard'));
   } catch (err) {
     console.error("Login error:", err);
     res.redirect('/login?error=server');
   }
 });
 
-// Start Server
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(3000, () => {
-        console.log('Server is running at http://localhost:3000');
-        console.log('Dashboard available at: http://localhost:3000/dashboard');
-    });
-}
-
-
+// Library page
 app.get('/library', async (req, res) => {
   try {
-    // If you later add auth, filter by owner: { owner: req.session.userId }
-    const books = await Book.find().sort({ createdAt: -1 });
-    res.render('library', { books }); // new view below
-  } catch (e) {
-    console.error(e);
+    if (!req.session || !req.session.user) return res.redirect('/login');
+
+    const user =
+      req.session.user.name ||
+      req.session.user.fullname ||
+      (req.session.user.email ? req.session.user.email.split('@')[0] : 'User');
+
+    // Show all books for now; later filter by owner
+    const books = await Book.find().sort({ createdAt: -1 }).lean();
+
+    res.render('library', {
+      userLoggedIn: true,
+      activePage: 'library',
+      user,
+      books
+    });
+  } catch (err) {
+    console.error('Error loading library:', err);
     res.status(500).send('Failed to load library');
   }
 });
 
 app.post('/books', async (req, res) => {
   try {
+    const user = req.session?.user || null;
+    if (!user) return res.status(401).json({ ok: false, message: 'Unauthorized' });
+
     const {
-      title,
-      author,
-      genre,
-      language,
-      publicationYear,
-      isbn,
-      publisher,
-      condition,
-      coverUrl
+      title, author, genre, language, year, isbn, publisher, condition, cover
     } = req.body;
 
-    // If you later add auth: const owner = req.session.userId;
-    const book = await Book.create({
-      title,
+    if (!title || !title.trim()) {
+      return res.status(400).json({ ok: false, message: 'Title is required' });
+    }
+    if (mongoose.connection.readyState !== 1) {
+      return res.status(503).json({ ok: false, message: 'Database not connected' });
+    }
+
+    const coverUrl = (typeof cover === 'string' && cover.trim()) ? cover.trim() : undefined;
+
+    const doc = await Book.create({
+      title: title.trim(),
       author,
       genre,
       language,
-      publicationYear,
+      publicationYear: year ? Number(year) : undefined,
       isbn,
       publisher,
       condition,
       coverUrl
-      // , owner
+      // , owner: user._id    // enable after adding `owner` to schema
     });
 
-    res.status(201).json({ ok: true, book });
-  } catch (e) {
-    console.error('Create book error:', e);
-    res.status(400).json({ ok: false, message: 'Invalid data' });
+    // Log activity
+    await logActivity({
+      userId: user._id || user.id,
+      action: 'ADD_BOOK',
+      message: `Added “${doc.title}” to library`,
+      entityType: 'Book',
+      entityId: doc._id,
+      meta: { author: doc.author, condition: doc.condition }
+    });
+    
+
+    res.status(201).json({ ok: true, book: doc });
+  } catch (err) {
+    console.error('Create book error:', err);
+    res.status(400).json({ ok: false, message: err?.message || 'Invalid data' });
   }
 });
 
-
+// API to list books (optional)
 app.get('/api/books', async (req, res) => {
-  const books = await Book.find().sort({ createdAt: -1 });
+  const books = await Book.find().sort({ createdAt: -1 }).lean();
   res.json(books);
 });
 
-// Export for Vercel
+if (process.env.NODE_ENV !== 'production') {
+  app.listen(3000, () => {
+    console.log('Server is running at http://localhost:3000');
+    console.log('Dashboard available at: http://localhost:3000/dashboard');
+  });
+}
+
+
 module.exports = app;
