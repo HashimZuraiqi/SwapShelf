@@ -4,7 +4,6 @@ const express = require('express');
 const path = require('path');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
-const bodyParser = require('body-parser');
 const session = require('express-session');
 const multer = require('multer');
 const fs = require('fs');
@@ -62,18 +61,18 @@ app.use(session({
   }
 }));
 
-// Debug + no-cache on protected pages
+// Debug middleware (only in development)
 app.use((req, res, next) => {
   if (process.env.NODE_ENV !== 'production') {
     console.log(`${req.method} ${req.path}:`, {
       sessionID: req.sessionID,
       hasSession: !!req.session,
       hasUser: !!(req.session && req.session.user),
-      userEmail: req.session?.user?.email,
-      cookies: req.headers.cookie ? 'Present' : 'Missing'
+      userEmail: req.session?.user?.email
     });
   }
 
+  // Set no-cache headers for protected pages
   if (
     req.path.startsWith('/dashboard') ||
     req.path.startsWith('/me') ||
@@ -94,21 +93,18 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
-app.use(bodyParser.urlencoded({ extended: false }));
 
 // Import API Routes
 const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
-// const dashboardRoutes = require('./routes/dashboard');
 
 // Mount API Routes
 app.use('/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
-// app.use('/api/dashboard', dashboardRoutes);
 
 // Legacy route for book addition (redirect to API)
 app.post('/books/add', (req, res) => {
@@ -126,7 +122,6 @@ app.get('/create-test-user', async (req, res) => {
         }
 
         // Create test user
-        const bcrypt = require('bcryptjs');
         const hashedPassword = await bcrypt.hash('password123', 12);
         
         const testUser = new User({
@@ -149,6 +144,96 @@ app.get('/create-test-user', async (req, res) => {
     }
 });
 
+// Test route to create sample activity data
+app.get('/create-test-activity', async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Please login first at /login' });
+    }
+    
+    try {
+        const userId = req.session.user._id || req.session.user.id;
+        
+        // Clear existing activities for this user first
+        await Activity.deleteMany({ user: userId });
+        
+        // Create some sample activities
+        const sampleActivities = [
+            {
+                user: userId,
+                action: 'ADD_BOOK',
+                message: 'Added "The Great Gatsby" by F. Scott Fitzgerald to library',
+                entityType: 'Book',
+                createdAt: new Date(Date.now() - 2 * 60 * 60 * 1000) // 2 hours ago
+            },
+            {
+                user: userId,
+                action: 'WISHLIST_ADD',
+                message: 'Added "To Kill a Mockingbird" by Harper Lee to wishlist',
+                entityType: 'Wishlist',
+                createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
+            },
+            {
+                user: userId,
+                action: 'PROFILE_UPDATE',
+                message: 'Updated profile photo',
+                entityType: 'User',
+                entityId: userId,
+                createdAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000) // 1 day ago
+            },
+            {
+                user: userId,
+                action: 'ADD_BOOK',
+                message: 'Added "1984" by George Orwell to library',
+                entityType: 'Book',
+                createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000) // 2 days ago
+            }
+        ];
+        
+        await Activity.insertMany(sampleActivities);
+        
+        res.json({ 
+            success: true, 
+            message: 'Sample activity data created successfully!',
+            count: sampleActivities.length,
+            userId: userId,
+            nextStep: 'Visit /me to see the activities'
+        });
+        
+    } catch (error) {
+        console.error('Error creating test activity:', error);
+        res.status(500).json({ error: 'Failed to create test activity', details: error.message });
+    }
+});
+
+// Debug endpoint to see activities in database
+app.get('/debug-activities', async (req, res) => {
+    try {
+        // Get all activities for all users to see if any exist
+        const allActivities = await Activity.find({}).sort({ createdAt: -1 });
+        
+        let userActivities = [];
+        let userId = 'Not logged in';
+        
+        if (req.session && req.session.user) {
+            userId = req.session.user._id || req.session.user.id;
+            userActivities = await Activity.find({ user: userId }).sort({ createdAt: -1 });
+        }
+        
+        res.json({
+            loggedIn: !!(req.session && req.session.user),
+            userId: userId,
+            userActivityCount: userActivities.length,
+            userActivities: userActivities,
+            allActivityCount: allActivities.length,
+            allActivities: allActivities.slice(0, 10) // Show first 10
+        });
+        
+    } catch (error) {
+        console.error('Error fetching activities:', error);
+        res.status(500).json({ error: 'Failed to fetch activities' });
+    }
+});
+
 /* --------------------- Helpers --------------------- */
 async function logActivity({ userId, action, message, entityType = null, entityId = null, meta = {} }) {
   try {
@@ -156,6 +241,66 @@ async function logActivity({ userId, action, message, entityType = null, entityI
   } catch (err) {
     console.error('Activity log failed:', err.message);
   }
+}
+
+// Helper function for time formatting
+function getTimeAgo(date) {
+  if (!date) return 'Unknown time';
+  
+  const now = new Date();
+  const diffInMs = now - new Date(date);
+  const diffInMinutes = Math.floor(diffInMs / (1000 * 60));
+  const diffInHours = Math.floor(diffInMinutes / 60);
+  const diffInDays = Math.floor(diffInHours / 24);
+  const diffInWeeks = Math.floor(diffInDays / 7);
+  
+  if (diffInMinutes < 1) return 'Just now';
+  if (diffInMinutes < 60) return `${diffInMinutes} minute${diffInMinutes > 1 ? 's' : ''} ago`;
+  if (diffInHours < 24) return `${diffInHours} hour${diffInHours > 1 ? 's' : ''} ago`;
+  if (diffInDays < 7) return `${diffInDays} day${diffInDays > 1 ? 's' : ''} ago`;
+  if (diffInWeeks < 4) return `${diffInWeeks} week${diffInWeeks > 1 ? 's' : ''} ago`;
+  
+  return new Date(date).toLocaleDateString();
+}
+
+// Helper function to format activities consistently
+function formatActivity(activity) {
+  let icon = 'bi-circle';
+  let iconClass = 'text-info';
+  let message = activity.message;
+
+  switch (activity.action) {
+    case 'ADD_BOOK':
+      icon = 'bi-plus-circle';
+      iconClass = 'text-primary';
+      break;
+    case 'SWAP_COMPLETED':
+      icon = 'bi-arrow-left-right';
+      iconClass = 'text-success';
+      break;
+    case 'WISHLIST_ADD':
+      icon = 'bi-heart-fill';
+      iconClass = 'text-danger';
+      break;
+    case 'PROFILE_UPDATE':
+      icon = 'bi-person-check';
+      iconClass = 'text-info';
+      break;
+    case 'BOOK_RATED':
+      icon = 'bi-star-fill';
+      iconClass = 'text-warning';
+      break;
+    default:
+      icon = 'bi-info-circle';
+      iconClass = 'text-info';
+  }
+
+  return {
+    message,
+    icon,
+    iconClass,
+    time: getTimeAgo(activity.createdAt)
+  };
 }
 
 /* --------------------- Routes --------------------- */
@@ -182,15 +327,7 @@ app.get('/home', (req, res) => res.redirect('/'));
  * 5. User activity and recommendations
  */
 app.get('/dashboard', async (req, res) => {
-    console.log('Dashboard access attempt:', {
-        sessionID: req.sessionID,
-        session: req.session,
-        hasUser: !!(req.session && req.session.user),
-        cookies: req.headers.cookie
-    });
-    
     if (!req.session || !req.session.user) {
-        console.log('Dashboard: No session/user, redirecting to login');
         return res.redirect('/login?error=session');
     }
     
@@ -200,26 +337,72 @@ app.get('/dashboard', async (req, res) => {
         const userName = req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
         const userPhoto = req.session.user.photo || null;
         
-        console.log('Dashboard - Session user:', req.session.user);
-        console.log('Dashboard - Resolved user name:', userName);
-        console.log('Dashboard - User ID:', userId);
-        
         // Verify user exists in database
         const currentUser = await User.findById(userId);
         if (!currentUser) {
-            console.log('Dashboard: User not found in database');
             return res.redirect('/login?error=user_not_found');
         }
         
         // Fetch REAL dashboard data from database
-        const dashboardData = await getRealDashboardData(userId);
+        let dashboardData = {
+            userStats: { booksOwned: 0, swapsCompleted: 0, wishlistItems: 0, pendingSwaps: 0 },
+            swapInsights: { successRate: 0, avgResponseTime: "No data", popularGenre: "Not specified" },
+            nearbyBooks: [],
+            trendingGenres: [],
+            trendingBooks: [],
+            recentActivity: []
+        };
         
-        console.log('Real dashboard data fetched successfully:', {
-            booksOwned: dashboardData.userStats.booksOwned,
-            swapsCompleted: dashboardData.userStats.swapsCompleted,
-            nearbyBooksCount: dashboardData.nearbyBooks.length,
-            availableBooks: dashboardData.userStats.booksAvailable
-        });
+        try {
+            // Get user's books
+            const userBooks = await Book.find({ owner: userId });
+            
+            // Get user's swaps
+            const userSwaps = await Swap.find({
+                $or: [{ requester: userId }, { owner: userId }]
+            });
+            
+            // Get user data for wishlist
+            const userData = await User.findById(userId);
+            
+            // Calculate real statistics
+            dashboardData.userStats = {
+                booksOwned: userBooks.length,
+                swapsCompleted: userSwaps.filter(swap => swap.status === 'Completed').length,
+                wishlistItems: userData ? userData.wishlist.length : 0,
+                pendingSwaps: userSwaps.filter(swap => swap.status === 'Pending').length
+            };
+            
+            // Get nearby books (books from other users)
+            const nearbyBooks = await Book.find({ 
+                owner: { $ne: userId },
+                availability: 'available'
+            }).limit(6).populate('owner', 'name location');
+            
+            dashboardData.nearbyBooks = nearbyBooks.map(book => ({
+                id: book._id,
+                title: book.title,
+                author: book.author,
+                image: book.image || '/images/book-placeholder.jpg',
+                ownerName: book.ownerName || 'Unknown',
+                distance: '2.5 km' // TODO: Calculate real distance
+            }));
+            
+            // Get recent activity
+            const activities = await Activity.find({ user: userId })
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .lean();
+                
+            dashboardData.recentActivity = activities.map(activity => ({
+                message: activity.message,
+                time: getTimeAgo(activity.createdAt),
+                icon: activity.action === 'ADD_BOOK' ? 'bi-plus-circle' : 'bi-info-circle'
+            }));
+            
+        } catch (dbError) {
+            console.error('Error fetching dashboard data:', dbError);
+        }
         
         res.render('dashboard', { 
             userLoggedIn, 
@@ -359,6 +542,42 @@ app.get('/api/dashboard/refresh', async (req, res) => {
     }
 });
 
+// API endpoint to get recent activity for profile page
+app.get('/api/users/recent-activity', async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    try {
+        const userId = req.session.user._id || req.session.user.id;
+        
+        // Fetch recent activities
+        const activities = await Activity.find({ user: userId })
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .populate('entityId', 'title author')
+            .lean();
+
+        console.log(`🔄 API: Found ${activities.length} activities for user ${userId}`);
+
+        // Format activities for JSON response using the helper function
+        const formattedActivities = activities.map(activity => {
+            const formatted = formatActivity(activity);
+            return {
+                ...formatted,
+                entityType: activity.entityType,
+                entityId: activity.entityId
+            };
+        });
+
+        res.json(formattedActivities);
+        
+    } catch (error) {
+        console.error('Recent activity API error:', error);
+        res.status(500).json({ error: 'Failed to fetch recent activity' });
+    }
+});
+
 // Login / Register / Logout
 app.get('/login', (req, res) => {
     const error = req.query.error;
@@ -428,6 +647,20 @@ app.post('/profile/upload-photo', upload.single('profilePhoto'), async (req, res
                 
                 if (updateResult) {
                     console.log('✅ Photo updated in database for user:', req.session.user.email);
+                    
+                    // Log activity for profile update
+                    try {
+                        await logActivity({
+                            userId: req.session.user.id,
+                            action: 'PROFILE_UPDATE',
+                            message: 'Updated profile photo',
+                            entityType: 'User',
+                            entityId: req.session.user.id
+                        });
+                    } catch (activityError) {
+                        console.error('Failed to log profile activity:', activityError);
+                        // Don't fail the main operation if activity logging fails
+                    }
                 } else {
                     console.warn('⚠️ User not found in database:', req.session.user.id);
                 }
@@ -462,30 +695,142 @@ app.post('/profile/upload-photo', upload.single('profilePhoto'), async (req, res
 });
 
 // Profile
-app.get('/me', (req, res) => {
+app.get('/me', async (req, res) => {
   if (!req.session || !req.session.user) return res.redirect('/login?error=session');
 
-  const user =
-    req.session.user.name ||
-    req.session.user.fullname ||
-    req.session.user.email.split('@')[0] ||
-    'User';
-  const userEmail = req.session.user.email || 'user@example.com';
-  const userPhoto = req.session.user.photo || '/images/default-avatar.png';
+  try {
+    const userId = req.session.user._id || req.session.user.id;
+    const user = req.session.user.name ||
+      req.session.user.fullname ||
+      req.session.user.email.split('@')[0] ||
+      'User';
+    const userEmail = req.session.user.email || 'user@example.com';
+    const userPhoto = req.session.user.photo || '/images/default-avatar.png';
 
-  const userBooks = [
-    { title: 'The Great Gatsby', image: '/images/book1.jpg' },
-    { title: '1984', image: '/images/book2.jpg' },
-    { title: 'To Kill a Mockingbird', image: '/images/book3.jpg' }
-  ];
+    // Get real user data from database
+    let userBooks = [];
+    let recentActivity = [];
+    let userStats = {
+      booksOwned: 0,
+      swapsCompleted: 0,
+      booksRead: 0,
+      swapRating: 4.8,
+      connections: 0
+    };
 
-  res.render('profile', {
-    user,
-    userEmail,
-    userPhoto,
-    userBooks,
-    activePage: 'profile'
-  });
+    if (mongoose.connection.readyState === 1) {
+      try {
+        // Fetch user's books
+        const books = await Book.find({ owner: userId }).sort({ createdAt: -1 }).limit(3);
+        userBooks = books.map(book => ({
+          title: book.title,
+          image: book.image || '/images/book-placeholder.jpg'
+        }));
+
+        // Fetch recent activity using existing Activity model
+        const activities = await Activity.find({ user: userId })
+          .sort({ createdAt: -1 })
+          .limit(10)
+          .populate('entityId', 'title author')
+          .lean();
+
+        console.log(`📊 Profile: Found ${activities.length} activities for user ${userId}`);
+
+        // Format activities for profile display using the helper function
+        recentActivity = activities.map(activity => {
+          const formatted = formatActivity(activity);
+          return {
+            ...formatted,
+            entityType: activity.entityType,
+            entityId: activity.entityId
+          };
+        });
+
+        console.log(`📊 Profile: Formatted ${recentActivity.length} activities`);
+
+        // Calculate user statistics
+        const allUserBooks = await Book.find({ owner: userId });
+        const userSwaps = await Swap.find({
+          $or: [{ requester: userId }, { owner: userId }]
+        });
+
+        userStats = {
+          booksOwned: allUserBooks.length,
+          swapsCompleted: userSwaps.filter(swap => swap.status === 'Completed').length,
+          booksRead: Math.floor(allUserBooks.length * 0.8), // Estimate
+          swapRating: 4.8, // TODO: Calculate from ratings
+          connections: Math.floor(userSwaps.length * 0.6) // Estimate unique connections
+        };
+
+      } catch (dbError) {
+        console.error('Database error in profile:', dbError);
+      }
+    }
+
+    // Only show fallback activity if NO real activities exist
+    if (recentActivity.length === 0) {
+      recentActivity = [
+        {
+          message: 'Welcome to BookSwap! Add your first book to get started.',
+          icon: 'bi-heart',
+          iconClass: 'text-primary', 
+          time: 'Welcome!',
+          entityType: null,
+          entityId: null
+        }
+      ];
+      console.log('📊 Profile: Using fallback welcome message');
+    } else {
+      console.log(`📊 Profile: Rendering ${recentActivity.length} real activities - NO fallback needed`);
+    }
+
+    res.render('profile', {
+      user,
+      userEmail,
+      userPhoto,
+      userBooks,
+      recentActivity,
+      userStats,
+      activePage: 'profile'
+    });
+
+  } catch (error) {
+    console.error('Profile error:', error);
+    
+    // Fallback data
+    const user = req.session.user.name ||
+      req.session.user.fullname ||
+      req.session.user.email.split('@')[0] ||
+      'User';
+    const userEmail = req.session.user.email || 'user@example.com';
+    const userPhoto = req.session.user.photo || '/images/default-avatar.png';
+
+    res.render('profile', {
+      user,
+      userEmail,
+      userPhoto,
+      userBooks: [],
+      recentActivity: [
+        {
+          message: 'Error loading activity. Please try again.',
+          icon: 'bi-exclamation-triangle',
+          iconClass: 'text-warning',
+          time: 'Now',
+          entityType: null,
+          entityId: null
+        }
+      ],
+      userStats: {
+        booksOwned: 0,
+        swapsCompleted: 0,
+        booksRead: 0,
+        swapRating: 0,
+        connections: 0
+      },
+      activePage: 'profile',
+      error: 'Unable to load profile data'
+    });
+  }
 });
 
 app.get('/profile', (req, res) => res.redirect('/me'));
@@ -754,6 +1099,20 @@ app.post('/wishlist/add', async (req, res) => {
         });
         
         await user.save();
+
+        // Log activity for adding to wishlist
+        try {
+            await logActivity({
+                userId: req.session.user.id,
+                action: 'WISHLIST_ADD',
+                message: `Added "${title}" by ${author} to wishlist`,
+                entityType: 'Wishlist',
+                entityId: null
+            });
+        } catch (activityError) {
+            console.error('Failed to log wishlist activity:', activityError);
+            // Don't fail the main operation if activity logging fails
+        }
         
         res.json({ success: true, message: 'Book added to wishlist' });
     } catch (error) {
@@ -761,7 +1120,7 @@ app.post('/wishlist/add', async (req, res) => {
         res.status(500).json({ error: 'Failed to add book to wishlist' });
     }
 });
-
+  
 // Remove book from wishlist
 app.delete('/wishlist/remove/:bookId', async (req, res) => {
     if (!req.session || !req.session.user) {

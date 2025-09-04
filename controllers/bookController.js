@@ -84,6 +84,22 @@ class BookController {
             console.log('📚 Attempting to save book...');
             const savedBook = await newBook.save();
             console.log('✅ Book saved successfully with ID:', savedBook._id);
+
+            // Log activity for adding a book
+            try {
+                const Activity = require('../models/Activity');
+                await Activity.create({
+                    user: userId,
+                    action: 'ADD_BOOK',
+                    message: `Added "${savedBook.title}" by ${savedBook.author} to library`,
+                    entityType: 'Book',
+                    entityId: savedBook._id
+                });
+                console.log('✅ Activity logged for book addition');
+            } catch (activityError) {
+                console.error('❌ Failed to log activity:', activityError);
+                // Don't fail the main operation if activity logging fails
+            }
             
             res.status(201).json({
                 success: true,

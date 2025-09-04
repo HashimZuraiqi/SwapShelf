@@ -712,43 +712,30 @@
                 <h2 class="profile-section-title">
                     <i class="bi bi-clock-history mr-2"></i>Recent Activity
                 </h2>
-                <div class="activity-feed">
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="bi bi-arrow-left-right text-success"></i>
+                <div class="activity-feed activity-list">
+                    <% if (recentActivity && recentActivity.length > 0) { %>
+                        <% recentActivity.forEach(activity => { %>
+                            <div class="activity-item">
+                                <div class="activity-icon <%= activity.iconClass %>">
+                                    <i class="bi <%= activity.icon %>"></i>
+                                </div>
+                                <div class="activity-content">
+                                    <p class="activity-text"><%= activity.message %></p>
+                                    <small class="activity-time text-muted"><%= activity.time %></small>
+                                </div>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <div class="activity-item">
+                            <div class="activity-icon text-info">
+                                <i class="bi bi-info-circle"></i>
+                            </div>
+                            <div class="activity-content">
+                                <p class="activity-text">No recent activity yet. Start by adding books to your library!</p>
+                                <small class="activity-time text-muted">Get started</small>
+                            </div>
                         </div>
-                        <div class="activity-content">
-                            <p><strong>Swapped "The Great Gatsby"</strong> with Sarah M.</p>
-                            <small class="text-muted">2 days ago</small>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="bi bi-plus-circle text-primary"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p><strong>Added "Dune"</strong> to your library</p>
-                            <small class="text-muted">5 days ago</small>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="bi bi-star-fill text-warning"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p><strong>Rated swap</strong> with John D. ⭐⭐⭐⭐⭐</p>
-                            <small class="text-muted">1 week ago</small>
-                        </div>
-                    </div>
-                    <div class="activity-item">
-                        <div class="activity-icon">
-                            <i class="bi bi-heart-fill text-danger"></i>
-                        </div>
-                        <div class="activity-content">
-                            <p><strong>Added "1984"</strong> to your wishlist</p>
-                            <small class="text-muted">2 weeks ago</small>
-                        </div>
-                    </div>
+                    <% } %>
                 </div>
             </div>
         </div>
@@ -817,6 +804,81 @@
                 overlay.innerHTML = '<i class="bi bi-camera-fill"></i><span>Change Photo</span>';
             }
         }
+
+        // Load recent activity
+        async function loadRecentActivity() {
+            try {
+                console.log('🔄 Loading recent activity...');
+                const response = await fetch('/api/users/recent-activity');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const activities = await response.json();
+                console.log(`📊 Received ${activities.length} activities from API`);
+                
+                if (activities && activities.length >= 0) {
+                    updateActivityFeed(activities);
+                } else {
+                    console.warn('No activities returned from API');
+                }
+            } catch (error) {
+                console.error('Failed to load recent activity:', error);
+            }
+        }
+
+        function updateActivityFeed(activities) {
+            const activityList = document.querySelector('.activity-list');
+            if (!activityList) {
+                console.error('Activity list container not found');
+                return;
+            }
+
+            // Clear existing activities
+            activityList.innerHTML = '';
+
+            if (activities && activities.length > 0) {
+                activities.forEach(activity => {
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+                    activityItem.innerHTML = `
+                        <div class="activity-icon ${activity.iconClass}">
+                            <i class="bi ${activity.icon}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="activity-text">${activity.message}</p>
+                            <small class="activity-time text-muted">${activity.time}</small>
+                        </div>
+                    `;
+                    activityList.appendChild(activityItem);
+                });
+                console.log(`✅ Updated activity feed with ${activities.length} activities`);
+            } else {
+                // Show empty state
+                const emptyItem = document.createElement('div');
+                emptyItem.className = 'activity-item';
+                emptyItem.innerHTML = `
+                    <div class="activity-icon text-info">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-text">No recent activity yet. Start by adding books to your library!</p>
+                        <small class="activity-time text-muted">Get started</small>
+                    </div>
+                `;
+                activityList.appendChild(emptyItem);
+                console.log('📝 Showing empty activity state');
+            }
+        }
+
+        // Load activity when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecentActivity();
+            
+            // Refresh activity every 30 seconds
+            setInterval(loadRecentActivity, 30000);
+        });
     </script>
 </body>
 </html>
