@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>
-        <% if (activePage === 'library') { %>My Library<% } else if (activePage === 'wishlist') { %>Wishlist<% } else if (activePage === 'nearby') { %>Nearby<% } else if (activePage === 'rewards') { %>Rewards<% } else if (activePage === 'swap-matcher') { %>Swap Matcher<% } else { %>Coming Soon<% } %> - SwapShelf
+        <% if (activePage === 'library') { %>My Library<% } else if (activePage === 'wishlist') { %>Wishlist<% } else if (activePage === 'rewards') { %>Rewards<% } else if (activePage === 'swap-matcher') { %>Swap Matcher<% } else { %>Coming Soon<% } %> - SwapShelf
     </title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
@@ -59,9 +59,6 @@
                     <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
                         <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
                     </li>
-                    <li class="nav-item <%= activePage === 'nearby' ? 'active' : '' %>" data-page="nearby">
-                        <a class="nav-link" href="/nearby"><i class="bi bi-geo-alt"></i> Nearby</a>
-                    </li>
                     <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
                         <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
                     </li>
@@ -94,8 +91,6 @@
                             <i class="bi bi-book"></i>
                         <% } else if (activePage === 'wishlist') { %>
                             <i class="bi bi-heart"></i>
-                        <% } else if (activePage === 'nearby') { %>
-                            <i class="bi bi-geo-alt"></i>
                         <% } else if (activePage === 'rewards') { %>
                             <i class="bi bi-trophy"></i>
                         <% } else if (activePage === 'swap-matcher') { %>
@@ -109,8 +104,6 @@
                             My Library
                         <% } else if (activePage === 'wishlist') { %>
                             Wishlist
-                        <% } else if (activePage === 'nearby') { %>
-                            Nearby
                         <% } else if (activePage === 'rewards') { %>
                             Rewards
                         <% } else if (activePage === 'swap-matcher') { %>
@@ -124,8 +117,6 @@
                             Manage your personal book collection
                         <% } else if (activePage === 'wishlist') { %>
                             Keep track of books you want to read
-                        <% } else if (activePage === 'nearby') { %>
-                            Connect with book lovers in your area
                         <% } else if (activePage === 'rewards') { %>
                             Earn rewards for your book swapping activities
                         <% } else if (activePage === 'swap-matcher') { %>
@@ -165,14 +156,6 @@
                                 <div class="feature-item">📋 Priority ranking system</div>
                                 <div class="feature-item">👥 Share with friends</div>
                                 <div class="feature-item">📥 Import from other platforms</div>
-                            </div>
-                        <% } else if (activePage === 'nearby') { %>
-                            <div class="feature-preview">
-                                <h5 class="mb-3">What's Coming:</h5>
-                                <div class="feature-item">📍 Find nearby book swappers</div>
-                                <div class="feature-item">🗺️ Interactive map view</div>
-                                <div class="feature-item">👥 Local book communities</div>
-                                <div class="feature-item">📅 Nearby book events</div>
                             </div>
                         <% } else if (activePage === 'rewards') { %>
                             <div class="feature-preview">
