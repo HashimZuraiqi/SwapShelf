@@ -4,7 +4,7 @@
    <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
-    <link rel="stylesheet" href="./css/style.css">
+    <link rel="stylesheet" href="/css/style.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <script src="https://kit.fontawesome.com/473c5494b9.js" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/places.js@1.19.0"></script>
@@ -55,7 +55,7 @@
     </div>  
   </div>
 </nav>
-    <!-- Login Form -->
+    <!-- Register Form -->
 <div class="container-fluid">
         <div class="row justify-content-center">
             <div class="form-container login-box">
@@ -77,19 +77,28 @@
 </div>
 <div class="welcome-section">
   <h2 class="welcome-title">Join BookSwap</h2>
-  <p class="welcome-desc">Create your account and start swapping books today</p>            </div>
+  <p class="welcome-desc">Create your account and start swapping books today</p>            
+</div>
+
+            <!-- Error Message Display -->
+            <% if (error) { %>
+                <div class="alert alert-danger" role="alert">
+                    <%= error %>
+                </div>
+            <% } %>
+
             <form action="/auth/register" method="post">
                 <!-- Full Name -->
                 <div class="form-group input-icon">
-                    <label for="fullname" class="form-label">Full Name</label>
+                    <label for="name" class="form-label">Full Name</label>
                     <span class="input-icon-left"><i class="fa-regular fa-user fa-lg"></i></span>
-                    <input type="text" name="fullname" id="fullname" class="form-control" placeholder="Enter your full name" required />
+                    <input type="text" name="name" id="name" class="form-control" placeholder="Enter your full name" value="<%= name %>" required />
                 </div>
                 <!-- Email -->
                 <div class="form-group input-icon">
                     <label for="email" class="form-label">Email Address</label>
                     <span class="input-icon-left"><i class="fa-regular fa-envelope fa-lg"></i></span>
-                    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required />
+                    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" value="<%= email %>" required />
                 </div>
                 <!-- Location -->
                 <div class="form-group input-icon">
@@ -144,9 +153,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
                 <!-- Confirm Password -->
                 <div class="form-group input-icon">
-                    <label for="confirm-password" class="form-label">Confirm Password</label>
+                    <label for="confirmPassword" class="form-label">Confirm Password</label>
                     <span class="input-icon-left"><i class="bi bi-lock"></i></span>
-                    <input type="password" name="confirm-password" id="confirm-password" class="form-control" placeholder="Confirm your password" required />
+                    <input type="password" name="confirmPassword" id="confirmPassword" class="form-control" placeholder="Confirm your password" required />
                 </div>
                 <!-- Create Account Button -->
                 <button type="submit" class="btn btn-gradient w-100 create-account-btn">Create Account</button>

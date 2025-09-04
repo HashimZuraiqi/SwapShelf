@@ -10,6 +10,45 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
    <link rel="stylesheet" href="/css/style.css">
+   
+   <!-- Remove button styles for high visibility -->
+   <style>
+     .remove-book-btn {
+       opacity: 1 !important;
+       visibility: visible !important;
+       display: block !important;
+       position: relative !important;
+       z-index: 9999 !important;
+       background-color: #dc3545 !important;
+       border-color: #dc3545 !important;
+       color: white !important;
+       transition: all 0.2s ease;
+     }
+     .remove-book-btn:hover {
+       background-color: #c82333 !important;
+       border-color: #bd2130 !important;
+       transform: scale(1.02);
+     }
+     .book-card:hover .remove-book-btn {
+       opacity: 1 !important;
+       visibility: visible !important;
+     }
+     .card-dark {
+       position: relative;
+       overflow: visible !important;
+     }
+     .card-dark .card-body {
+       position: relative !important;
+     }
+     /* Force the remove button container to be visible */
+     .remove-button-container {
+       display: block !important;
+       visibility: visible !important;
+       opacity: 1 !important;
+       margin-top: 0.5rem !important;
+       text-align: center !important;
+     }
+   </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -133,13 +172,23 @@
                  data-title="<%= (book.title||'').toLowerCase() %>"
                  data-author="<%= (book.author||'').toLowerCase() %>">
               <div class="card h-100 card-dark">
-                <img src="<%= book.image || '/images/book-placeholder.png' %>" class="card-img-top card-cover" alt="<%= book.title %>">
+                <div class="position-relative" style="overflow: visible;">
+                  <img src="<%= book.image || '/images/book-placeholder.png' %>" class="card-img-top card-cover" alt="<%= book.title %>">
+                </div>
                 <div class="card-body card-body-compact">
                   <h6 class="card-title card-title-white"><%= book.title %></h6>
                   <div class="author-text"><%= book.author %></div>
                   <div class="d-flex justify-content-between align-items-center">
                     <small class="text-muted text-muted-light">Condition: <%= book.condition || 'N/A' %></small>
-                    <a href="/books/<%= book.id %>" class="btn btn-sm btn-outline-light">Details</a>
+                    <div class="btn-group" role="group">
+                      <a href="/books/<%= book.id %>" class="btn btn-sm btn-outline-light">Details</a>
+                      <button class="btn btn-sm btn-outline-danger remove-book-btn" 
+                              data-book-id="<%= book.id %>" 
+                              data-book-title="<%= book.title %>"
+                              title="Remove book">
+                        <i class="bi bi-trash"></i>
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -185,7 +234,7 @@
             <span aria-hidden="true">&times;</span>
           </button>
         </div>
-        <form id="add-book-form">
+        <form id="add-book-form" method="POST" action="/api/books" enctype="multipart/form-data">
           <div class="modal-body">
             <div class="form-row">
               <div class="form-group col-md-7">
@@ -389,7 +438,7 @@
       });
     });
 
-    // Add Book modal trigger (ORIGINAL)
+    // Add Book modal trigger and form submission
     document.addEventListener('DOMContentLoaded', function(){
       function showAddBookModal(e){
         e.preventDefault();
@@ -399,7 +448,170 @@
       if(addBookBtn) addBookBtn.addEventListener('click', showAddBookModal);
       var firstBookBtn = document.querySelector('a.btn-gradient.mt-3');
       if(firstBookBtn) firstBookBtn.addEventListener('click', showAddBookModal);
+
+      // Handle form submission
+      const addBookForm = document.getElementById('add-book-form');
+      if (addBookForm) {
+        addBookForm.addEventListener('submit', async function(e) {
+          e.preventDefault();
+          
+          const submitBtn = addBookForm.querySelector('button[type="submit"]');
+          const originalText = submitBtn.innerHTML;
+          
+          // Show loading state
+          submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm mr-2"></span>Adding Book...';
+          submitBtn.disabled = true;
+          
+          try {
+            const formData = new FormData(addBookForm);
+            
+            const response = await fetch('/api/books', {
+              method: 'POST',
+              body: formData
+            });
+            
+            const result = await response.json();
+            
+            if (result.success) {
+              // Show success message
+              showMessage('success', result.message || 'Book added successfully!');
+              
+              // Close modal
+              $('#addBookModal').modal('hide');
+              
+              // Reset form
+              addBookForm.reset();
+              
+              // Reload page to show the new book
+              setTimeout(() => {
+                window.location.reload();
+              }, 1000);
+              
+            } else {
+              showMessage('error', result.message || 'Failed to add book');
+            }
+            
+          } catch (error) {
+            console.error('Error adding book:', error);
+            showMessage('error', 'Failed to add book. Please try again.');
+          } finally {
+            // Reset button state
+            submitBtn.innerHTML = originalText;
+            submitBtn.disabled = false;
+          }
+        });
+      }
     });
+
+    // Message display function
+    function showMessage(type, message) {
+      // Create message container if it doesn't exist
+      let messageContainer = document.getElementById('messageContainer');
+      if (!messageContainer) {
+        messageContainer = document.createElement('div');
+        messageContainer.id = 'messageContainer';
+        messageContainer.style.cssText = 'position: fixed; top: 20px; right: 20px; z-index: 9999; max-width: 400px;';
+        document.body.appendChild(messageContainer);
+      }
+      
+      const alertClass = type === 'success' ? 'alert-success' : 'alert-danger';
+      const icon = type === 'success' ? '✅' : '❌';
+      
+      const messageHtml = `
+        <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
+          ${icon} ${message}
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+      `;
+      
+      messageContainer.innerHTML = messageHtml;
+      
+      // Auto-hide after 5 seconds
+      setTimeout(() => {
+        const alert = messageContainer.querySelector('.alert');
+        if (alert) {
+          $(alert).alert('close');
+        }
+      }, 5000);
+    }
+
+    // Remove book functionality
+    document.addEventListener('click', function(e) {
+      if (e.target.closest('.remove-book-btn')) {
+        e.preventDefault();
+        const btn = e.target.closest('.remove-book-btn');
+        const bookId = btn.getAttribute('data-book-id');
+        const bookTitle = btn.getAttribute('data-book-title');
+        
+        // Confirm deletion
+        if (confirm(`Are you sure you want to remove "${bookTitle}" from your library?`)) {
+          removeBook(bookId, btn);
+        }
+      }
+    });
+
+    // Remove book function
+    async function removeBook(bookId, buttonElement) {
+      try {
+        // Show loading state
+        const originalHTML = buttonElement.innerHTML;
+        buttonElement.innerHTML = '<i class="bi bi-hourglass-split"></i>';
+        buttonElement.disabled = true;
+
+        const response = await fetch(`/api/books/${bookId}`, {
+          method: 'DELETE',
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        });
+
+        const result = await response.json();
+        
+        if (response.ok && result.success) {
+          // Remove the book card from the DOM
+          const bookCard = buttonElement.closest('.book-card');
+          if (bookCard) {
+            bookCard.style.transition = 'opacity 0.3s ease';
+            bookCard.style.opacity = '0';
+            setTimeout(() => {
+              bookCard.remove();
+              updateLibraryStats();
+              
+              // Check if library is now empty
+              const remainingBooks = document.querySelectorAll('.book-card');
+              if (remainingBooks.length === 0) {
+                location.reload(); // Reload to show empty state
+              }
+            }, 300);
+          }
+          
+          showMessage('success', `"${result.bookTitle || 'Book'}" has been removed from your library`);
+        } else {
+          showMessage('error', result.message || 'Failed to remove book');
+          // Reset button state on error
+          buttonElement.innerHTML = originalHTML;
+          buttonElement.disabled = false;
+        }
+        
+      } catch (error) {
+        console.error('Error removing book:', error);
+        showMessage('error', 'Failed to remove book. Please try again.');
+        // Reset button state on error
+        buttonElement.innerHTML = originalHTML;
+        buttonElement.disabled = false;
+      }
+    }
+
+    // Update library statistics after book removal
+    function updateLibraryStats() {
+      const totalBooks = document.querySelectorAll('.book-card').length;
+      const totalStat = document.getElementById('stat-total');
+      if (totalStat) {
+        totalStat.textContent = totalBooks;
+      }
+    }
   </script>
 
   <!-- emoji opacity handlers (unchanged logic) -->

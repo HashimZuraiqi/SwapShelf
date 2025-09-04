@@ -4,9 +4,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Dashboard | BookSwap</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        /* Active navigation styling for dynamic page */
+        .nav-item.active .nav-link {
+            color: #3BB7FB !important;
+            background: rgba(59, 183, 251, 0.1);
+            border-radius: 5px;
+            font-weight: 600;
+        }
+    </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
@@ -40,7 +51,6 @@
     
     <div class="collapse navbar-collapse" id="navbarNav">
       <!-- Navigation options in the center with correct order -->
-      <!-- Debug: activePage = <%= activePage %> -->
       <ul class="navbar-nav mx-auto">
         <li class="nav-item <%= activePage === 'home' ? 'active' : '' %>" data-page="home">
             <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
@@ -77,109 +87,330 @@
     </div>
   </div>
 </nav>
-</body>
-</html>
+
+
+<!-- Dashboard Main Content -->
+<main class="container-fluid py-4">
+    <!-- Welcome Hero Section -->
+    <section class="welcome-hero mb-5">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="hero-title mb-3">
+                        Welcome back, <span class="gradient-text"><%= userName || 'Reader' %>!</span>
+                    </h1>
+                    <p class="hero-subtitle mb-4">Ready to discover your next great read? Check out what's happening in your reading community.</p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <a href="/library" class="btn btn-gradient">
+                            <i class="bi bi-book"></i> My Library
+                        </a>
+                        <a href="/swap-matcher" class="btn btn-outline-light">
+                            <i class="bi bi-arrow-left-right"></i> Find Swaps
+                        </a>
+                        <button type="button" class="btn btn-outline-info" id="refresh-dashboard" title="Refresh All Data">
+                            <i class="bi bi-arrow-clockwise"></i> Refresh Data
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="user-avatar-large">
+                        <% if (userPhoto) { %>
+                            <img src="<%= userPhoto %>" alt="Profile" class="rounded-circle profile-img-large">
+                        <% } else { %>
+                            <div class="avatar-placeholder">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
         </div>
-    </nav>
+    </section>
 
-    <main class="dashboard-main container mt-5">
-        <div class="dashboard-content mx-auto" style="max-width: 1200px;">
-            <!-- Welcome Section -->
-            <section class="dashboard-welcome mb-4 p-4">
-                <h1>Welcome back, <%= user %>! <span>👋</span></h1>
-                <p>Ready to discover your next great read?</p>
-                <div class="row dashboard-stats">
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="stat-card text-center">
-                            <div class="stat-label">My Books</div>
-                            <div class="stat-value">0</div>
-                        </div>
+    <!-- Stats Overview -->
+    <section class="stats-section mb-5" id="user-stats-section">
+        <div class="container">
+            <div class="stats-container">
+                <div class="stats-inner p-4">
+                    <div class="stats-title text-center mb-4">
+                        Your Reading Journey
+                        <button type="button" class="btn btn-sm btn-outline-primary ml-2 refresh-stats" title="Refresh Stats">
+                            <i class="bi bi-arrow-clockwise"></i>
+                        </button>
                     </div>
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="stat-card wishlist text-center">
-                            <div class="stat-label">Wishlist</div>
-                            <div class="stat-value">0</div>
+                    <div class="row text-center">
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-value text-gradient" id="books-owned-count"><%= userStats.booksOwned %></div>
+                                <div class="stat-label">Books Owned</div>
+                                <div class="stat-icon"><i class="bi bi-book"></i></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="stat-card swaps text-center">
-                            <div class="stat-label">Active Swaps</div>
-                            <div class="stat-value">0</div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-value text-success" id="swaps-completed-count"><%= userStats.swapsCompleted %></div>
+                                <div class="stat-label">Swaps Completed</div>
+                                <div class="stat-icon"><i class="bi bi-arrow-left-right"></i></div>
+                            </div>
                         </div>
-                    </div>
-                    <div class="col-6 col-md-3 mb-3">
-                        <div class="stat-card points text-center">
-                            <div class="stat-label">Points Earned</div>
-                            <div class="stat-value">0</div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-value text-danger" id="wishlist-items-count"><%= userStats.wishlistItems %></div>
+                                <div class="stat-label">Wishlist Items</div>
+                                <div class="stat-icon"><i class="bi bi-heart"></i></div>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-3 mb-3">
+                            <div class="stat-item">
+                                <div class="stat-value text-warning" id="pending-swaps-count"><%= userStats.pendingSwaps %></div>
+                                <div class="stat-label">Pending Swaps</div>
+                                <div class="stat-icon"><i class="bi bi-clock"></i></div>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </section>
+            </div>
+        </div>
+    </section>
 
-            <!-- Quick Actions & Recent Activity -->
-            <section class="dashboard-actions row mb-5 p-4">
-                <div class="quick-actions col-md-9 mb-4 h-100">
-                    <h2>Quick Actions</h2>
-                    <p>Get started with these popular actions</p>
-                    <div class="row actions-grid">
-                        <!-- Each action is a col-md-4 for equal width -->
-                        <div class="col-12 col-md-4 mb-3 d-flex">
-                            <a href="/add-book" class="action-card flex-fill">
-                                <span class="action-icon">+</span>
-                                <span>Add New Book</span>
-                            </a>
+    <!-- Quick Actions -->
+    <section class="quick-actions mb-5">
+        <div class="container">
+            <h3 class="section-title mb-4">
+                <i class="bi bi-lightning"></i> Quick Actions
+            </h3>
+            <div class="row">
+                <div class="col-6 col-md-3 mb-3">
+                    <a href="/library/add" class="action-card-modern">
+                        <div class="action-icon-modern">
+                            <i class="bi bi-plus-circle"></i>
                         </div>
-                        <div class="col-12 col-md-4 mb-3 d-flex">
-                            <a href="/find-swaps" class="action-card flex-fill">
-                                <span class="action-icon">👥</span>
-                                <span>Find Swaps</span> 
-                            </a>
+                        <h6>Add Book</h6>
+                        <p>Add a new book to your library</p>
+                    </a>
+                </div>
+                <div class="col-6 col-md-3 mb-3">
+                    <a href="/swap-matcher" class="action-card-modern">
+                        <div class="action-icon-modern">
+                            <i class="bi bi-arrow-left-right"></i>
                         </div>
-                    </div>
+                        <h6>Find Swaps</h6>
+                        <p>Discover books to swap</p>
+                    </a>
                 </div>
-                <div class="recent-activity col-md-3 h-100">
-                    <h2>Recent Activity</h2>
-                    <p>Your latest BookSwap actions</p>
-                    <ul>
-                        <li>Added "The Great Gatsby" to library <span class="activity-time">2 hours ago</span></li>
-                        <li>Matched with Sarah for book swap <span class="activity-time">1 day ago</span></li>
-                        <li>Completed swap with Mike <span class="activity-time">3 days ago</span></li>
-                        <li>Added "1984" to wishlist <span class="activity-time">1 week ago</span></li>
-                    </ul>
+                <div class="col-6 col-md-3 mb-3">
+                    <a href="/wishlist" class="action-card-modern">
+                        <div class="action-icon-modern">
+                            <i class="bi bi-heart"></i>
+                        </div>
+                        <h6>Wishlist</h6>
+                        <p>Manage your reading list</p>
+                    </a>
                 </div>
-            </section>
+                <div class="col-6 col-md-3 mb-3">
+                    <a href="/messages" class="action-card-modern">
+                        <div class="action-icon-modern">
+                            <i class="bi bi-chat-dots"></i>
+                        </div>
+                        <h6>Messages</h6>
+                        <p>Check conversations</p>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
 
-            <!-- Trending Books Section -->
-            <section class="trending-books mb-5 p-4">
-                <h2>Trending Books in Your Area</h2>
-                <p>Popular books that other swappers are looking for</p>
-                <div class="row book-cards">
-                    <% if (typeof trendingBooks !== 'undefined' && trendingBooks && trendingBooks.length > 0) { %>
-                        <% trendingBooks.forEach(function(book) { %>
-                            <div class="col-6 col-md-3 mb-4 d-flex">
-                                <div class="book-card flex-fill">
-                                    <img src="<%= book.image || '/images/placeholder-book.jpg' %>" alt="<%= book.title || 'Book Cover' %>" class="img-fluid book-img">
-                                    <div class="book-title mt-2 text-center"><%= book.title || 'Unknown Title' %></div>
+    <!-- Main Dashboard Grid -->
+    <section class="dashboard-grid">
+        <div class="container">
+            <div class="row">
+                <!-- Swap Insights -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card card-dark h-100" id="swap-insights-section">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="bi bi-graph-up"></i> Swap Insights
+                                <button type="button" class="btn btn-sm btn-outline-primary ml-2 refresh-insights" title="Refresh Insights">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="insight-item mb-4">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span>Success Rate</span>
+                                    <span class="badge badge-success"><span id="success-rate"><%= swapInsights.successRate %></span>%</span>
+                                </div>
+                                <div class="progress-modern">
+                                    <div class="progress-bar-modern bg-success" data-width="<%= swapInsights.successRate %>"></div>
                                 </div>
                             </div>
-                        <% }); %>
-                    <% } else { %>
-                        <div class="col-12 text-center">
-                            <div class="no-books-placeholder">
-                                <div class="placeholder-icon mb-3">📚</div>
-                                <h4>No Trending Books Available</h4>
-                                <p class="text-muted">Check back later for popular book recommendations!</p>
+                            <div class="insight-item mb-3">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-clock-history"></i> Avg Response Time</span>
+                                    <span class="text-muted" id="avg-response-time"><%= swapInsights.avgResponseTime %></span>
+                                </div>
+                            </div>
+                            <div class="insight-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <span><i class="bi bi-bookmark"></i> Popular Genre</span>
+                                    <span class="badge badge-primary" id="popular-genre"><%= swapInsights.popularGenre %></span>
+                                </div>
                             </div>
                         </div>
-                    <% } %>
-                    <!-- To add more books, add more objects to trendingBooks in your backend -->
+                    </div>
                 </div>
-            </section>
+
+                <!-- Nearby Books -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card card-dark h-100" id="nearby-books-section">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="bi bi-geo-alt"></i> Nearby Books
+                                <button type="button" class="btn btn-sm btn-outline-primary ml-2 refresh-nearby" title="Refresh Nearby Books">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="nearby-books-list">
+                                <% if (nearbyBooks && nearbyBooks.length > 0) { %>
+                                    <% nearbyBooks.forEach(book => { %>
+                                        <div class="nearby-book-item mb-3">
+                                            <div class="row align-items-center">
+                                                <div class="col-3">
+                                                    <img src="<%= book.image || '/images/placeholder-book.jpg' %>" 
+                                                         alt="<%= book.title %>" class="book-cover-small">
+                                                </div>
+                                                <div class="col-9">
+                                                    <h6 class="book-title"><%= book.title %></h6>
+                                                    <p class="book-author">by <%= book.author %></p>
+                                                    <div class="d-flex justify-content-between align-items-center">
+                                                        <span class="location-text">
+                                                            <i class="bi bi-geo-alt"></i> <%= book.distance %>
+                                                        </span>
+                                                        <a href="/swap-request/<%= book.id %>" class="btn btn-sm btn-outline-light">
+                                                            Request
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="empty-state">
+                                        <p class="text-muted">No nearby books available at the moment.</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trending Genres -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card card-dark h-100" id="trending-section">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="bi bi-fire"></i> Trending Genres
+                                <button type="button" class="btn btn-sm btn-outline-primary ml-2 refresh-trending" title="Refresh Trending Data">
+                                    <i class="bi bi-arrow-clockwise"></i>
+                                </button>
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="trending-genres-list">
+                                <% if (trendingGenres && trendingGenres.length > 0) { %>
+                                    <% trendingGenres.forEach((genre, index) => { %>
+                                        <div class="trending-item mb-3">
+                                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                                <div class="d-flex align-items-center">
+                                                    <span class="trending-rank">#<%= index + 1 %></span>
+                                                    <span class="genre-name"><%= genre.name %></span>
+                                                </div>
+                                                <span class="badge badge-warning"><%= genre.swaps %></span>
+                                            </div>
+                                            <div class="progress-modern">
+                                                <div class="progress-bar-modern bg-warning" data-width="<%= genre.percentage %>"></div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="empty-state text-center py-4">
+                                        <i class="bi bi-fire empty-state-icon"></i>
+                                        <h6 class="mt-3">No trending data</h6>
+                                        <p class="text-muted">Check back soon for trending genres</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trending Books -->
+                <div class="col-lg-6 mb-4">
+                    <div class="card card-dark h-100">
+                        <div class="card-header">
+                            <h5 class="card-title">
+                                <i class="bi bi-star"></i> Trending Books
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div id="trending-books-list">
+                                <% if (trendingBooks && trendingBooks.length > 0) { %>
+                                    <% trendingBooks.forEach((book, index) => { %>
+                                        <div class="trending-book-item mb-3">
+                                            <div class="row align-items-center">
+                                                <div class="col-2 text-center">
+                                                    <span class="trending-rank-large">#<%= index + 1 %></span>
+                                                </div>
+                                                <div class="col-3">
+                                                    <img src="<%= book.image || '/images/placeholder-book.jpg' %>" 
+                                                         alt="<%= book.title %>" class="book-cover-small">
+                                                </div>
+                                                <div class="col-7">
+                                                    <h6 class="book-title"><%= book.title %></h6>
+                                                    <p class="book-author">by <%= book.author %></p>
+                                                    <div class="swap-count">
+                                                        <i class="bi bi-arrow-left-right text-success"></i>
+                                                        <span class="text-muted small"><%= book.swapCount %> swaps</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="empty-state text-center py-4">
+                                        <i class="bi bi-star empty-state-icon"></i>
+                                        <h6 class="mt-3">No trending books</h6>
+                                        <p class="text-muted">Check back soon for popular titles</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
-    </main>
+    </section>
+</main>
+
+    <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
     <script src="/js/navigation.js"></script>
+    <script src="/js/dashboard-updater.js"></script>
+    
+    <!-- Progress bar initialization -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Set progress bar widths from data attributes
+            document.querySelectorAll('.progress-bar[data-width]').forEach(function(bar) {
+                const width = bar.getAttribute('data-width');
+                bar.style.width = width + '%';
+            });
+        });
+    </script>
 </body>
 </html>
