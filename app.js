@@ -7,7 +7,6 @@ const bcrypt = require('bcryptjs');
 const session = require('express-session');
 const multer = require('multer');
 const fs = require('fs');
-
 const User = require('./models/User'); // Mongoose User model
 const Book = require('./models/Book'); // Mongoose Book model  
 const Swap = require('./models/Swap'); // Mongoose Swap model
@@ -101,11 +100,13 @@ const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
 
 // Mount API Routes
+app.use('/auth', require('./routes/auth'));  // mounts /auth/*
 app.use('/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
-
+app.get('/login.html', (req, res) => res.redirect(301, '/auth/login'));
+app.get('/register.html', (req, res) => res.redirect(301, '/auth/register'));
 // Legacy route for book addition (redirect to API)
 app.post('/books/add', (req, res) => {
     // Redirect to the new API endpoint
@@ -1532,5 +1533,37 @@ app.get('/history', async (req, res) => {
   }));
   res.render('history', { userLoggedIn: true, activePage: 'history', items, nextPage: raw.length === PAGE_SIZE ? 2 : null });
 });
+
+// ---- Public routes/prefixes allowed without auth (define before guard) ----
+const openPaths = [
+  '/', '/home',
+  '/login', '/register',
+  '/auth/login', '/auth/register',
+  '/login.html', '/register.html',
+  '/test-login-error', '/logout',
+  '/create-test-user', '/create-test-activity', '/debug-activities', // dev only; remove in prod
+  '/api/dashboard/trending' // keep only if you want this public
+];
+
+// Use regexes for directories / assets
+const openPrefixes = [
+  /^\/css\//, /^\/js\//, /^\/images?\//, /^\/img\//, /^\/fonts?\//,
+  /^\/uploads\//, /^\/public\//, /^\/favicon\.ico$/
+];
+
+app.use((req, res, next) => {
+  const path = req.path;
+  const isOpen =
+    openPaths.includes(path) ||
+    openPrefixes.some(rx => rx.test(path));
+
+  if (!req.session || !req.session.user) {
+    // don’t trap the user in a redirect loop
+    if (path !== '/login') return res.redirect('/login');
+  }
+  next();
+});
+
+
 
 module.exports = app;

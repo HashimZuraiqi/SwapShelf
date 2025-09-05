@@ -1,7 +1,9 @@
 const User = require('../models/User');
 const Book = require('../models/Book');
 const Swap = require('../models/Swap');
-
+const crypto = require('crypto');
+const bcrypt = require('bcryptjs');
+const nodemailer = require('nodemailer');
 /**
  * User Management Controller
  * Handles profile, wishlist, and user-related operations
@@ -338,4 +340,160 @@ class UserController {
     }
 }
 
-module.exports = UserController;
+/* ---------- helpers ---------- */
+function makeTransport() {
+  // If SMTP env not set, fallback to console logger transport
+  if (!process.env.SMTP_HOST) {
+    return {
+      sendMail: async (opts) => {
+        console.log('📧 [DEV EMAIL MOCK] To:', opts.to);
+        console.log('Subject:', opts.subject);
+        console.log('HTML:', opts.html);
+        return true;
+      }
+    };
+  }
+
+  return nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT || 587),
+    secure: !!(process.env.SMTP_SECURE === 'true'),
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS
+    }
+  });
+}
+
+function appBaseUrl(req) {
+  // Respect Vercel/Proxy/X-Forwarded headers if present
+  const proto = req.headers['x-forwarded-proto'] || req.protocol;
+  const host = req.headers['x-forwarded-host'] || req.get('host');
+  return `${proto}://${host}`;
+}
+
+/* ---------- views ---------- */
+exports.renderForgotPassword = (req, res) => {
+  res.render('forgot-password', { error: null, success: null });
+};
+
+exports.renderResetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.render('reset-password', { token: null, error: 'Reset link is invalid or has expired.' });
+    }
+
+    res.render('reset-password', { token, error: null });
+  } catch (e) {
+    console.error('Render reset error:', e);
+    res.render('reset-password', { token: null, error: 'Something went wrong. Please try again.' });
+  }
+};
+
+/* ---------- actions ---------- */
+exports.handleForgotPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    if (!email || !email.trim()) {
+      return res.render('forgot-password', { error: 'Please enter your email address.', success: null });
+    }
+
+    const user = await User.findOne({ email: email.trim().toLowerCase() });
+    // For privacy, do not reveal whether user exists
+    if (!user) {
+      return res.render('forgot-password', { error: null, success: 'If that email exists, we’ve sent a reset link.' });
+    }
+
+    // Generate token
+    const token = crypto.randomBytes(32).toString('hex');
+    user.resetPasswordToken = token;
+    user.resetPasswordExpires = new Date(Date.now() + (1000 * 60 * 30)); // 30 minutes
+    await user.save();
+
+    // Send email
+    const transporter = makeTransport();
+    const base = appBaseUrl(req);
+    const resetUrl = `${base}/auth/reset-password/${token}`;
+
+    await transporter.sendMail({
+      to: user.email,
+      from: process.env.MAIL_FROM || 'no-reply@swapshelf.local',
+      subject: 'Reset your SwapShelf password',
+      html: `
+        <div style="font-family:Arial,sans-serif;line-height:1.6;color:#111">
+          <h2>Reset your password</h2>
+          <p>Hi ${user.fullname || user.name || ''},</p>
+          <p>We received a request to reset your SwapShelf password. Click the button below to set a new one:</p>
+          <p>
+            <a href="${resetUrl}" style="display:inline-block;padding:10px 16px;background:#3BB7FB;color:#fff;text-decoration:none;border-radius:6px;font-weight:bold">
+              Reset Password
+            </a>
+          </p>
+          <p>Or paste this link into your browser:</p>
+          <p><a href="${resetUrl}">${resetUrl}</a></p>
+          <p><small>This link expires in 30 minutes. If you didn’t request this, you can safely ignore this email.</small></p>
+        </div>
+      `
+    });
+
+    return res.render('forgot-password', { error: null, success: 'If that email exists, we’ve sent a reset link.' });
+  } catch (e) {
+    console.error('Forgot password error:', e);
+    res.render('forgot-password', { error: 'Could not send reset link. Please try again.', success: null });
+  }
+};
+
+exports.handleResetPassword = async (req, res) => {
+  try {
+    const { token } = req.params;
+    const { password, confirm } = req.body;
+
+    if (!password || password.length < 6) {
+      return res.render('reset-password', { token, error: 'Password must be at least 6 characters.' });
+    }
+    if (password !== confirm) {
+      return res.render('reset-password', { token, error: 'Passwords do not match.' });
+    }
+
+    const user = await User.findOne({
+      resetPasswordToken: token,
+      resetPasswordExpires: { $gt: new Date() }
+    });
+
+    if (!user) {
+      return res.render('reset-password', { token: null, error: 'Reset link is invalid or has expired.' });
+    }
+
+    // Update password
+    const hashed = await bcrypt.hash(password, 12);
+    user.password = hashed;
+    user.resetPasswordToken = undefined;
+    user.resetPasswordExpires = undefined;
+    await user.save();
+
+    // Optional: auto-redirect to login with message
+    return res.redirect('/auth/login?success=Your password has been reset. Please sign in.');
+  } catch (e) {
+    console.error('Reset password error:', e);
+    res.render('reset-password', { token: null, error: 'Something went wrong. Please try again.' });
+  }
+};
+
+/* 
+ * IMPORTANT FIX:
+ * Previously: `module.exports = UserController;` overwrote the `exports.*` handlers above.
+ * We now merge them so routes like `router.get('/forgot-password', userCtrl.renderForgotPassword)`
+ * receive a real function.
+ */
+module.exports = Object.assign(UserController, {
+  renderForgotPassword: exports.renderForgotPassword,
+  renderResetPassword: exports.renderResetPassword,
+  handleForgotPassword: exports.handleForgotPassword,
+  handleResetPassword: exports.handleResetPassword,
+});
