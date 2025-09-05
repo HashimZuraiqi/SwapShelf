@@ -2,7 +2,7 @@ const Book = require('../models/Book');
 const User = require('../models/User');
 const Swap = require('../models/Swap');
 const path = require('path');
-
+const Activity = require('../models/Activity');
 /**
  * Book Management Controller
  * Handles all book-related operations: CRUD, search, filtering
@@ -177,7 +177,7 @@ class BookController {
             
             let query = {
                 owner: { $ne: userId }, // Exclude user's own books
-                availability: 'Available'
+                availability: 'available' // ✅ match schema (lowercase)
             };
             
             // Text search
@@ -331,6 +331,19 @@ class BookController {
             book.updatedAt = new Date();
             
             await book.save();
+
+            // ✅ Log update activity so it appears in Recent Activity
+            try {
+                await Activity.create({
+                    user: userId,
+                    action: 'UPDATE_BOOK',
+                    message: `Updated "${book.title}" details`,
+                    entityType: 'Book',
+                    entityId: book._id
+                });
+            } catch (activityError) {
+                console.error('❌ Failed to log update activity:', activityError);
+            }
             
             res.json({
                 success: true,
@@ -344,45 +357,59 @@ class BookController {
         }
     }
     
-    /**
-     * Delete a book
-     */
-    static async deleteBook(req, res) {
-        try {
-            const { bookId } = req.params;
-            const userId = req.session.user._id || req.session.user.id;
-            
-            const book = await Book.findOne({ _id: bookId, owner: userId });
-            if (!book) {
-                return res.status(404).json({ error: 'Book not found or unauthorized' });
-            }
-            
-            // Check for active swaps
-            const activeSwaps = await Swap.find({
-                'requestedBook.id': bookId,
-                status: { $in: ['Pending', 'Accepted', 'In Progress'] }
-            });
-            
-            if (activeSwaps.length > 0) {
-                return res.status(400).json({ 
-                    error: 'Cannot delete book with active swap requests' 
-                });
-            }
-            
-            await Book.findByIdAndDelete(bookId);
-            
-            res.json({
-                success: true,
-                message: 'Book deleted successfully',
-                bookTitle: book.title
-            });
-            
-        } catch (error) {
-            console.error('Delete book error:', error);
-            res.status(500).json({ error: 'Failed to delete book' });
-        }
+/**
+ * Delete a book
+ */
+static async deleteBook(req, res) {
+  try {
+    const { bookId } = req.params;
+    const userId = req.session.user._id || req.session.user.id;
+
+    const book = await Book.findOne({ _id: bookId, owner: userId });
+    if (!book) {
+      return res.status(404).json({ error: 'Book not found or unauthorized' });
     }
-    
+
+    // Check for active swaps
+    const activeSwaps = await Swap.find({
+      'requestedBook.id': bookId,
+      status: { $in: ['Pending', 'Accepted', 'In Progress'] }
+    });
+
+    if (activeSwaps.length > 0) {
+      return res.status(400).json({
+        error: 'Cannot delete book with active swap requests'
+      });
+    }
+
+    const title = book.title; // capture for activity message
+
+    await book.deleteOne(); // delete the document
+
+    // 🔔 Log activity so it appears in Recent Activity
+    try {
+      await Activity.create({
+        user: userId,
+        action: 'DELETE_BOOK',                 // must match Activity.js enum exactly
+        message: `Removed "${title}" from library`,
+        entityType: 'Book',
+        entityId: bookId
+      });
+    } catch (activityError) {
+      console.error('❌ Failed to log delete activity:', activityError);
+      // don't fail the API if logging fails
+    }
+
+    return res.json({
+      success: true,
+      message: 'Book deleted successfully',
+      bookTitle: title
+    });
+  } catch (error) {
+    console.error('Delete book error:', error);
+    return res.status(500).json({ error: 'Failed to delete book' });
+  }
+}
     /**
      * Toggle book availability
      */
@@ -396,12 +423,13 @@ class BookController {
                 return res.status(404).json({ error: 'Book not found or unauthorized' });
             }
             
-            book.availability = book.availability === 'Available' ? 'Not Available' : 'Available';
+            // ✅ Keep in sync with schema enum: 'available' | 'unavailable' | 'swapped'
+            book.availability = book.availability === 'available' ? 'unavailable' : 'available';
             await book.save();
             
             res.json({
                 success: true,
-                message: `Book marked as ${book.availability.toLowerCase()}`,
+                message: `Book marked as ${book.availability}`,
                 availability: book.availability
             });
             

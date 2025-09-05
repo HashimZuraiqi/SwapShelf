@@ -167,14 +167,14 @@ app.get('/create-test-activity', async (req, res) => {
             },
             {
                 user: userId,
-                action: 'WISHLIST_ADD',
+                action: 'ADD_WISHLIST',
                 message: 'Added "To Kill a Mockingbird" by Harper Lee to wishlist',
                 entityType: 'Wishlist',
                 createdAt: new Date(Date.now() - 4 * 60 * 60 * 1000) // 4 hours ago
             },
             {
                 user: userId,
-                action: 'PROFILE_UPDATE',
+                action: 'UPDATE_PROFILE',
                 message: 'Updated profile photo',
                 entityType: 'User',
                 entityId: userId,
@@ -237,7 +237,14 @@ app.get('/debug-activities', async (req, res) => {
 /* --------------------- Helpers --------------------- */
 async function logActivity({ userId, action, message, entityType = null, entityId = null, meta = {} }) {
   try {
-    await Activity.create({ user: userId, action, message, entityType, entityId, meta });
+    const aliasMap = {
+      WISHLIST_ADD: 'ADD_WISHLIST',
+      PROFILE_UPDATE: 'UPDATE_PROFILE',
+      SWAP_COMPLETED: 'COMPLETE_SWAP'
+    };
+    const normalized = (action || '').toUpperCase();
+    const finalAction = aliasMap[normalized] || normalized;
+    await Activity.create({ user: userId, action: finalAction, message, entityType, entityId, meta });
   } catch (err) {
     console.error('Activity log failed:', err.message);
   }
@@ -274,21 +281,37 @@ function formatActivity(activity) {
       icon = 'bi-plus-circle';
       iconClass = 'text-primary';
       break;
-    case 'SWAP_COMPLETED':
+    case 'UPDATE_BOOK':
+      icon = 'bi-pencil-square';
+      iconClass = 'text-info';
+      break;
+    case 'DELETE_BOOK':
+      icon = 'bi-trash';
+      iconClass = 'text-danger';
+      break;
+    case 'COMPLETE_SWAP':
       icon = 'bi-arrow-left-right';
       iconClass = 'text-success';
       break;
-    case 'WISHLIST_ADD':
+    case 'ADD_WISHLIST':
       icon = 'bi-heart-fill';
       iconClass = 'text-danger';
       break;
-    case 'PROFILE_UPDATE':
+    case 'REMOVE_WISHLIST':
+      icon = 'bi-heart';
+      iconClass = 'text-secondary';
+      break;
+    case 'MATCH_SWAP':
+      icon = 'bi-handshake';
+      iconClass = 'text-success';
+      break;
+    case 'EARN_POINTS':
+      icon = 'bi-coin';
+      iconClass = 'text-warning';
+      break;
+    case 'UPDATE_PROFILE':
       icon = 'bi-person-check';
       iconClass = 'text-info';
-      break;
-    case 'BOOK_RATED':
-      icon = 'bi-star-fill';
-      iconClass = 'text-warning';
       break;
     default:
       icon = 'bi-info-circle';
@@ -377,27 +400,26 @@ app.get('/dashboard', async (req, res) => {
             const nearbyBooks = await Book.find({ 
                 owner: { $ne: userId },
                 availability: 'available'
-            }).limit(6).populate('owner', 'name location');
+            }).limit(6).populate('owner', 'name location fullname');
             
             dashboardData.nearbyBooks = nearbyBooks.map(book => ({
                 id: book._id,
                 title: book.title,
                 author: book.author,
                 image: book.image || '/images/book-placeholder.jpg',
-                ownerName: book.ownerName || 'Unknown',
+                ownerName: (book.owner && (book.owner.name || book.owner.fullname)) || 'Unknown',
                 distance: '2.5 km' // TODO: Calculate real distance
             }));
             
             // Get recent activity
             const activities = await Activity.find({ user: userId })
                 .sort({ createdAt: -1 })
-                .limit(5)
+                .limit(5)               // was 10
+                .populate('entityId', 'title author')
                 .lean();
                 
             dashboardData.recentActivity = activities.map(activity => ({
-                message: activity.message,
-                time: getTimeAgo(activity.createdAt),
-                icon: activity.action === 'ADD_BOOK' ? 'bi-plus-circle' : 'bi-info-circle'
+                ...formatActivity(activity)
             }));
             
         } catch (dbError) {
@@ -554,7 +576,7 @@ app.get('/api/users/recent-activity', async (req, res) => {
         // Fetch recent activities
         const activities = await Activity.find({ user: userId })
             .sort({ createdAt: -1 })
-            .limit(10)
+            .limit(5)
             .populate('entityId', 'title author')
             .lean();
 
@@ -634,10 +656,11 @@ app.post('/profile/upload-photo', upload.single('profilePhoto'), async (req, res
         req.session.user.photo = photoPath;
 
         // Update database if connected and user has a real ID
-        if (mongoose.connection.readyState === 1 && req.session.user.id && !req.session.user.id.toString().startsWith('test-')) {
+        if (mongoose.connection.readyState === 1 && (req.session.user.id || req.session.user._id) && !String(req.session.user.id || req.session.user._id).startsWith('test-')) {
             try {
+                const userIdForUpdate = req.session.user.id || req.session.user._id;
                 const updateResult = await User.findByIdAndUpdate(
-                    req.session.user.id, 
+                    userIdForUpdate, 
                     { 
                         photo: photoPath,
                         updatedAt: new Date()
@@ -651,27 +674,26 @@ app.post('/profile/upload-photo', upload.single('profilePhoto'), async (req, res
                     // Log activity for profile update
                     try {
                         await logActivity({
-                            userId: req.session.user.id,
-                            action: 'PROFILE_UPDATE',
+                            userId: userIdForUpdate,
+                            action: 'UPDATE_PROFILE',
                             message: 'Updated profile photo',
                             entityType: 'User',
-                            entityId: req.session.user.id
+                            entityId: userIdForUpdate
                         });
                     } catch (activityError) {
                         console.error('Failed to log profile activity:', activityError);
-                        // Don't fail the main operation if activity logging fails
                     }
                 } else {
-                    console.warn('⚠️ User not found in database:', req.session.user.id);
+                    console.warn('⚠️ User not found in database:', userIdForUpdate);
                 }
             } catch (dbError) {
                 console.error('❌ Database update failed:', dbError.message);
-                console.log('User ID:', req.session.user.id);
+                console.log('User ID:', req.session.user.id || req.session.user._id);
             }
         } else {
             console.log('📝 Photo updated in session only (test mode or no DB connection)');
             console.log('Connection state:', mongoose.connection.readyState);
-            console.log('User ID:', req.session.user.id);
+            console.log('User ID:', req.session.user.id || req.session.user._id);
         }
 
         // Save session to ensure photo persists
@@ -730,7 +752,7 @@ app.get('/me', async (req, res) => {
         // Fetch recent activity using existing Activity model
         const activities = await Activity.find({ user: userId })
           .sort({ createdAt: -1 })
-          .limit(10)
+          .limit(5)
           .populate('entityId', 'title author')
           .lean();
 
@@ -1073,7 +1095,7 @@ app.post('/wishlist/add', async (req, res) => {
     try {
         const { title, author, ownerId, ownerName, priority, notes } = req.body;
         
-        const user = await User.findById(req.session.user.id);
+        const user = await User.findById(req.session.user.id || req.session.user._id);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
@@ -1103,15 +1125,14 @@ app.post('/wishlist/add', async (req, res) => {
         // Log activity for adding to wishlist
         try {
             await logActivity({
-                userId: req.session.user.id,
-                action: 'WISHLIST_ADD',
+                userId: user._id,
+                action: 'ADD_WISHLIST',
                 message: `Added "${title}" by ${author} to wishlist`,
                 entityType: 'Wishlist',
                 entityId: null
             });
         } catch (activityError) {
             console.error('Failed to log wishlist activity:', activityError);
-            // Don't fail the main operation if activity logging fails
         }
         
         res.json({ success: true, message: 'Book added to wishlist' });
@@ -1128,13 +1149,21 @@ app.delete('/wishlist/remove/:bookId', async (req, res) => {
     }
     
     try {
-        const user = await User.findById(req.session.user.id);
+        const user = await User.findById(req.session.user.id || req.session.user._id);
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
         
-        user.wishlist = user.wishlist.filter(book => book._id.toString() !== req.params.bookId);
+        user.wishlist = user.wishlist.filter(book => String(book._id) !== String(req.params.bookId));
         await user.save();
+
+        await logActivity({
+          userId: user._id,
+          action: 'REMOVE_WISHLIST',
+          message: `Removed book from wishlist`,
+          entityType: 'Wishlist',
+          entityId: req.params.bookId || null
+        });
         
         res.json({ success: true, message: 'Book removed from wishlist' });
     } catch (error) {
@@ -1325,7 +1354,8 @@ app.post('/books', async (req, res) => {
       isbn,
       publisher,
       condition,
-      coverUrl
+      coverUrl,
+      owner: user._id || user.id   // ✅ set owner for later DELETE authorization
       // , owner: user._id    // enable after adding `owner` to schema
     });
 
@@ -1338,12 +1368,104 @@ app.post('/books', async (req, res) => {
       entityId: doc._id,
       meta: { author: doc.author, condition: doc.condition }
     });
-    
+
+const book = await Book.findByIdAndUpdate(req.params.id, req.body, { new: true });
+await logActivity({
+  userId: req.session.user.id,
+  action: 'UPDATE_BOOK',
+  message: `Updated "${book1.title}" details`,
+  entityType: 'Book',
+  entityId: book._id
+});
+
+const book1 = await Book.findByIdAndDelete(req.params.id);
+await logActivity({
+  userId: req.session.user.id,
+  action: 'DELETE_BOOK',
+  message: `Removed "${book1.title}" from library`,
+  entityType: 'Book',
+  entityId: book._id
+});
+
+await logActivity({
+  userId: req.session.user.id,
+  action: 'ADD_WISHLIST',
+  message: `Added "${req.body.title}" by ${req.body.author} to wishlist`,
+  entityType: 'Book',
+  entityId: req.body.bookId
+});
+
+await logActivity({
+  userId: req.session.user.id,
+  action: 'REMOVE_WISHLIST',
+  message: `Removed book from wishlist`,
+  entityType: 'Book',
+  entityId: req.params.bookId
+});
+
+const swap = await Swap.create({ ...req.body, requester: req.session.user.id });
+await logActivity({
+  userId: req.session.user.id,
+  action: 'MATCH_SWAP',
+  message: `Requested swap for "${swap.bookTitle}" with ${swap.ownerName}`,
+  entityType: 'Swap',
+  entityId: swap._id
+});
+
+const swap1 = await Swap.findByIdAndUpdate(req.params.id, { status: 'completed' }, { new: true });
+await logActivity({
+  userId: req.session.user.id,
+  action: 'COMPLETE_SWAP',
+  message: `Completed swap: "${swap1.bookTitle}" with ${swap1.otherUserName}`,
+  entityType: 'Swap',
+  entityId: swap._id
+});
+
+await logActivity({
+  userId: req.session.user.id,
+  action: 'UPDATE_PROFILE',
+  message: `Updated profile photo`,
+  entityType: 'User',
+  entityId: req.session.user.id
+});
 
     res.status(201).json({ ok: true, book: doc });
   } catch (err) {
     console.error('Create book error:', err);
     res.status(400).json({ ok: false, message: err?.message || 'Invalid data' });
+  }
+});
+
+// ✅ NEW: explicit DELETE route so Recent Activity shows DELETE_BOOK
+app.delete('/api/books/:id', async (req, res) => {
+  try {
+    if (!req.session || !req.session.user) {
+      return res.status(401).json({ success: false, message: 'Unauthorized' });
+    }
+    const userId = req.session.user._id || req.session.user.id;
+    const { id } = req.params;
+    if (!mongoose.isValidObjectId(id)) {
+      return res.status(400).json({ success: false, message: 'Invalid book id' });
+    }
+    const book = await Book.findOne({ _id: id, owner: userId });
+    if (!book) {
+      return res.status(404).json({ success: false, message: 'Book not found or not yours' });
+    }
+    const title = book.title;
+    await book.deleteOne();
+
+    await logActivity({
+      userId,
+      action: 'DELETE_BOOK',
+      message: `Removed "${title}" from library`,
+      entityType: 'Book',
+      entityId: id
+    });
+
+    return res.json({ success: true, message: 'Book removed successfully' });
+  } catch (err) {
+    console.error('DELETE /api/books/:id error:', err);
+    return res.status(500).json({ success: false, message: 'Failed to remove book' });
   }
 });
 
@@ -1360,5 +1482,55 @@ if (process.env.NODE_ENV !== 'production') {
   });
 }
 
+// Full history page (server-rendered shell + first page)
+app.get('/history', async (req, res) => {
+  if (!req.session || !req.session.user) return res.redirect('/login');
+
+  try {
+    const userId = req.session.user._id || req.session.user.id;
+    const PAGE_SIZE = 20;
+
+    const raw = await Activity.find({ user: userId })
+      .sort({ createdAt: -1 })
+      .limit(PAGE_SIZE)
+      .lean();
+
+    const items = raw.map(a => ({
+      ...formatActivity(a),
+      action: a.action,
+      createdAt: a.createdAt,
+      entityType: a.entityType,
+      entityId: a.entityId
+    }));
+
+    res.render('history', {
+      userLoggedIn: true,
+      activePage: 'history',
+      items,
+      nextPage: raw.length === PAGE_SIZE ? 2 : null  // client can request /api/users/history?page=2
+    });
+  } catch (err) {
+    console.error('History page error:', err);
+    res.status(500).send('Failed to load history');
+  }
+});
+
+
+app.get('/history', async (req, res) => {
+  if (!req.session || !req.session.user) return res.redirect('/login');
+  const userId = req.session.user._id || req.session.user.id;
+  const PAGE_SIZE = 20;
+  const raw = await Activity.find({ user: userId })
+    .sort({ createdAt: -1 })
+    .limit(PAGE_SIZE)
+    .lean();
+  const items = raw.map(a => ({
+    message: a.message,
+    time: new Date(a.createdAt).toLocaleString(),
+    icon: 'bi-info-circle', // or map same as API
+    iconClass: 'text-info'
+  }));
+  res.render('history', { userLoggedIn: true, activePage: 'history', items, nextPage: raw.length === PAGE_SIZE ? 2 : null });
+});
 
 module.exports = app;

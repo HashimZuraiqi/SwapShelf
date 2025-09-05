@@ -446,6 +446,9 @@
             .mobile-profile-items {
                 display: none !important;
             }
+
+        .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.18); color: #e6e9ee; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.06); color: #fff; }
         }
     </style>
 </head>
@@ -709,10 +712,18 @@
             </div>
 
             <div class="profile-section">
-                <h2 class="profile-section-title">
+                <div class="d-flex align-items-center justify-content-between">
+                    <h2 class="profile-section-title mb-0">
                     <i class="bi bi-clock-history mr-2"></i>Recent Activity
-                </h2>
-                <div class="activity-feed activity-list">
+                    </h2>
+
+                    <!-- History button on the right -->
+                    <a href="/history" class="btn btn-outline-light btn-sm" title="View full history">
+                    <i class="bi bi-clock-history mr-1"></i> View All
+                    </a>
+            </div>
+
+            <div class="activity-feed activity-list mt-3">
                     <% if (recentActivity && recentActivity.length > 0) { %>
                         <% recentActivity.forEach(activity => { %>
                             <div class="activity-item">
