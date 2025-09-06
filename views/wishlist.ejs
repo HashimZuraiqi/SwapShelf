@@ -64,10 +64,10 @@
     </nav>
 
     <main class="main-content">
-        <!-- Clean & Stylish Header Section -->
-        <div class="wishlist-header" style="background: linear-gradient(135deg, #1a1b21 0%, #23242a 50%, #1e1f24 100%); border-bottom: 1px solid rgba(59, 183, 251, 0.1); padding: 3rem 0 2.5rem; position: relative; overflow: hidden;">
+        <!-- Clean & Stylish Header Section with Rounded Design -->
+        <div class="wishlist-header" style="background: linear-gradient(135deg, #1a1b21 0%, #23242a 50%, #1e1f24 100%); border: 1px solid rgba(59, 183, 251, 0.1); border-radius: 20px; padding: 3rem 2rem 2.5rem; position: relative; overflow: hidden; margin: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
             <!-- Subtle Background Pattern -->
-            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 25% 25%, rgba(59, 183, 251, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(246, 180, 67, 0.05) 0%, transparent 50%); pointer-events: none;"></div>
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 25% 25%, rgba(59, 183, 251, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(246, 180, 67, 0.05) 0%, transparent 50%); pointer-events: none; border-radius: 20px;"></div>
             
             <div class="container-fluid px-4">
                 <div class="row justify-content-center">
@@ -415,10 +415,18 @@
             // Add CSS for clean and stylish hierarchy
             const style = document.createElement('style');
             style.textContent = `
-                /* Clean & Stylish Wishlist Header */
+                /* Clean & Stylish Wishlist Header with Rounded Design */
                 .wishlist-header {
                     position: relative;
                     overflow: hidden;
+                    backdrop-filter: blur(20px);
+                    transition: all 0.3s ease;
+                }
+                
+                .wishlist-header:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 12px 40px rgba(0,0,0,0.4) !important;
+                    border-color: rgba(59, 183, 251, 0.2) !important;
                 }
                 
                 .title-icon-wrapper:hover {
@@ -688,7 +696,9 @@
                 /* Responsive adjustments */
                 @media (max-width: 768px) {
                     .wishlist-header {
-                        padding: 2.5rem 0 2rem !important;
+                        padding: 2.5rem 1.5rem 2rem !important;
+                        margin: 1rem !important;
+                        border-radius: 16px !important;
                     }
                     
                     .page-title {
@@ -724,7 +734,9 @@
                 
                 @media (max-width: 576px) {
                     .wishlist-header {
-                        padding: 2rem 0 1.5rem !important;
+                        padding: 2rem 1rem 1.5rem !important;
+                        margin: 0.75rem !important;
+                        border-radius: 12px !important;
                     }
                     
                     .page-title {
