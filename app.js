@@ -858,6 +858,9 @@ app.get('/me', async (req, res) => {
 
 app.get('/profile', (req, res) => res.redirect('/me'));
 
+// Redirect /add-book to library page where books can be added
+app.get('/add-book', (req, res) => res.redirect('/library'));
+
 // Library page - user's personal book collection
 app.get('/library', async (req, res) => {
     if (!req.session || !req.session.user) {
