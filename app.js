@@ -1034,38 +1034,25 @@ app.get('/wishlist', async (req, res) => {
             id: item._id || index,
             title: item.title,
             author: item.author,
-            genre: item.genre || 'Unknown',
-            priority: item.priority || 'Medium',
-            available: false, // TODO: Check if book is available from other users
-            availableNearby: 0, // TODO: Calculate nearby availability
             image: item.image || '/images/book-placeholder.jpg',
+            priority: item.priority || 'Medium',
+            notes: item.notes || '',
             dateAdded: item.dateAdded || new Date()
         }));
         
-        // Check which wishlist books are available from other users
-        for (let wishItem of wishlistBooks) {
-            const availableBooks = await Book.find({
-                owner: { $ne: userId },
-                title: new RegExp(wishItem.title, 'i'),
-                author: new RegExp(wishItem.author, 'i'),
-                availability: 'available'
-            });
-            
-            wishItem.available = availableBooks.length > 0;
-            wishItem.availableNearby = availableBooks.length;
-        }
-        
-        // Calculate REAL wishlist statistics
+        // Calculate wishlist statistics
         const wishlistStats = {
             totalWishlist: wishlistBooks.length,
-            availableNow: wishlistBooks.filter(book => book.available).length,
             highPriority: wishlistBooks.filter(book => book.priority === 'High').length,
-            matchNotifications: 2 // TODO: Implement real notification system
+            mediumPriority: wishlistBooks.filter(book => book.priority === 'Medium').length,
+            lowPriority: wishlistBooks.filter(book => book.priority === 'Low').length
         };
         
         res.render('wishlist', { 
             userLoggedIn, 
             activePage: 'wishlist',
+            userName: req.session.user.name || req.session.user.fullname || 'User',
+            userPhoto: req.session.user.photo || null,
             wishlistBooks: wishlistBooks,
             wishlistStats: wishlistStats
         });
@@ -1094,7 +1081,7 @@ app.post('/wishlist/add', async (req, res) => {
     }
     
     try {
-        const { title, author, ownerId, ownerName, priority, notes } = req.body;
+        const { title, author, image, priority, notes } = req.body;
         
         const user = await User.findById(req.session.user.id || req.session.user._id);
         if (!user) {
@@ -1114,11 +1101,10 @@ app.post('/wishlist/add', async (req, res) => {
         user.wishlist.push({
             title,
             author,
-            ownerId,
-            ownerName,
+            image: image || '',
             priority: priority || 'Medium',
             notes: notes || '',
-            addedAt: new Date()
+            dateAdded: new Date()
         });
         
         await user.save();
@@ -1127,7 +1113,7 @@ app.post('/wishlist/add', async (req, res) => {
         try {
             await logActivity({
                 userId: user._id,
-                action: 'ADD_WISHLIST',
+                action: 'WISHLIST_ADD',
                 message: `Added "${title}" by ${author} to wishlist`,
                 entityType: 'Wishlist',
                 entityId: null

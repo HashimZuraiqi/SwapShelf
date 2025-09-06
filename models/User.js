@@ -20,15 +20,14 @@ const userSchema = new mongoose.Schema({
   wishlist: [{
     title: String,
     author: String,
-    ownerId: String,
-    ownerName: String,
+    image: String,
     priority: {
       type: String,
       enum: ['Low', 'Medium', 'High'],
       default: 'Medium'
     },
     notes: String,
-    addedAt: {
+    dateAdded: {
       type: Date,
       default: Date.now
     }
