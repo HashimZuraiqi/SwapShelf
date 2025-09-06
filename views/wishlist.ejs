@@ -63,111 +63,198 @@
         </div>
     </nav>
 
-    <main class="main-content container-fluid px-4 py-4">
-        <!-- Page Header -->
-        <div class="page-header mb-5">
-            <div class="row">
-                <div class="col-12">
-                    <div class="mb-4">
-                        <h1 class="mb-3 page-title" style="font-size: 2rem; font-weight: 700; color: #fff;">
-                            <span class="title-icon me-2">
-                                <img src="/images/image.png" alt="Wishlist Icon" class="title-icon-img" style="width: 32px; height: 32px;" />
-                            </span>
-                            My Wishlist
-                        </h1>
-                        <p class="subtitle mb-0" style="font-size: 1rem; color: #b0b3b8; line-height: 1.5;">
-                            Discover and add books to your wishlist using our book explorer
-                        </p>
-                    </div>
-                    
-                    <!-- Search and Action Bar -->
-                    <div class="d-flex flex-column flex-md-row gap-2 align-items-start align-items-md-center">
-                        <!-- Search bar -->
-                        <div class="flex-grow-1" style="max-width: 620px;">
-                            <div class="search-box" style="background: #23242a; border: 1px solid rgba(120,130,150,.2); border-radius: 10px; padding: 0.2rem;">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" style="background: transparent; border: none; color: #3BB7FB; font-size: 1rem; padding-left: 0.75rem;">
-                                            <i class="bi bi-search"></i>
-                                        </span>
+    <main class="main-content">
+        <!-- Clean & Stylish Header Section -->
+        <div class="wishlist-header" style="background: linear-gradient(135deg, #1a1b21 0%, #23242a 50%, #1e1f24 100%); border-bottom: 1px solid rgba(59, 183, 251, 0.1); padding: 3rem 0 2.5rem; position: relative; overflow: hidden;">
+            <!-- Subtle Background Pattern -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 25% 25%, rgba(59, 183, 251, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(246, 180, 67, 0.05) 0%, transparent 50%); pointer-events: none;"></div>
+            
+            <div class="container-fluid px-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 col-xl-8">
+                        <div class="header-content text-center" style="position: relative; z-index: 2;">
+                            <!-- Main Title Section -->
+                            <div class="title-section mb-4">
+                                <div class="title-icon-wrapper" style="background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; width: 70px; height: 70px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3); position: relative;">
+                                    <i class="bi bi-heart-fill" style="color: #fff; font-size: 1.8rem;"></i>
+                                    <!-- Glow effect -->
+                                    <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; opacity: 0.3; filter: blur(8px); z-index: -1;"></div>
+                                </div>
+                                
+                                <h1 class="page-title" style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 1rem; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                    My Wishlist
+                                </h1>
+                                
+                                <!-- Book Count Badge -->
+                                <div class="count-badge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(35, 36, 42, 0.8); border: 1px solid rgba(59, 183, 251, 0.2); border-radius: 50px; padding: 0.6rem 1.2rem; backdrop-filter: blur(20px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                                    <div style="background: linear-gradient(135deg, #3BB7FB, #F6B443); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-book" style="color: #fff; font-size: 0.7rem;"></i>
                                     </div>
-                                    <input
-                                        id="wishlist-search"
-                                        type="text"
-                                        class="form-control search-input"
-                                        placeholder="Search your wishlist..."
-                                        autocomplete="off"
-                                        style="background: transparent; border: none; color: #fff; font-size: 0.95rem; padding: 0.5rem 0.75rem; padding-left: 0.3rem; height: auto;"
-                                    />
+                                    <span style="color: #fff; font-weight: 700; font-size: 0.95rem;">
+                                        <%= wishlistBooks ? wishlistBooks.length : 0 %> 
+                                        <span style="color: #b0b3b8; font-weight: 500; margin-left: 0.2rem;">
+                                            <%= (wishlistBooks && wishlistBooks.length === 1) ? 'Book' : 'Books' %>
+                                        </span>
+                                    </span>
                                 </div>
                             </div>
-                        </div>
-                        <!-- Explore Books Button -->
-                        <div class="flex-shrink-0">
-                            <button class="btn btn-gradient" onclick="openBookExplorer()" 
-                                    style="font-size: 0.95rem; font-weight: 600; border-radius: 10px; padding: 0.55rem 1.3rem; white-space: nowrap; height: auto;">
-                                <i class="bi bi-search me-2"></i> Explore Books
-                            </button>
+                            
+                            <!-- Subtitle -->
+                            <p class="subtitle" style="font-size: 1.2rem; color: #b0b3b8; line-height: 1.7; margin: 0 auto; max-width: 560px; opacity: 0.9;">
+                                Curate your personal reading collection and discover your next great book
+                            </p>
+                            
+                            <!-- Action Button -->
+                            <div class="header-action mt-4">
+                                <button class="btn btn-gradient btn-lg" onclick="openBookExplorer()" 
+                                        style="font-size: 1rem; font-weight: 700; border-radius: 50px; padding: 1rem 2.5rem; box-shadow: 0 6px 25px rgba(59, 183, 251, 0.4); transition: all 0.3s ease; border: none; position: relative; overflow: hidden;">
+                                    <span style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.6rem;">
+                                        <i class="bi bi-plus-circle"></i>
+                                        Explore Books
+                                    </span>
+                                    <!-- Button glow effect -->
+                                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity 0.3s ease; border-radius: 50px;"></div>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
 
+        <!-- Content Section -->
+        <div class="wishlist-content" style="padding: 2rem 0;">
+            <div class="container-fluid px-4">
+                <!-- Search and Filter Bar -->
+                <div class="content-controls mb-4">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <div class="search-container" style="max-width: 500px;">
+                                <div class="search-box" style="background: #23242a; border: 1px solid rgba(120,130,150,.2); border-radius: 12px; padding: 0.3rem; position: relative;">
+                                    <div class="input-group">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text" style="background: transparent; border: none; color: #3BB7FB; font-size: 1rem; padding-left: 1rem;">
+                                                <i class="bi bi-search"></i>
+                                            </span>
+                                        </div>
+                                        <input
+                                            id="wishlist-search"
+                                            type="text"
+                                            class="form-control search-input"
+                                            placeholder="Search your wishlist by title or author..."
+                                            autocomplete="off"
+                                            style="background: transparent; border: none; color: #fff; font-size: 0.95rem; padding: 0.75rem 1rem; padding-left: 0.5rem;"
+                                        />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-right">
+                            <div class="view-options d-flex align-items-center justify-content-md-end justify-content-start mt-3 mt-md-0">
+                                <small class="text-muted me-3" style="font-size: 0.85rem;">
+                                    <i class="bi bi-grid-3x3-gap me-1"></i> Grid View
+                                </small>
+                                <button class="btn btn-outline-primary btn-sm" onclick="openBookExplorer()" 
+                                        style="border-color: rgba(59, 183, 251, 0.4); color: #3BB7FB; padding: 0.4rem 0.8rem; border-radius: 6px; font-size: 0.8rem;">
+                                    <i class="bi bi-plus me-1"></i> Add Books
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
         <!-- My Wishlist Content -->
         <div id="wishlist-content">
             <% if (!wishlistBooks || wishlistBooks.length === 0) { %>
-                <div id="empty-state" class="text-center py-4 my-4">
-                    <div style="background: #23242a; border: 1px solid rgba(120,130,150,.1); border-radius: 12px; padding: 2rem 1.5rem; max-width: 400px; margin: 0 auto;">
-                        <i class="bi bi-heart empty-state-icon" style="font-size: 3rem; color: #3BB7FB; opacity: 0.6; margin-bottom: 1rem; display: block;"></i>
-                        <h4 class="mt-2 empty-title" style="color: #fff; font-weight: 600; margin-bottom: 0.75rem;">Your wishlist is empty</h4>
-                        <p class="empty-text" style="color: #b0b3b8; font-size: 0.95rem; margin-bottom: 1.5rem; line-height: 1.5;">
-                            Use the "Explore Books" button above to find books and add them to your wishlist!
-                        </p>
-                        <button class="btn btn-gradient" onclick="openBookExplorer()" 
-                                style="font-weight: 600; border-radius: 6px; padding: 0.5rem 1rem; font-size: 0.9rem;">
-                            <i class="bi bi-search me-2"></i> Start Exploring
-                        </button>
+                <!-- Enhanced Empty State -->
+                <div id="empty-state" class="empty-wishlist-container">
+                    <div class="container-fluid px-0">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-6 col-md-8">
+                                <div class="empty-state-card" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.15); border-radius: 20px; padding: 3rem 2rem; text-align: center; box-shadow: 0 8px 32px rgba(0,0,0,0.2);">
+                                    <div class="empty-icon-wrapper" style="background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; width: 80px; height: 80px; margin: 0 auto 2rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 24px rgba(59, 183, 251, 0.3);">
+                                        <i class="bi bi-heart" style="font-size: 2.5rem; color: #fff;"></i>
+                                    </div>
+                                    <h3 class="empty-title" style="color: #fff; font-weight: 700; margin-bottom: 1rem; font-size: 1.5rem;">
+                                        Your Wishlist Awaits
+                                    </h3>
+                                    <p class="empty-description" style="color: #b0b3b8; font-size: 1rem; margin-bottom: 2rem; line-height: 1.6; max-width: 400px; margin-left: auto; margin-right: auto;">
+                                        Start building your personal reading collection. Discover amazing books and add them to your wishlist to read later.
+                                    </p>
+                                    <div class="empty-actions">
+                                        <button class="btn btn-gradient btn-lg" onclick="openBookExplorer()" 
+                                                style="font-weight: 600; border-radius: 12px; padding: 0.8rem 2rem; font-size: 1rem; box-shadow: 0 4px 16px rgba(59, 183, 251, 0.3);">
+                                            <i class="bi bi-search me-2"></i> Explore Books Now
+                                        </button>
+                                    </div>
+                                    <div class="empty-features mt-4">
+                                        <div class="row text-center">
+                                            <div class="col-4">
+                                                <i class="bi bi-search" style="color: #3BB7FB; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                                <small style="color: #b0b3b8; font-size: 0.8rem; display: block;">Discover</small>
+                                            </div>
+                                            <div class="col-4">
+                                                <i class="bi bi-heart-fill" style="color: #F6B443; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                                <small style="color: #b0b3b8; font-size: 0.8rem; display: block;">Save</small>
+                                            </div>
+                                            <div class="col-4">
+                                                <i class="bi bi-book" style="color: #059669; font-size: 1.5rem; margin-bottom: 0.5rem;"></i>
+                                                <small style="color: #b0b3b8; font-size: 0.8rem; display: block;">Read</small>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             <% } else { %>
-                <div class="mb-4">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h3 class="mb-0" style="color: #fff; font-weight: 600; font-size: 1.5rem;">
-                            My Wishlist 
-                            <span class="badge badge-primary ms-2" style="background: linear-gradient(135deg, #3BB7FB, #F6B443); font-size: 0.75rem; padding: 0.3rem 0.6rem; border-radius: 6px;">
-                                <%= wishlistBooks.length %>
-                            </span>
-                        </h3>
-                    </div>
-                    <div class="row" id="wishlist-grid">
+                <!-- Wishlist Grid with Professional Layout -->
+                <div class="wishlist-grid-container">
+                    <div class="row">
                         <% wishlistBooks.forEach(book => { %>
-                            <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4">
-                                <div class="book-card h-100">
-                                    <div class="text-center mb-3">
+                            <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4">
+                                <div class="book-card-professional h-100" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.25rem; transition: all 0.3s ease; position: relative; overflow: hidden;">
+                                    <!-- Book Cover -->
+                                    <div class="book-cover-container text-center mb-3" style="position: relative;">
                                         <% if (book.image) { %>
-                                            <img src="<%= book.image %>" class="book-thumbnail-grid" alt="<%= book.title %>">
+                                            <img src="<%= book.image %>" class="book-cover-professional" alt="<%= book.title %>" 
+                                                 style="width: 100%; max-width: 120px; height: 160px; object-fit: cover; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease;">
                                         <% } else { %>
-                                            <div class="book-thumbnail-grid bg-secondary d-flex align-items-center justify-content-center mx-auto">
-                                                <i class="bi bi-book text-white" style="font-size: 2rem;"></i>
+                                            <div class="book-cover-placeholder" style="width: 120px; height: 160px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 6px 20px rgba(0,0,0,0.4);">
+                                                <i class="bi bi-book text-white" style="font-size: 2.5rem;"></i>
                                             </div>
                                         <% } %>
+                                        <!-- Quick Actions Overlay -->
+                                        <div class="quick-actions-overlay" style="position: absolute; top: 8px; right: 8px; opacity: 0; transition: opacity 0.3s ease;">
+                                            <button class="btn btn-sm" onclick="removeFromWishlist('<%= book.id %>')" 
+                                                    style="background: rgba(220, 53, 69, 0.9); border: none; border-radius: 50%; width: 28px; height: 28px; padding: 0; color: white; backdrop-filter: blur(10px);">
+                                                <i class="bi bi-x" style="font-size: 0.8rem;"></i>
+                                            </button>
+                                        </div>
                                     </div>
-                                    <div class="book-info">
-                                        <h6 class="text-white font-weight-bold mb-2" style="font-size: 0.95rem; line-height: 1.3; height: 2.6rem; overflow: hidden; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical;">
+                                    
+                                    <!-- Book Information -->
+                                    <div class="book-info-professional">
+                                        <h6 class="book-title-professional" style="color: #fff; font-weight: 600; font-size: 0.9rem; line-height: 1.3; margin-bottom: 0.5rem; height: 2.6rem; overflow: hidden; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2;">
                                             <%= book.title %>
                                         </h6>
-                                        <p class="text-muted mb-3" style="font-size: 0.8rem; font-weight: 500; text-align: center; color: #3BB7FB;">
+                                        <p class="book-author-professional" style="color: #3BB7FB; font-size: 0.75rem; font-weight: 500; text-align: center; margin-bottom: 1rem; opacity: 0.9;">
                                             <%= book.author %>
                                         </p>
-                                        <div class="mt-auto">
-                                            <div class="text-center mb-3">
-                                                <small class="text-muted" style="font-size: 0.7rem;">
-                                                    <i class="bi bi-calendar me-1"></i> <%= new Date(book.dateAdded).toLocaleDateString() %>
-                                                </small>
-                                            </div>
+                                        
+                                        <!-- Book Meta -->
+                                        <div class="book-meta text-center mb-3">
+                                            <small class="date-added" style="color: #b0b3b8; font-size: 0.7rem; background: rgba(120,130,150,.1); padding: 0.2rem 0.6rem; border-radius: 8px; display: inline-block;">
+                                                <i class="bi bi-calendar3 me-1"></i> 
+                                                <%= new Date(book.dateAdded).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                                            </small>
+                                        </div>
+                                        
+                                        <!-- Action Button -->
+                                        <div class="book-actions mt-auto">
                                             <button class="btn btn-outline-danger w-100" onclick="removeFromWishlist('<%= book.id %>')" 
-                                                    style="padding: 0.6rem; border-radius: 999px; font-weight: 600; font-size: 0.8rem; transition: all 0.2s ease;">
+                                                    style="padding: 0.6rem; border-radius: 10px; font-weight: 600; font-size: 0.8rem; transition: all 0.3s ease; border-color: rgba(220, 53, 69, 0.5); background: transparent;">
                                                 <i class="bi bi-heart-fill me-1"></i> Remove
                                             </button>
                                         </div>
@@ -179,6 +266,8 @@
                 </div>
             <% } %>
         </div>
+            </div>
+        </div>
     </main>
 
     <!-- Book Explorer Modal -->
@@ -189,15 +278,9 @@
                     <h5 class="modal-title" id="bookExplorerLabel" style="display: flex; align-items: center; gap: 0.75rem; color: #fff; font-weight: 800; font-size: 2.15rem; letter-spacing: 0.2px;">
                         <i class="bi bi-search" style="color: #3BB7FB;"></i> Explore Books
                     </h5>
-                    <div class="d-flex align-items-center gap-2">
-                        <button type="button" class="btn btn-sm btn-outline-light" onclick="toggleFullscreen()" 
-                                style="border-color: rgba(120,130,150,.3); padding: 0.55rem 1rem; border-radius: 999px; font-weight: 700;">
-                            <i class="bi bi-arrows-fullscreen" id="fullscreen-icon"></i>
-                        </button>
-                        <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="font-size: 1.2rem; opacity: 0.8;">
-                            <span aria-hidden="true">&times;</span>
-                        </button>
-                    </div>
+                    <button type="button" class="close text-white" data-dismiss="modal" aria-label="Close" style="font-size: 1.2rem; opacity: 0.8;">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
                 </div>
                 <div class="modal-body" style="background: linear-gradient(135deg,#18191E,#15181D,#0D0E10); padding: 1.1rem;">
                     
@@ -286,6 +369,37 @@
         </div>
     </div>
 
+    <!-- Professional Confirmation Modal -->
+    <div class="modal fade" id="confirmRemovalModal" tabindex="-1" role="dialog" aria-labelledby="confirmRemovalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-sm modal-dialog-centered" role="document">
+            <div class="modal-content" style="background: linear-gradient(135deg,#18191E,#15181D,#0D0E10); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(120,130,150,.2); padding: 2rem 2rem 1.5rem 2rem;">
+                    <h5 class="modal-title text-white" style="font-weight: 600; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; margin: 0; width: 100%; justify-content: center;">
+                        <i class="bi bi-exclamation-triangle" style="color: #F6B443; font-size: 1.5rem;"></i>
+                        Remove Book
+                    </h5>
+                </div>
+                <div class="modal-body" style="padding: 2rem 2.5rem 2.5rem 2.5rem; text-align: center;">
+                    <p class="text-muted" style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem; color: #b0b3b8;">
+                        Are you sure you want to remove<br>
+                        "<span id="book-title-confirm" class="text-white font-weight-bold" style="color: #3BB7FB !important;"></span>"<br>
+                        from your wishlist?
+                    </p>
+                    <div class="d-flex gap-3" style="margin-top: 2rem;">
+                        <button type="button" class="btn btn-outline-secondary flex-fill" data-dismiss="modal" 
+                                style="padding: 0.8rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 1rem; border-color: rgba(120,130,150,.4); color: #b0b3b8; transition: all 0.3s ease;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger flex-fill" id="confirm-remove-btn" 
+                                style="background: linear-gradient(135deg, #dc3545, #c82333); border: none; padding: 0.8rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 1rem; transition: all 0.3s ease;">
+                            <i class="bi bi-trash me-2"></i>Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
@@ -295,19 +409,169 @@
         let currentPage = 0;
         let currentQuery = '';
         let isSearchMode = false;
-        let isFullscreen = false;
 
         // Filter chip hover effects like history.ejs
         document.addEventListener('DOMContentLoaded', function() {
-            // Add CSS for filter chip hover effects
+            // Add CSS for clean and stylish hierarchy
             const style = document.createElement('style');
             style.textContent = `
+                /* Clean & Stylish Wishlist Header */
+                .wishlist-header {
+                    position: relative;
+                    overflow: hidden;
+                }
+                
+                .title-icon-wrapper:hover {
+                    transform: scale(1.08) rotate(5deg);
+                    box-shadow: 0 12px 40px rgba(59, 183, 251, 0.5);
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                
+                .header-action .btn:hover {
+                    transform: translateY(-2px);
+                    box-shadow: 0 8px 35px rgba(59, 183, 251, 0.6);
+                }
+                
+                .header-action .btn:hover div {
+                    opacity: 1;
+                }
+                
+                .count-badge:hover {
+                    transform: scale(1.05);
+                    border-color: rgba(59, 183, 251, 0.4);
+                    transition: all 0.3s ease;
+                }
+                
+                .wishlist-content {
+                    position: relative;
+                    z-index: 1;
+                }
+                
+                .content-controls {
+                    background: rgba(35, 36, 42, 0.4);
+                    border: 1px solid rgba(120,130,150,.15);
+                    border-radius: 18px;
+                    padding: 1.8rem;
+                    backdrop-filter: blur(15px);
+                    margin-bottom: 2.5rem;
+                    box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+                }
+                
+                .search-container {
+                    position: relative;
+                }
+                
+                .search-box {
+                    transition: all 0.3s ease;
+                }
+                
+                .search-box:focus-within {
+                    border-color: rgba(59, 183, 251, 0.6);
+                    box-shadow: 0 0 0 4px rgba(59, 183, 251, 0.15);
+                    transform: translateY(-1px);
+                }
+                
+                .view-options {
+                    gap: 1.2rem;
+                }
+                
+                .view-options .btn:hover {
+                    border-color: rgba(59, 183, 251, 0.7);
+                    background: rgba(59, 183, 251, 0.1);
+                    transform: translateY(-1px);
+                }
+                
+                /* Enhanced Book Cards */
+                .book-card-professional {
+                    display: flex;
+                    flex-direction: column;
+                    min-height: 320px;
+                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+                }
+                
+                .book-card-professional:hover {
+                    background: linear-gradient(135deg, #2A2D35, #23242a) !important;
+                    border-color: rgba(59, 183, 251, 0.4) !important;
+                    transform: translateY(-6px);
+                    box-shadow: 0 15px 45px rgba(0,0,0,0.5);
+                }
+                
+                .book-card-professional:hover .book-cover-professional {
+                    transform: scale(1.05);
+                }
+                
+                .book-card-professional:hover .quick-actions-overlay {
+                    opacity: 1 !important;
+                }
+                
+                .book-info-professional {
+                    flex-grow: 1;
+                    display: flex;
+                    flex-direction: column;
+                }
+                
+                .book-actions {
+                    margin-top: auto;
+                }
+                
+                .book-card-professional .btn-outline-danger:hover {
+                    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+                    border-color: #dc3545 !important;
+                    color: #fff !important;
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+                }
+                
+                /* Enhanced Empty State */
+                .empty-wishlist-container {
+                    padding: 5rem 0;
+                    position: relative;
+                }
+                
+                .empty-state-card {
+                    position: relative;
+                    overflow: hidden;
+                    transition: all 0.3s ease;
+                }
+                
+                .empty-state-card:hover {
+                    transform: translateY(-3px);
+                    box-shadow: 0 12px 40px rgba(0,0,0,0.3);
+                }
+                
+                .empty-state-card::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background: linear-gradient(135deg, rgba(59, 183, 251, 0.05), rgba(246, 180, 67, 0.05));
+                    pointer-events: none;
+                }
+                
+                .empty-state-card > * {
+                    position: relative;
+                    z-index: 2;
+                }
+                
+                .empty-icon-wrapper:hover {
+                    transform: scale(1.15) rotate(10deg);
+                    box-shadow: 0 15px 40px rgba(59, 183, 251, 0.5);
+                }
+                
+                .empty-features .col-4:hover i {
+                    transform: scale(1.3);
+                    transition: transform 0.3s ease;
+                }
+                
+                /* Filter chip hover effects */
                 .filter-chip:hover {
                     background: linear-gradient(135deg, #3BB7FB, #34a0e0) !important;
                     color: #fff !important;
                     border-color: #3BB7FB !important;
-                    transform: translateY(-1px);
-                    box-shadow: 0 4px 12px rgba(59, 183, 251, 0.2);
+                    transform: translateY(-2px);
+                    box-shadow: 0 6px 16px rgba(59, 183, 251, 0.3);
                 }
                 
                 .filter-chip.active {
@@ -316,6 +580,7 @@
                     border-color: #3BB7FB !important;
                 }
                 
+                /* Legacy book-card styles for backward compatibility */
                 .book-card {
                     background: linear-gradient(135deg, #23242a, #1E1F23);
                     border: 1px solid rgba(120,130,150,.1);
@@ -401,6 +666,76 @@
                 @media (min-width: 992px) {
                     .col-lg-3 { flex: 0 0 25% !important; max-width: 25% !important; }
                 }
+                
+                @media (min-width: 1200px) {
+                    .col-xl-2 { flex: 0 0 16.666667% !important; max-width: 16.666667% !important; }
+                }
+                
+                /* Confirmation Modal Button Hover Effects */
+                #confirmRemovalModal .btn-outline-secondary:hover {
+                    background: rgba(120,130,150,.2) !important;
+                    border-color: rgba(120,130,150,.6) !important;
+                    color: #fff !important;
+                    transform: translateY(-1px);
+                }
+                
+                #confirmRemovalModal .btn-danger:hover {
+                    background: linear-gradient(135deg, #c82333, #a71e2a) !important;
+                    transform: translateY(-1px);
+                    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3);
+                }
+                
+                /* Responsive adjustments */
+                @media (max-width: 768px) {
+                    .wishlist-header {
+                        padding: 2.5rem 0 2rem !important;
+                    }
+                    
+                    .page-title {
+                        font-size: 2.2rem !important;
+                    }
+                    
+                    .subtitle {
+                        font-size: 1rem !important;
+                    }
+                    
+                    .header-action .btn {
+                        padding: 0.8rem 2rem !important;
+                        font-size: 0.9rem !important;
+                    }
+                    
+                    .title-icon-wrapper {
+                        width: 60px !important;
+                        height: 60px !important;
+                    }
+                    
+                    .title-icon-wrapper i {
+                        font-size: 1.5rem !important;
+                    }
+                    
+                    .content-controls {
+                        padding: 1.2rem !important;
+                    }
+                    
+                    .empty-state-card {
+                        padding: 2.5rem 1.5rem !important;
+                    }
+                }
+                
+                @media (max-width: 576px) {
+                    .wishlist-header {
+                        padding: 2rem 0 1.5rem !important;
+                    }
+                    
+                    .page-title {
+                        font-size: 1.8rem !important;
+                    }
+                    
+                    .count-badge {
+                        padding: 0.5rem 1rem !important;
+                        font-size: 0.85rem !important;
+                    }
+                }
             `;
             document.head.appendChild(style);
 
@@ -409,6 +744,11 @@
                 if (!isSearchMode) {
                     loadTrendingBooks();
                 }
+            });
+            
+            // Reset confirmation modal state
+            $('#confirmRemovalModal').on('hidden.bs.modal', function() {
+                bookToRemove = null;
             });
         });
 
@@ -588,17 +928,22 @@
             }
         }
 
-        // Show success toast
+        // Show success toast with proper error handling
         function showSuccessToast(message, type = 'success') {
             const toast = document.getElementById('successToast');
             const messageSpan = document.getElementById('toast-message');
+            const icon = toast.querySelector('i');
             
             messageSpan.textContent = message;
             
             if (type === 'error') {
                 toast.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+                icon.className = 'bi bi-exclamation-circle-fill me-2';
+                icon.style.color = '#ff6b6b';
             } else {
                 toast.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                icon.className = 'bi bi-check-circle-fill me-2';
+                icon.style.color = '#10b981';
             }
             
             $(toast).toast('show');
@@ -726,142 +1071,130 @@
             });
         });
 
-        // Toggle fullscreen mode
-        function toggleFullscreen() {
-            const modal = document.querySelector('#bookExplorerModal .modal-dialog');
-            const icon = document.getElementById('fullscreen-icon');
-            
-            if (!isFullscreen) {
-                modal.classList.remove('modal-xl');
-                modal.classList.add('modal-fullscreen');
-                icon.classList.remove('bi-arrows-fullscreen');
-                icon.classList.add('bi-fullscreen-exit');
-                isFullscreen = true;
-            } else {
-                modal.classList.remove('modal-fullscreen');
-                modal.classList.add('modal-xl');
-                icon.classList.remove('bi-fullscreen-exit');
-                icon.classList.add('bi-arrows-fullscreen');
-                isFullscreen = false;
-            }
-        }
-
         // Open book explorer modal
         function openBookExplorer() {
             $('#bookExplorerModal').modal('show');
         }
 
-        // Search wishlist items
+        // Enhanced search functionality for professional layout
         document.getElementById('wishlist-search').addEventListener('input', function(e) {
             const searchTerm = e.target.value.toLowerCase();
-            const wishlistItems = document.querySelectorAll('#wishlist-grid .col-6, #wishlist-grid .col-sm-4, #wishlist-grid .col-md-3');
+            const wishlistItems = document.querySelectorAll('.wishlist-grid-container .col-6, .wishlist-grid-container .col-sm-6, .wishlist-grid-container .col-md-4, .wishlist-grid-container .col-lg-3, .wishlist-grid-container .col-xl-2');
+            let visibleCount = 0;
             
             wishlistItems.forEach(item => {
-                const title = item.querySelector('.card-title')?.textContent.toLowerCase() || '';
-                const author = item.querySelector('.author-text')?.textContent.toLowerCase() || '';
+                const title = item.querySelector('.book-title-professional')?.textContent.toLowerCase() || '';
+                const author = item.querySelector('.book-author-professional')?.textContent.toLowerCase() || '';
                 
                 if (title.includes(searchTerm) || author.includes(searchTerm)) {
                     item.style.display = '';
+                    item.style.animation = 'fadeIn 0.3s ease';
+                    visibleCount++;
                 } else {
                     item.style.display = 'none';
                 }
             });
+            
+            // Show/hide empty state for search
+            const emptySearchState = document.getElementById('empty-search-state');
+            if (searchTerm && visibleCount === 0) {
+                if (!emptySearchState) {
+                    const emptyDiv = document.createElement('div');
+                    emptyDiv.id = 'empty-search-state';
+                    emptyDiv.className = 'col-12 text-center py-5';
+                    emptyDiv.innerHTML = `
+                        <div style="background: rgba(35, 36, 42, 0.6); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 3rem 2rem; max-width: 500px; margin: 0 auto;">
+                            <i class="bi bi-search" style="font-size: 3rem; color: #3BB7FB; opacity: 0.6; margin-bottom: 1.5rem;"></i>
+                            <h5 style="color: #fff; font-weight: 600; margin-bottom: 1rem;">No books found</h5>
+                            <p style="color: #b0b3b8; font-size: 0.95rem; margin-bottom: 0;">
+                                No books match "<strong>${searchTerm}</strong>". Try a different search term.
+                            </p>
+                        </div>
+                    `;
+                    document.querySelector('.wishlist-grid-container .row').appendChild(emptyDiv);
+                } else {
+                    emptySearchState.querySelector('p').innerHTML = `No books match "<strong>${searchTerm}</strong>". Try a different search term.`;
+                    emptySearchState.style.display = 'block';
+                }
+            } else if (emptySearchState) {
+                emptySearchState.style.display = 'none';
+            }
         });
 
-        // Remove from wishlist
-        async function removeFromWishlist(bookId) {
-            if (confirm('Are you sure you want to remove this book from your wishlist?')) {
-                try {
-                    const response = await fetch(`/wishlist/remove/${bookId}`, {
-                        method: 'DELETE'
-                    });
-                    
-                    const result = await response.json();
-                    
-                    if (response.ok) {
-                        // Remove the card visually
-                        event.target.closest('.col-6, .col-sm-4, .col-md-3').remove();
-                        showSuccessToast('Book removed from wishlist');
-                    } else {
-                        showSuccessToast(result.error || 'Failed to remove book', 'error');
+        // Enhanced remove from wishlist with professional confirmation
+        let bookToRemove = null;
+        
+        function removeFromWishlist(bookId) {
+            // Find the book title for confirmation - works with both layouts
+            const bookCard = event.target.closest('.col-6, .col-sm-6, .col-md-4, .col-lg-3, .col-xl-2');
+            const bookTitle = bookCard.querySelector('.book-title-professional, h6')?.textContent || 'this book';
+            
+            // Set the book title in the confirmation modal
+            document.getElementById('book-title-confirm').textContent = bookTitle;
+            
+            // Store the book ID for removal
+            bookToRemove = { id: bookId, element: bookCard };
+            
+            // Show confirmation modal
+            $('#confirmRemovalModal').modal('show');
+        }
+        
+        // Handle confirmed removal with enhanced animation
+        document.getElementById('confirm-remove-btn').addEventListener('click', async function() {
+            if (!bookToRemove) return;
+            
+            try {
+                const response = await fetch(`/wishlist/remove/${bookToRemove.id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
                     }
-                } catch (error) {
-                    console.error('Error removing from wishlist:', error);
-                    showSuccessToast('Failed to remove book from wishlist', 'error');
-                }
-            }
-        }
-
-        // Search on Enter key
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('book-explorer-search').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') {
-                    searchBooks();
-                }
-            });
-        });
-
-        // Toggle fullscreen mode
-        function toggleFullscreen() {
-            const modal = document.querySelector('#bookExplorerModal .modal-dialog');
-            const icon = document.getElementById('fullscreen-icon');
-            
-            if (!isFullscreen) {
-                modal.classList.remove('modal-xl');
-                modal.classList.add('modal-fullscreen');
-                icon.classList.remove('bi-arrows-fullscreen');
-                icon.classList.add('bi-fullscreen-exit');
-                isFullscreen = true;
-            } else {
-                modal.classList.remove('modal-fullscreen');
-                modal.classList.add('modal-xl');
-                icon.classList.remove('bi-fullscreen-exit');
-                icon.classList.add('bi-arrows-fullscreen');
-                isFullscreen = false;
-            }
-        }
-
-        // Open book explorer modal
-        function openBookExplorer() {
-            $('#bookExplorerModal').modal('show');
-        }
-
-        // Search wishlist items
-        document.getElementById('wishlist-search').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const wishlistItems = document.querySelectorAll('#wishlist-grid .col-6');
-            
-            wishlistItems.forEach(item => {
-                const title = item.querySelector('h6')?.textContent.toLowerCase() || '';
-                const author = item.querySelector('p.text-muted')?.textContent.toLowerCase() || '';
+                });
                 
-                if (title.includes(searchTerm) || author.includes(searchTerm)) {
-                    item.style.display = '';
+                const result = await response.json();
+                
+                if (response.ok) {
+                    // Enhanced removal animation
+                    bookToRemove.element.style.transition = 'all 0.4s cubic-bezier(0.4, 0, 0.2, 1)';
+                    bookToRemove.element.style.transform = 'scale(0.8) translateY(-20px)';
+                    bookToRemove.element.style.opacity = '0';
+                    
+                    setTimeout(() => {
+                        bookToRemove.element.remove();
+                        
+                        // Check if wishlist is empty and update layout
+                        const remainingItems = document.querySelectorAll('.wishlist-grid-container .col-6, .wishlist-grid-container .col-sm-6, .wishlist-grid-container .col-md-4, .wishlist-grid-container .col-lg-3, .wishlist-grid-container .col-xl-2');
+                        if (remainingItems.length === 0) {
+                            // Smooth transition to empty state
+                            setTimeout(() => {
+                                location.reload(); // Reload to show empty state
+                            }, 200);
+                        } else {
+                            // Update the book count in header if it exists
+                            const bookCountBadge = document.querySelector('.title-badge .badge');
+                            if (bookCountBadge) {
+                                const currentCount = parseInt(bookCountBadge.textContent.split(' ')[0]);
+                                bookCountBadge.textContent = `${currentCount - 1} Books`;
+                            }
+                        }
+                    }, 400);
+                    
+                    showSuccessToast('Book removed from wishlist successfully!');
                 } else {
-                    item.style.display = 'none';
+                    showSuccessToast(result.error || result.message || 'Failed to remove book', 'error');
                 }
-            });
+                
+                // Hide modal
+                $('#confirmRemovalModal').modal('hide');
+                bookToRemove = null;
+                
+            } catch (error) {
+                console.error('Error removing from wishlist:', error);
+                showSuccessToast('Failed to remove book from wishlist', 'error');
+                $('#confirmRemovalModal').modal('hide');
+                bookToRemove = null;
+            }
         });
-
-        // Add CSS for fullscreen modal
-        const modalStyle = document.createElement('style');
-        modalStyle.textContent = `
-            .modal-fullscreen {
-                width: 100vw;
-                max-width: none;
-                height: 100vh;
-                margin: 0;
-            }
-            .modal-fullscreen .modal-content {
-                height: 100vh;
-                border: 0;
-                border-radius: 0;
-            }
-            .modal-fullscreen .modal-body {
-                overflow-y: auto;
-            }
-        `;
-        document.head.appendChild(modalStyle);
     </script>
 </body>
 </html>
