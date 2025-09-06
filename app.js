@@ -17,6 +17,7 @@ const {
   awardWeekendBadge
 } = require('./helpers/badges');
 
+const { findSwapMatches } = require('./helpers/swapMatcher');
 
 const app = express();
 
@@ -565,6 +566,22 @@ app.post('/books', async (req, res) => {
 app.get('/api/books', async (req, res) => {
   const books = await Book.find().sort({ createdAt: -1 });
   res.json(books);
+});
+// swap Matcher API
+app.get('/api/match', async (req, res) => {
+  const { userId, criteria, value } = req.query;
+
+  if (!userId || !criteria) {
+    return res.status(400).json({ error: 'userId and criteria are required' });
+  }
+
+  try {
+    const matches = await findSwapMatches(userId, criteria, value);
+    res.json(matches);
+  } catch (err) {
+    console.error('Swap matcher error:', err);
+    res.status(500).json({ error: err.message });
+  }
 });
 
 // Export for Vercel
