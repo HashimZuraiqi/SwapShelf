@@ -3,614 +3,272 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Create Account | BookSwap</title>
-  
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+
+  <!-- Bootstrap -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css" integrity="sha384-Vkoo8x4CGsO3+Hhxv8T/Q5PaXtkKtu6ug5TOeNV6gBiFeWPGFN9MuhOf23Q9Ifjh" crossorigin="anonymous">
+  <!-- Bootstrap Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+
+  <!-- Your site styles -->
   <link rel="stylesheet" href="/css/style.css">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <title>Register</title>
 
   <style>
-    /* Active navigation styling for static page */
-    .nav-item.active .nav-link {
-      color: #3BB7FB !important;
-      background: rgba(59, 183, 251, 0.1);
-      border-radius: 5px;
-      font-weight: 600;
+    :root{
+      --bg:#0f141a; --card:#151a21; --field:#111418; --field-focus:#12161b;
+      --text:#e9ecef; --muted:rgba(255,255,255,.68); --border:rgba(255,255,255,.14);
+      --focus:#56b2ff; --ok:#28a745; --bad:#dc3545; --shadow:0 12px 40px rgba(0,0,0,.35);
+      --grad-start:#3BB7FB; --grad-end:#F6B443;
     }
-    * {
-      box-sizing: border-box;
+
+    body.register-page{
+      background:var(--bg); color:var(--text); min-height:100vh;
+      display:grid; grid-template-rows:auto 1fr;
     }
-    
-    body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      background: linear-gradient(135deg, #0D0E10 0%, #18191E 50%, #15181D 100%);
-      background-attachment: fixed;
-      min-height: 100vh;
-      margin: 0;
-      display: flex;
-      flex-direction: column;
-      color: #ffffff;
+
+    .auth-shell{display:grid;place-items:center;padding:36px 16px 48px;}
+    .auth-card{
+      width:100%; max-width:760px; background:var(--card);
+      border:1px solid var(--border); border-radius:18px; padding:28px; box-shadow:var(--shadow);
     }
-    
-    .register-container {
-      flex: 1;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      padding: 2rem 1rem;
+
+    /* Brand */
+    .brand{display:flex;flex-direction:column;align-items:center;gap:.55rem;margin-bottom:.5rem;}
+    .brand-badge{
+      /* bigger badge */
+      width:72px;height:72px;border-radius:50%;
+      background:linear-gradient(135deg,var(--grad-start),var(--grad-end));
+      display:grid;place-items:center;
+      box-shadow:0 8px 22px rgba(0,0,0,.28);
     }
-    
-    .register-card {
-      background: rgba(31, 34, 41, 0.95);
-      backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.08);
-      border-radius: 24px;
-      padding: 3rem;
-      width: 100%;
-      max-width: 600px;
-      box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-      position: relative;
-      overflow: hidden;
+    .brand-badge svg{
+      /* bigger book */
+      width:65px;height:65px;display:block
     }
-    
-    .register-card::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 1px;
-      background: linear-gradient(90deg, transparent, #3BB7FB, #F6B443, transparent);
-      opacity: 0.6;
+    .brand-title{
+      font-weight:800;font-size:1.9rem;line-height:1;
+      background:linear-gradient(90deg,#69c0ff 0%, #6fbfff 35%, #ffd274 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+      margin:0;
     }
-    
-    .brand-header {
-      text-align: center;
-      margin-bottom: 2rem;
+    .brand-sub{margin:0;color:var(--muted);text-align:center}
+
+    /* Inputs with left icon + right eye */
+    .form-group{margin-bottom:18px;}
+    .input-icon{position:relative}
+    .input-icon .input-icon-left{
+      position:absolute; left:12px; top:70%; transform:translateY(-50%); /* lowered */
+      color:#9aa0a6; pointer-events:none;
+      font-size:1.05rem;
     }
-    
-    .brand-logo {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1.5rem;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3);
-      position: relative;
+    .form-control{
+      background:var(--field)!important; background-image:none!important;
+      color:var(--text); border-color:var(--border); border-radius:.5rem; height:48px;
+      padding-left:42px; padding-right:46px;
     }
-    
-    .brand-logo::after {
-      content: '';
-      position: absolute;
-      inset: 2px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-      opacity: 0.1;
+    .form-control::placeholder{color:#8693a1}
+    .form-control:focus{
+      background:var(--field-focus)!important; border-color:var(--focus)!important;
+      box-shadow:0 0 0 .2rem rgba(86,178,255,.14);
     }
-    
-    .brand-title {
-      font-size: 1.875rem;
-      font-weight: 700;
-      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      background-clip: text;
-      margin-bottom: 0.5rem;
-      letter-spacing: -0.02em;
+    .toggle-pass{
+      position:absolute; right:6px; top:60%; transform:translateY(-50%); /* lowered */
+      width:36px;height:36px;display:grid;place-items:center;
+      border:0;background:transparent!important;color:#9aa0a6;cursor:pointer;outline:none
     }
-    
-    .brand-subtitle {
-      color: #9CA3AF;
-      font-size: 1rem;
-      font-weight: 400;
-      margin-bottom: 0;
+
+    /* Checklist */
+    .req-card{background:#1f2126;border:1px solid rgba(255,255,255,.08);border-radius:12px;padding:12px 14px;margin-top:10px;}
+    .req-list{list-style:none;margin:0;padding:0}
+    .req-list li{display:flex;align-items:center;gap:8px;padding:4px 0;line-height:1.25;color:var(--muted)}
+    .req-list li.text-success{color:var(--ok)!important}
+    .req-list li.text-danger{color:var(--bad)!important}
+    .req-list li i{font-size:1rem}
+
+    .valid-msg,.invalid-msg{font-size:.9rem;margin-top:6px}
+    .valid-msg{color:var(--ok)}
+    .invalid-msg{color:var(--bad)}
+
+    /* CTA */
+    .btn-gradient{width:100%;height:52px;border-radius:999px;border:0;font-weight:700;letter-spacing:.2px}
+
+    /* Small navbar brand on top */
+    .navbar-brand .brand-mini{display:flex;align-items:center}
+    .navbar-brand .brand-mini .badge{
+      width:28px;height:28px;border-radius:50%;
+      background:linear-gradient(135deg,var(--grad-start),var(--grad-end));
+      display:grid;place-items:center;margin-right:.5rem;
     }
-    
-    .form-group {
-      margin-bottom: 1.25rem;
+    .navbar-brand .brand-mini svg{width:24px;height:24px}
+    .navbar-brand .brand-mini .text{
+      font-weight:800;font-size:1.1rem;
+      background:linear-gradient(90deg,#69c0ff 0%, #ffd274 100%);
+      -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
     }
-    
-    .form-label {
-      color: #E5E7EB;
-      font-weight: 600;
-      font-size: 0.875rem;
-      margin-bottom: 0.5rem;
-      display: block;
-      letter-spacing: 0.01em;
-    }
-    
-    .input-container {
-      position: relative;
-    }
-    
-    .input-icon {
-      position: absolute;
-      left: 1rem;
-      top: 50%;
-      transform: translateY(-50%);
-      color: #6B7280;
-      font-size: 1.125rem;
-      transition: color 0.2s ease;
-      z-index: 2;
-    }
-    
-    .toggle-pass {
-      position: absolute;
-      right: 0.75rem;
-      top: 50%;
-      transform: translateY(-50%);
-      width: 36px;
-      height: 36px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      border: 0;
-      background: transparent;
-      color: #6B7280;
-      cursor: pointer;
-      outline: none;
-      border-radius: 6px;
-      transition: all 0.2s ease;
-      z-index: 3;
-    }
-    
-    .toggle-pass:hover {
-      color: #3BB7FB;
-      background: rgba(59, 183, 251, 0.1);
-    }
-    
-    .form-control {
-      background: rgba(17, 20, 24, 0.8) !important;
-      border: 1.5px solid rgba(55, 65, 81, 0.8) !important;
-      color: #ffffff !important;
-      border-radius: 12px !important;
-      height: 52px !important;
-      padding: 0 3rem 0 3rem !important;
-      font-size: 0.95rem !important;
-      font-weight: 400 !important;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-      backdrop-filter: blur(10px);
-    }
-    
-    .form-control::placeholder {
-      color: #6B7280 !important;
-      font-weight: 400 !important;
-    }
-    
-    .form-control:focus {
-      background: rgba(17, 20, 24, 0.9) !important;
-      border-color: #3BB7FB !important;
-      box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.1) !important;
-      transform: translateY(-1px);
-    }
-    
-    .form-control:focus + .input-icon {
-      color: #3BB7FB;
-    }
-    
-    .btn-primary {
-      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-      border: none;
-      border-radius: 12px;
-      height: 52px;
-      font-weight: 600;
-      font-size: 1rem;
-      letter-spacing: 0.025em;
-      color: #ffffff;
-      width: 100%;
-      position: relative;
-      overflow: hidden;
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: 0 4px 16px rgba(59, 183, 251, 0.3);
-      margin-top: 1rem;
-    }
-    
-    .btn-primary::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-      transition: left 0.5s ease;
-    }
-    
-    .btn-primary:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(59, 183, 251, 0.4);
-      color: #ffffff;
-    }
-    
-    .btn-primary:hover::before {
-      left: 100%;
-    }
-    
-    .btn-primary:active {
-      transform: translateY(0);
-    }
-    
-    .form-footer {
-      margin-top: 1.5rem;
-      text-align: center;
-    }
-    
-    .form-footer p {
-      color: #9CA3AF;
-      font-size: 0.875rem;
-      margin-bottom: 0;
-    }
-    
-    .form-footer a {
-      color: #3BB7FB;
-      text-decoration: none;
-      font-weight: 600;
-      transition: color 0.2s ease;
-    }
-    
-    .form-footer a:hover {
-      color: #F6B443;
-      text-decoration: none;
-    }
-    
-    .alert {
-      border-radius: 12px;
-      border: none;
-      padding: 1rem 1.25rem;
-      margin-bottom: 1.5rem;
-      font-weight: 500;
-      display: flex;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    
-    .alert-danger {
-      background: rgba(239, 68, 68, 0.1);
-      color: #FCA5A5;
-      border: 1px solid rgba(239, 68, 68, 0.2);
-    }
-    
-    .alert-success {
-      background: rgba(34, 197, 94, 0.1);
-      color: #86EFAC;
-      border: 1px solid rgba(34, 197, 94, 0.2);
-    }
-    
-    /* Password Requirements */
-    .password-requirements {
-      background: rgba(17, 20, 24, 0.6);
-      border: 1px solid rgba(55, 65, 81, 0.4);
-      border-radius: 10px;
-      padding: 1rem;
-      margin-top: 0.5rem;
-      display: none;
-    }
-    
-    .password-requirements.show {
-      display: block;
-    }
-    
-    .requirements-title {
-      color: #9CA3AF;
-      font-size: 0.8rem;
-      font-weight: 600;
-      margin-bottom: 0.75rem;
-    }
-    
-    .requirement-list {
-      list-style: none;
-      padding: 0;
-      margin: 0;
-    }
-    
-    .requirement-item {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-      padding: 0.25rem 0;
-      color: #6B7280;
-      font-size: 0.8rem;
-      transition: color 0.2s ease;
-    }
-    
-    .requirement-item.valid {
-      color: #10B981;
-    }
-    
-    .requirement-item.invalid {
-      color: #EF4444;
-    }
-    
-    .requirement-icon {
-      font-size: 0.9rem;
-    }
-    
-    /* Country List */
-    #country-list {
-      position: absolute;
-      z-index: 1000;
-      list-style: none;
-      padding: 0;
-      margin-top: 4px;
-      width: 100%;
-      background: rgba(31, 34, 41, 0.95);
-      backdrop-filter: blur(10px);
-      border-radius: 10px;
-      border: 1px solid rgba(55, 65, 81, 0.8);
-      display: none;
-      max-height: 200px;
-      overflow-y: auto;
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
-    }
-    
-    #country-list li {
-      padding: 0.75rem 1rem;
-      cursor: pointer;
-      color: #E5E7EB;
-      transition: all 0.2s ease;
-      font-size: 0.9rem;
-    }
-    
-    #country-list li:hover {
-      background: rgba(59, 183, 251, 0.1);
-      color: #3BB7FB;
-    }
-    
-    #country-list li:first-child {
-      border-top-left-radius: 10px;
-      border-top-right-radius: 10px;
-    }
-    
-    #country-list li:last-child {
-      border-bottom-left-radius: 10px;
-      border-bottom-right-radius: 10px;
-    }
-    
-    /* Status Messages */
-    .field-status {
-      font-size: 0.8rem;
-      margin-top: 0.5rem;
-      font-weight: 500;
-    }
-    
-    .field-status.valid {
-      color: #10B981;
-    }
-    
-    .field-status.invalid {
-      color: #EF4444;
-    }
-    
-    @media (max-width: 576px) {
-      .register-card {
-        padding: 2rem 1.5rem;
-        margin: 1rem;
-        border-radius: 20px;
-      }
-      
-      .brand-title {
-        font-size: 1.625rem;
-      }
-    }
+
+    .auth-footer{text-align:center;margin-top:14px;color:var(--muted)}
+    .auth-footer a{color:#4ca3ff}
   </style>
 </head>
 <body class="register-page">
 
-<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <!-- Minimal nav with book logo -->
+  <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <span class="logo-icon mr-2" style="display:flex;align-items:center;">
-          <!-- Book SVG ICON -->
-          <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
-            <defs>
-              <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#3BB7FB"/>
-                <stop offset="1" stop-color="#F6B443"/>
-              </linearGradient>
-            </defs>
-            <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
-            <g>
-              <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
-              <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
-              <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
-            </g>
-          </svg>
+      <a class="navbar-brand" href="/">
+        <span class="brand-mini">
+          <span class="badge">
+            <!-- Book glyph (small) -->
+            <svg viewBox="0 0 56 56" fill="none" aria-hidden="true">
+              <g>
+                <rect x="17" y="20" width="10" height="16" rx="2" fill="#ffffff"/>
+                <rect x="29" y="20" width="10" height="16" rx="2" fill="#ffffff"/>
+                <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+              </g>
+            </svg>
+          </span>
+          <span class="text">BookSwap</span>
         </span>
-        <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
       </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
-          <li class="nav-item home-center-link">
-            <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" href="/login">Login</a>
-          </li>
-          <li class="nav-item active">
-            <a class="btn btn-gradient signup-btn ml-2" href="/register">Sign Up</a>
-          </li>
-        </ul>
-      </div>
     </div>
   </nav>
 
-  <div class="register-container">
-    <div class="register-card">
-      <div class="brand-header">
-        <div class="brand-logo">
-          <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+  <main class="auth-shell">
+    <section class="auth-card">
+
+      <!-- Centered brand header with bigger book badge -->
+      <div class="brand">
+        <div class="brand-badge" aria-hidden="true">
+          <!-- Book glyph (large) -->
+          <svg viewBox="0 0 56 56" fill="none">
             <g>
-              <rect x="17" y="20" width="10" height="16" rx="2" fill="#ffffff"/>
-              <rect x="29" y="20" width="10" height="16" rx="2" fill="#ffffff"/>
-              <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
+              <rect x="17" y="20" width="12" height="18" rx="2" fill="#ffffff"/>
+              <rect x="29" y="20" width="12" height="18" rx="2" fill="#ffffff"/>
+              <line x1="28" y1="20" x2="28" y2="38" stroke="#3BB7FB" stroke-width="1.8"/>
             </g>
           </svg>
         </div>
-        <h1 class="brand-title">Create Account</h1>
-        <p class="brand-subtitle">Join BookSwap and start trading books today</p>
+        <h1 class="brand-title">Join BookSwap</h1>
+        <p class="brand-sub">Create your account and start swapping books today</p>
       </div>
 
+      <!-- Server error (EJS) -->
       <% if (error) { %>
-        <div class="alert alert-danger" role="alert">
-          <i class="bi bi-exclamation-circle"></i>
-          <%= error %>
-        </div>
+        <div class="alert alert-danger" role="alert"><%= error %></div>
       <% } %>
 
       <form id="registerForm" action="/auth/register" method="post" novalidate>
-        <div class="form-group">
-          <label for="name" class="form-label">Full Name</label>
-          <div class="input-container">
-            <i class="input-icon bi bi-person"></i>
-            <input id="name" name="name" type="text" class="form-control" 
-                   placeholder="Enter your full name" value="<%= name %>" required>
-          </div>
+
+        <!-- Full Name with icon -->
+        <div class="form-group input-icon">
+          <label for="name">Full Name</label>
+          <span class="input-icon-left"><i class="bi bi-person"></i></span>
+          <input id="name" name="name" type="text" class="form-control" placeholder="Enter your full name" value="<%= name %>" required>
         </div>
 
-        <div class="form-group">
-          <label for="username" class="form-label">Username</label>
-          <div class="input-container">
-            <i class="input-icon bi bi-at"></i>
-            <input id="username" name="username" type="text" class="form-control" 
-                   placeholder="Choose a unique username" value="<%= username %>" required>
-          </div>
-          <div id="username-status" class="field-status"></div>
+        <!-- Email with icon -->
+        <div class="form-group input-icon">
+          <label for="email">Email Address</label>
+          <span class="input-icon-left"><i class="bi bi-envelope"></i></span>
+          <input id="email" name="email" type="email" class="form-control" placeholder="Enter your email" value="<%= email %>" required>
         </div>
 
-        <div class="form-group">
-          <label for="email" class="form-label">Email Address</label>
-          <div class="input-container">
-            <i class="input-icon bi bi-envelope"></i>
-            <input id="email" name="email" type="email" class="form-control" 
-                   placeholder="Enter your email address" value="<%= email %>" required>
-          </div>
+        <!-- Location with icon -->
+        <div class="form-group input-icon">
+          <label for="location">Location</label>
+          <span class="input-icon-left"><i class="bi bi-geo-alt"></i></span>
+          <input id="location" name="location" type="text" class="form-control" placeholder="Country" autocomplete="off" required>
+          <ul id="country-list" style="position:absolute;z-index:1000;list-style:none;padding-left:0;margin-top:4px;width:100%;background:#1f2126;border-radius:10px;border:1px solid rgba(255,255,255,.08);display:none;"></ul>
         </div>
 
+        <!-- Password -->
         <div class="form-group">
-          <label for="location" class="form-label">Location</label>
-          <div class="input-container">
-            <i class="input-icon bi bi-geo-alt"></i>
-            <input id="location" name="location" type="text" class="form-control" 
-                   placeholder="Enter your country" autocomplete="off" required>
+          <label for="password" class="mb-1">Password</label>
+          <div class="input-icon">
+            <span class="input-icon-left"><i class="bi bi-lock"></i></span>
+            <input id="password" name="password" type="password" class="form-control" placeholder="Enter your password" aria-describedby="passwordHelp" required>
+            <button class="toggle-pass" type="button" aria-label="Show/Hide password" data-target="#password"><i class="bi bi-eye"></i></button>
           </div>
-          <ul id="country-list"></ul>
-        </div>
 
-        <div class="form-group">
-          <label for="password" class="form-label">Password</label>
-          <div class="input-container">
-            <i class="input-icon bi bi-lock"></i>
-            <input id="password" name="password" type="password" class="form-control" 
-                   placeholder="Create a strong password" required>
-            <button class="toggle-pass" type="button" data-target="#password">
-              <i class="bi bi-eye"></i>
-            </button>
-          </div>
-          <div id="passwordHelp" class="password-requirements">
-            <div class="requirements-title">Password must include:</div>
-            <ul class="requirement-list">
-              <li class="requirement-item" id="req-length">
-                <i class="requirement-icon bi bi-dot"></i>
-                At least 6 characters
-              </li>
-              <li class="requirement-item" id="req-upper">
-                <i class="requirement-icon bi bi-dot"></i>
-                One uppercase letter (A–Z)
-              </li>
-              <li class="requirement-item" id="req-number">
-                <i class="requirement-icon bi bi-dot"></i>
-                One number (0–9)
-              </li>
-              <li class="requirement-item" id="req-symbol">
-                <i class="requirement-icon bi bi-dot"></i>
-                One symbol (e.g. @ ! $ # % ^ & * ?)
-              </li>
+          <!-- Checklist (opens every focus, hides on blur if empty) -->
+          <div id="passwordHelp" class="req-card" aria-live="polite" style="display:none;">
+            <small class="d-block mb-1" style="opacity:.85;">Password must include:</small>
+            <ul class="req-list small">
+              <li id="req-length"><i class="bi bi-dot"></i> At least <strong>6 characters</strong></li>
+              <li id="req-upper"><i class="bi bi-dot"></i> At least <strong>one uppercase</strong> letter (A–Z)</li>
+              <li id="req-number"><i class="bi bi-dot"></i> At least <strong>one number</strong> (0–9)</li>
+              <li id="req-symbol"><i class="bi bi-dot"></i> At least <strong>one symbol</strong> (e.g. @ ! $ # % ^ &amp; * ?)</li>
             </ul>
           </div>
         </div>
 
+        <!-- Confirm Password -->
         <div class="form-group">
-          <label for="confirmPassword" class="form-label">Confirm Password</label>
-          <div class="input-container">
-            <i class="input-icon bi bi-lock"></i>
-            <input id="confirmPassword" name="confirmPassword" type="password" class="form-control" 
-                   placeholder="Re-enter your password" required>
-            <button class="toggle-pass" type="button" data-target="#confirmPassword">
-              <i class="bi bi-eye"></i>
-            </button>
+          <label for="confirmPassword" class="mb-1">Confirm Password</label>
+          <div class="input-icon">
+            <span class="input-icon-left"><i class="bi bi-lock"></i></span>
+            <input id="confirmPassword" name="confirmPassword" type="password" class="form-control" placeholder="Confirm your password" required>
+            <button class="toggle-pass" type="button" aria-label="Show/Hide confirm password" data-target="#confirmPassword"><i class="bi bi-eye"></i></button>
           </div>
-          <div id="confirmFeedback" class="field-status"></div>
+          <div id="confirmFeedback" class="mt-1 small"></div>
         </div>
 
-        <button type="submit" class="btn btn-primary">Create Account</button>
+        <button type="submit" class="btn btn-gradient create-account-btn">Create Account</button>
+
+        <div class="auth-footer">
+          Already have an account? <a href="/login">Sign in here</a>
+        </div>
       </form>
+    </section>
+  </main>
 
-      <div class="form-footer">
-        <p>Already have an account? <a href="/login">Sign in here</a></p>
-      </div>
-    </div>
-  </div>
-
+  <!-- Scripts -->
   <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
 
+  <!-- Country autocomplete -->
   <script>
     (function() {
       const input = document.getElementById('location');
-      const list = document.getElementById('country-list');
-      
-      function hideList() {
-        list.style.display = 'none';
-        list.innerHTML = '';
-      }
+      const list  = document.getElementById('country-list');
+      const hide = ()=>{ list.style.display='none'; list.innerHTML=''; };
 
-      input.addEventListener('input', function() {
-        const query = this.value.trim();
-        if (query.length < 2) return hideList();
-        
-        fetch(`https://restcountries.com/v3.1/name/${encodeURIComponent(query)}`)
-          .then(r => r.json())
-          .then(data => {
-            if (!Array.isArray(data)) return hideList();
-            
-            list.innerHTML = data.slice(0, 8).map(country => {
-              const name = country?.name?.common || '';
-              const safeName = String(name).replace(/'/g, "\\'");
-              return `<li onmousedown="document.getElementById('location').value='${safeName}'; hideList();">${name}</li>`;
+      input.addEventListener('input', function(){
+        const q = this.value.trim();
+        if (q.length < 2) return hide();
+        fetch('https://restcountries.com/v3.1/name/'+encodeURIComponent(q))
+          .then(r=>r.json())
+          .then(data=>{
+            if (!Array.isArray(data)) return hide();
+            list.innerHTML = data.slice(0,8).map(c=>{
+              const name = c?.name?.common || '';
+              const safe = String(name).replace(/'/g,"\\'");
+              return `<li style="padding:8px 12px;cursor:pointer;" onmousedown="document.getElementById('location').value='${safe}';">${name}</li>`;
             }).join('');
-            list.style.display = 'block';
-          })
-          .catch(hideList);
+            list.style.display='block';
+          }).catch(hide);
       });
 
-      document.addEventListener('click', e => {
-        if (!input.contains(e.target) && !list.contains(e.target)) hideList();
+      document.addEventListener('click', e=>{
+        if (!input.contains(e.target) && !list.contains(e.target)) hide();
       });
-
-      window.hideList = hideList;
     })();
+  </script>
 
-    (function() {
+  <!-- Password validation -->
+  <script>
+    (function(){
       const form = document.getElementById('registerForm');
-      const pwd = document.getElementById('password');
+      const pwd  = document.getElementById('password');
       const cpwd = document.getElementById('confirmPassword');
       const help = document.getElementById('passwordHelp');
       const confirmFeedback = document.getElementById('confirmFeedback');
 
-      const requirements = {
+      const req = {
         length: document.getElementById('req-length'),
-        upper: document.getElementById('req-upper'),
+        upper:  document.getElementById('req-upper'),
         number: document.getElementById('req-number'),
         symbol: document.getElementById('req-symbol')
       };
@@ -618,146 +276,82 @@
       let submitAttempted = false;
 
       const tests = {
-        length: v => v.length >= 6,
-        upper: v => /[A-Z]/.test(v),
+        length: v => v.length >= 6,  // ≥ 6
+        upper:  v => /[A-Z]/.test(v),
         number: v => /\d/.test(v),
         symbol: v => /[@!$#%^&*?~_\-+.,;:()[\]{}\\/|`]/.test(v)
       };
 
-      function updateRequirement(element, isValid) {
-        const icon = element.querySelector('.requirement-icon');
-        element.classList.remove('valid', 'invalid');
-        
-        if (isValid) {
-          element.classList.add('valid');
-          icon.className = 'requirement-icon bi bi-check-circle';
-        } else if (submitAttempted) {
-          element.classList.add('invalid');
-          icon.className = 'requirement-icon bi bi-x-circle';
-        } else {
-          icon.className = 'requirement-icon bi bi-dot';
-        }
+      function setItem(el, state){
+        const icon = el.querySelector('i');
+        el.classList.remove('text-success','text-danger');
+        if (state==='ok'){ el.classList.add('text-success'); icon.className='bi bi-check-circle'; }
+        else if (state==='bad'){ el.classList.add('text-danger'); icon.className='bi bi-x-circle'; }
+        else { icon.className='bi bi-dot'; }
       }
 
-      function validatePassword() {
-        const value = pwd.value || '';
-        const results = {
-          length: tests.length(value),
-          upper: tests.upper(value),
-          number: tests.number(value),
-          symbol: tests.symbol(value)
+      function setValidity(input, isValid){
+        input.classList.remove('is-valid','is-invalid');
+        input.classList.add(isValid ? 'is-valid' : 'is-invalid');
+        input.setAttribute('aria-invalid', String(!isValid));
+      }
+
+      function evalPassword(){
+        const v = pwd.value || '';
+        const r = {
+          length: tests.length(v),
+          upper:  tests.upper(v),
+          number: tests.number(v),
+          symbol: tests.symbol(v)
         };
-
-        Object.keys(results).forEach(key => {
-          updateRequirement(requirements[key], results[key]);
+        Object.keys(r).forEach(k=>{
+          setItem(req[k], r[k] ? 'ok' : (submitAttempted ? 'bad' : 'muted'));
         });
-
-        const isValid = Object.values(results).every(Boolean);
-        
-        if (submitAttempted) {
-          pwd.style.borderColor = isValid ? '#10B981' : '#EF4444';
-        }
-        
-        return isValid;
+        const ok = r.length && r.upper && r.number && r.symbol;
+        setValidity(pwd, ok || !submitAttempted);
+        return ok;
       }
 
-      function validateConfirmPassword() {
-        const isMatch = pwd.value && cpwd.value && pwd.value === cpwd.value;
-        
-        if (cpwd.value.length) {
-          confirmFeedback.textContent = isMatch ? '✓ Passwords match' : '✗ Passwords do not match';
-          confirmFeedback.className = `field-status ${isMatch ? 'valid' : 'invalid'}`;
+      function evalConfirm(){
+        const match = !!pwd.value && !!cpwd.value && pwd.value === cpwd.value;
+        if (cpwd.value.length){
+          confirmFeedback.textContent = match ? 'Passwords match' : 'Passwords do not match';
+          confirmFeedback.className   = match ? 'valid-msg' : 'invalid-msg';
         } else {
-          confirmFeedback.textContent = '';
-          confirmFeedback.className = 'field-status';
+          confirmFeedback.textContent = ''; confirmFeedback.className = '';
         }
-
-        if (submitAttempted) {
-          cpwd.style.borderColor = isMatch ? '#10B981' : '#EF4444';
-        }
-        
-        return isMatch;
+        setValidity(cpwd, match || !submitAttempted);
+        return match;
       }
 
-      pwd.addEventListener('focus', () => {
-        help.classList.add('show');
-      });
+      // Checklist opens EVERY focus, hides on blur if empty
+      pwd.addEventListener('focus', ()=>{ help.style.display='block'; });
+      pwd.addEventListener('blur',  ()=>{ if (!pwd.value.length) help.style.display='none'; });
+      pwd.addEventListener('input', ()=>{ evalPassword(); if (cpwd.value) evalConfirm(); });
+      cpwd.addEventListener('input', evalConfirm);
 
-      pwd.addEventListener('blur', () => {
-        if (!pwd.value.length) help.classList.remove('show');
-      });
-
-      pwd.addEventListener('input', () => {
-        validatePassword();
-        if (cpwd.value) validateConfirmPassword();
-      });
-
-      cpwd.addEventListener('input', validateConfirmPassword);
-
-      document.querySelectorAll('.toggle-pass').forEach(btn => {
-        btn.addEventListener('click', () => {
-          const target = document.querySelector(btn.getAttribute('data-target'));
+      // Eye toggles
+      document.querySelectorAll('.toggle-pass').forEach(btn=>{
+        btn.addEventListener('click', ()=>{
+          const input = document.querySelector(btn.getAttribute('data-target'));
+          if (!input) return;
           const icon = btn.querySelector('i');
-          
-          if (target.type === 'password') {
-            target.type = 'text';
-            icon.className = 'bi bi-eye-slash';
-          } else {
-            target.type = 'password';
-            icon.className = 'bi bi-eye';
-          }
-          target.focus();
+          if (input.type === 'password'){ input.type='text'; icon.className='bi bi-eye-slash'; }
+          else { input.type='password'; icon.className='bi bi-eye'; }
+          input.focus();
         });
       });
 
-      form.addEventListener('submit', e => {
+      // Submit gate
+      form.addEventListener('submit', e=>{
         submitAttempted = true;
-        const passwordValid = validatePassword();
-        const confirmValid = validateConfirmPassword();
-        
-        if (!passwordValid || !confirmValid) {
+        const ok = evalPassword();
+        const match = evalConfirm();
+        if (!ok || !match){
           e.preventDefault();
-          const firstInvalid = passwordValid ? cpwd : pwd;
-          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
-          firstInvalid.focus();
+          (ok ? cpwd : pwd).scrollIntoView({behavior:'smooth', block:'center'});
+          (ok ? cpwd : pwd).focus();
         }
-      });
-    })();
-
-    (function() {
-      const input = document.getElementById('username');
-      const status = document.getElementById('username-status');
-      let timeout = null;
-
-      input.addEventListener('input', () => {
-        clearTimeout(timeout);
-        const value = input.value.trim();
-
-        if (value.length < 3) {
-          status.textContent = 'Username too short';
-          status.className = 'field-status invalid';
-          return;
-        }
-
-        timeout = setTimeout(async () => {
-          try {
-            const response = await fetch(`/auth/check-username?username=${encodeURIComponent(value)}`);
-            const data = await response.json();
-            
-            if (data && data.available) {
-              status.textContent = '✓ Username available';
-              status.className = 'field-status valid';
-              input.style.borderColor = '#10B981';
-            } else {
-              status.textContent = '✗ Username taken';
-              status.className = 'field-status invalid';
-              input.style.borderColor = '#EF4444';
-            }
-          } catch (error) {
-            status.textContent = 'Error checking username';
-            status.className = 'field-status invalid';
-          }
-        }, 500);
       });
     })();
   </script>

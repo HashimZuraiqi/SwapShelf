@@ -3,296 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sign In | BookSwap</title>
+    <title>Login | BookSwap</title>
+    <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="/css/style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
-    <style>
-        /* Active navigation styling for static page */
-        .nav-item.active .nav-link {
-            color: #3BB7FB !important;
-            background: rgba(59, 183, 251, 0.1);
-            border-radius: 5px;
-            font-weight: 600;
-        }
-        * {
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            background: linear-gradient(135deg, #0D0E10 0%, #18191E 50%, #15181D 100%);
-            background-attachment: fixed;
-            min-height: 100vh;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            color: #ffffff;
-        }
-        
-        .login-container {
-            flex: 1;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 3rem 1rem;
-        }
-        
-        .login-card {
-            background: rgba(31, 34, 41, 0.95);
-            backdrop-filter: blur(20px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            border-radius: 24px;
-            padding: 3rem;
-            width: 100%;
-            max-width: 540px;
-            box-shadow: 
-                0 20px 40px rgba(0, 0, 0, 0.4),
-                0 0 0 1px rgba(255, 255, 255, 0.05) inset;
-            position: relative;
-            overflow: hidden;
-        }
-        
-        .login-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, #3BB7FB, #F6B443, transparent);
-            opacity: 0.6;
-        }
-        
-        .brand-header {
-            text-align: center;
-            margin-bottom: 2.5rem;
-        }
-        
-        .brand-logo {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1.5rem;
-            border-radius: 20px;
-            background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3);
-            position: relative;
-        }
-        
-        .brand-logo::after {
-            content: '';
-            position: absolute;
-            inset: 2px;
-            border-radius: 18px;
-            background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-            opacity: 0.1;
-        }
-        
-        .brand-title {
-            font-size: 2rem;
-            font-weight: 700;
-            background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            margin-bottom: 0.5rem;
-            letter-spacing: -0.02em;
-        }
-        
-        .brand-subtitle {
-            color: #9CA3AF;
-            font-size: 1rem;
-            font-weight: 400;
-            margin-bottom: 0;
-        }
-        
-        .form-group {
-            margin-bottom: 1.5rem;
-        }
-        
-        .form-label {
-            color: #E5E7EB;
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 0.5rem;
-            display: block;
-            letter-spacing: 0.01em;
-        }
-        
-        .input-container {
-            position: relative;
-        }
-        
-        .input-icon {
-            position: absolute;
-            left: 1rem;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #6B7280;
-            font-size: 1.125rem;
-            transition: color 0.2s ease;
-            z-index: 2;
-        }
-        
-        .form-control {
-            background: rgba(17, 20, 24, 0.8) !important;
-            border: 1.5px solid rgba(55, 65, 81, 0.8) !important;
-            color: #ffffff !important;
-            border-radius: 12px !important;
-            height: 56px !important;
-            padding: 0 1rem 0 3rem !important;
-            font-size: 1rem !important;
-            font-weight: 400 !important;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
-            backdrop-filter: blur(10px);
-        }
-        
-        .form-control::placeholder {
-            color: #6B7280 !important;
-            font-weight: 400 !important;
-        }
-        
-        .form-control:focus {
-            background: rgba(17, 20, 24, 0.9) !important;
-            border-color: #3BB7FB !important;
-            box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.1) !important;
-            transform: translateY(-1px);
-        }
-        
-        .form-control:focus + .input-icon {
-            color: #3BB7FB;
-        }
-        
-        .btn-primary {
-            background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-            border: none;
-            border-radius: 12px;
-            height: 56px;
-            font-weight: 600;
-            font-size: 1rem;
-            letter-spacing: 0.025em;
-            color: #ffffff;
-            width: 100%;
-            position: relative;
-            overflow: hidden;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-            box-shadow: 0 4px 16px rgba(59, 183, 251, 0.3);
-        }
-        
-        .btn-primary::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
-            transition: left 0.5s ease;
-        }
-        
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 183, 251, 0.4);
-            color: #ffffff;
-        }
-        
-        .btn-primary:hover::before {
-            left: 100%;
-        }
-        
-        .btn-primary:active {
-            transform: translateY(0);
-        }
-        
-        .form-footer {
-            margin-top: 2rem;
-            text-align: center;
-        }
-        
-        .form-footer p {
-            color: #9CA3AF;
-            font-size: 0.875rem;
-            margin-bottom: 0.75rem;
-        }
-        
-        .form-footer a {
-            color: #3BB7FB;
-            text-decoration: none;
-            font-weight: 600;
-            transition: color 0.2s ease;
-        }
-        
-        .form-footer a:hover {
-            color: #F6B443;
-            text-decoration: none;
-        }
-        
-        .divider {
-            display: flex;
-            align-items: center;
-            margin: 1.5rem 0;
-            color: #6B7280;
-            font-size: 0.875rem;
-        }
-        
-        .divider::before,
-        .divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: rgba(107, 114, 128, 0.3);
-        }
-        
-        .divider span {
-            padding: 0 1rem;
-        }
-        
-        .alert {
-            border-radius: 12px;
-            border: none;
-            padding: 1rem 1.25rem;
-            margin-bottom: 1.5rem;
-            font-weight: 500;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-        
-        .alert-danger {
-            background: rgba(239, 68, 68, 0.1);
-            color: #FCA5A5;
-            border: 1px solid rgba(239, 68, 68, 0.2);
-        }
-        
-        .alert-success {
-            background: rgba(34, 197, 94, 0.1);
-            color: #86EFAC;
-            border: 1px solid rgba(34, 197, 94, 0.2);
-        }
-        
-        @media (max-width: 480px) {
-            .login-card {
-                padding: 2rem 1.5rem;
-                margin: 1rem;
-                border-radius: 20px;
-            }
-            
-            .brand-title {
-                font-size: 1.75rem;
-            }
-        }
-    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <script src="https://kit.fontawesome.com/473c5494b9.js" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
 </head>
 
-<body>
+<body class="login-page">
 
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
   <div class="container">
+    <!-- Brand/logo left -->
     <a class="navbar-brand d-flex align-items-center" href="/">
       <span class="logo-icon mr-2" style="display:flex;align-items:center;">
         <!-- Book SVG ICON -->
@@ -319,10 +43,10 @@
     </button>
     <div class="collapse navbar-collapse" id="navbarNav">
       <ul class="navbar-nav mx-auto align-items-center w-100 justify-content-center">
-        <li class="nav-item home-center-link">
+          <li class="nav-item home-center-link">
           <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
         </li>
-        <li class="nav-item active">
+        <li class="nav-item">
           <a class="nav-link" href="/login">Login</a>
         </li>
         <li class="nav-item">
@@ -333,74 +57,55 @@
   </div>
 </nav>
 
-<div class="login-container">
-    <div class="login-card">
-        <div class="brand-header">
-            <div class="brand-logo">
-                <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
+    <!-- Login Form -->
+<div class="container-fluid">
+    <div class="row justify-content-center">
+        <div class="form-container login-box">
+            <div class="login-logo">
+                <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+                    <defs>
+                        <linearGradient id="loginGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
+                            <stop stop-color="#3BB7FB"/>
+                            <stop offset="1" stop-color="#F6B443"/>
+                        </linearGradient>
+                    </defs>
+                    <circle cx="28" cy="28" r="28" fill="url(#loginGrad)"/>
                     <g>
-                        <rect x="17" y="20" width="10" height="16" rx="2" fill="#ffffff"/>
-                        <rect x="29" y="20" width="10" height="16" rx="2" fill="#ffffff"/>
+                        <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
+                        <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
                         <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
                     </g>
                 </svg>
             </div>
-            <h1 class="brand-title">Welcome back</h1>
-            <p class="brand-subtitle">Sign in to your account to continue</p>
-        </div>
-
-        <% if (errorMessage) { %>
-            <div class="alert alert-danger" role="alert">
-                <i class="bi bi-exclamation-circle"></i>
-                <%= errorMessage %>
+            <div class="welcome-section">
+                <h2 class="welcome-title">Welcome Back</h2>
+                <p class="welcome-desc">Sign in to continue your book swapping journey</p>
             </div>
-        <% } %>
 
-        <% if (successMessage) { %>
-            <div class="alert alert-success" role="alert">
-                <i class="bi bi-check-circle"></i>
-                <%= successMessage %>
-            </div>
-        <% } %>
-
-        <form action="/auth/login" method="post" novalidate>
-            <div class="form-group">
-                <label for="identifier" class="form-label">Email or Username</label>
-                <div class="input-container">
-                    <i class="input-icon bi bi-person"></i>
-                    <input type="text"
-                           name="identifier"
-                           id="identifier"
-                           class="form-control"
-                           placeholder="Enter your email or username"
-                           value="<%= email || '' %>"
-                           required
-                           autocomplete="username" />
+            <!-- Error Message Display -->
+            <% if (errorMessage) { %>
+                <div class="error-message" style="background-color: #dc3545 !important; border: 2px solid #b02a37 !important; color: #ffffff !important; border-radius: 10px; padding: 15px 20px; margin-bottom: 25px; font-size: 15px; font-weight: 600; display: flex; align-items: center; box-shadow: 0 4px 12px rgba(220, 53, 69, 0.25);" role="alert">
+                    <i class="bi bi-exclamation-circle" style="margin-right: 10px; font-size: 18px;"></i>
+                    <%= errorMessage %>
                 </div>
-            </div>
-            
-            <div class="form-group">
-                <label for="password" class="form-label">Password</label>
-                <div class="input-container">
-                    <i class="input-icon bi bi-lock"></i>
-                    <input type="password" 
-                           name="password" 
-                           id="password" 
-                           class="form-control" 
-                           placeholder="Enter your password" 
-                           required
-                           autocomplete="current-password" />
-                </div>
-            </div>
-            
-            <button type="submit" class="btn btn-primary">
-                Sign In
-            </button>
-        </form>
+            <% } %>
 
-        <div class="form-footer">
-            <p>Don't have an account? <a href="/register">Create one now</a></p>
-            <p><a href="/auth/forgot-password">Forgot your password?</a></p>
+            <!-- FIXED form action and forgot-password link -->
+            <form action="/auth/login" method="post">
+                <div class="form-group input-icon">
+                    <label for="email" class="form-label">Email Address</label>
+                    <span class="input-icon-left"><i class="fa-regular fa-envelope fa-lg"></i></span>
+                    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required />
+                </div>
+                <div class="form-group input-icon">
+                    <label for="password" class="form-label">Password</label>
+                    <span class="input-icon-left"><i class="bi bi-lock"></i></span>
+                    <input type="password" name="password" id="password" class="form-control" placeholder="Enter your password" required />
+                </div>
+                <button type="submit" class="sign-in-button">SIGN IN</button>
+                <p>Don't have an account? <a href="/register">Sign up here</a></p>
+                <p class="forgot-password"><a href="/auth/forgot-password">Forgot your password?</a></p>
+            </form>            
         </div>
     </div>
 </div>
@@ -409,4 +114,5 @@
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
 </body>
+
 </html>

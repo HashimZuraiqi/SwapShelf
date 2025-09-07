@@ -412,19 +412,43 @@
         
         /* Mobile navigation - show profile items separately */
         @media (max-width: 991.98px) {
-            .dropdown-menu { display: none !important; }
-            .mobile-profile-items { display: block !important; }
-            .dropdown-toggle::after { display: none; }
-            .navbar-nav .nav-item { border-bottom: 1px solid rgba(255, 255, 255, 0.1); }
-            .navbar-nav .nav-item:last-child { border-bottom: none; }
-            .navbar-nav .nav-link { padding: 0.75rem 1rem; }
+            /* Hide dropdown functionality on mobile */
+            .dropdown-menu {
+                display: none !important;
+            }
+            
+            /* Show profile items as separate nav items */
+            .mobile-profile-items {
+                display: block !important;
+            }
+            
+            /* Hide dropdown toggle arrow on mobile */
+            .dropdown-toggle::after {
+                display: none;
+            }
+            
+            /* Style mobile profile nav items */
+            .navbar-nav .nav-item {
+                border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            }
+            
+            .navbar-nav .nav-item:last-child {
+                border-bottom: none;
+            }
+            
+            .navbar-nav .nav-link {
+                padding: 0.75rem 1rem;
+            }
         }
         
-        /* Desktop */
+        /* Desktop - hide mobile profile items, show dropdown */
         @media (min-width: 992px) {
-            .mobile-profile-items { display: none !important; }
-            .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.18); color: #e6e9ee; }
-            .btn-ghost:hover { background: rgba(255,255,255,0.06); color: #fff; }
+            .mobile-profile-items {
+                display: none !important;
+            }
+
+        .btn-ghost { background: transparent; border: 1px solid rgba(255,255,255,0.18); color: #e6e9ee; }
+        .btn-ghost:hover { background: rgba(255,255,255,0.06); color: #fff; }
         }
     </style>
 </head>
@@ -519,11 +543,6 @@
             </div>
             <div class="profile-info">
                 <h1 class="profile-title"><%= user %></h1>
-                <!-- username (fixed) -->
-                <p class="profile-email">
-                    <i class="bi bi-at"></i>
-                    <%=(typeof username !== 'undefined' && username) ? username : (userEmail ? userEmail.split('@')[0] : 'user') %>
-                </p>
                 <p class="profile-email"><i class="bi bi-envelope"></i> <%= userEmail %></p>
             </div>
         </div>
@@ -740,12 +759,135 @@
     <script src="/js/navigation.js"></script>
     
     <script>
-        async function uploadProfilePhoto() { /* unchanged */ }
-        // Load recent activity (unchanged)
-        async function loadRecentActivity() { /* unchanged */ }
-        function updateActivityFeed(activities) { /* unchanged */ }
+        async function uploadProfilePhoto(input) {
+            if (!input.files || !input.files[0]) {
+                return;
+            }
+
+            const file = input.files[0];
+            
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                alert('Please select an image file.');
+                return;
+            }
+
+            // Validate file size (5MB max)
+            if (file.size > 5 * 1024 * 1024) {
+                alert('File size must be less than 5MB.');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('profilePhoto', file);
+
+            try {
+                // Show loading state
+                const profileImg = document.getElementById('profilePhotoImg');
+                const overlay = document.querySelector('.photo-upload-overlay');
+                overlay.innerHTML = '<i class="bi bi-hourglass-split"></i><span>Uploading...</span>';
+
+                const response = await fetch('/profile/upload-photo', {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    // Update the profile image
+                    profileImg.src = result.photoUrl;
+                    
+                    // Reset overlay
+                    overlay.innerHTML = '<i class="bi bi-camera-fill"></i><span>Change Photo</span>';
+                    
+                    // Show success message
+                    alert('Profile photo updated successfully!');
+                } else {
+                    throw new Error(result.error || 'Upload failed');
+                }
+            } catch (error) {
+                console.error('Upload error:', error);
+                alert('Failed to upload photo: ' + error.message);
+                
+                // Reset overlay
+                const overlay = document.querySelector('.photo-upload-overlay');
+                overlay.innerHTML = '<i class="bi bi-camera-fill"></i><span>Change Photo</span>';
+            }
+        }
+
+        // Load recent activity
+        async function loadRecentActivity() {
+            try {
+                console.log('🔄 Loading recent activity...');
+                const response = await fetch('/api/users/recent-activity');
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+                
+                const activities = await response.json();
+                console.log(`📊 Received ${activities.length} activities from API`);
+                
+                if (activities && activities.length >= 0) {
+                    updateActivityFeed(activities);
+                } else {
+                    console.warn('No activities returned from API');
+                }
+            } catch (error) {
+                console.error('Failed to load recent activity:', error);
+            }
+        }
+
+        function updateActivityFeed(activities) {
+            const activityList = document.querySelector('.activity-list');
+            if (!activityList) {
+                console.error('Activity list container not found');
+                return;
+            }
+
+            // Clear existing activities
+            activityList.innerHTML = '';
+
+            if (activities && activities.length > 0) {
+                activities.forEach(activity => {
+                    const activityItem = document.createElement('div');
+                    activityItem.className = 'activity-item';
+                    activityItem.innerHTML = `
+                        <div class="activity-icon ${activity.iconClass}">
+                            <i class="bi ${activity.icon}"></i>
+                        </div>
+                        <div class="activity-content">
+                            <p class="activity-text">${activity.message}</p>
+                            <small class="activity-time text-muted">${activity.time}</small>
+                        </div>
+                    `;
+                    activityList.appendChild(activityItem);
+                });
+                console.log(`✅ Updated activity feed with ${activities.length} activities`);
+            } else {
+                // Show empty state
+                const emptyItem = document.createElement('div');
+                emptyItem.className = 'activity-item';
+                emptyItem.innerHTML = `
+                    <div class="activity-icon text-info">
+                        <i class="bi bi-info-circle"></i>
+                    </div>
+                    <div class="activity-content">
+                        <p class="activity-text">No recent activity yet. Start by adding books to your library!</p>
+                        <small class="activity-time text-muted">Get started</small>
+                    </div>
+                `;
+                activityList.appendChild(emptyItem);
+                console.log('📝 Showing empty activity state');
+            }
+        }
+
+        // Load activity when page loads
         document.addEventListener('DOMContentLoaded', function() {
             loadRecentActivity();
+            
+            // Refresh activity every 30 seconds
             setInterval(loadRecentActivity, 30000);
         });
     </script>
