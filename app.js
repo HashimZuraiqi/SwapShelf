@@ -944,71 +944,20 @@ app.get('/books/:bookId', async (req, res) => {
             return res.status(404).send('Book not found or you do not have permission to view it.');
         }
         
-        // Simple book details page
-        res.send(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>${book.title} - Book Details</title>
-                <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
-                <link rel="stylesheet" href="/css/style.css">
-            </head>
-            <body class="bg-dark text-light">
-                <div class="container mt-5">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <img src="${book.image || '/images/book-placeholder.png'}" class="img-fluid" alt="${book.title}">
-                        </div>
-                        <div class="col-md-8">
-                            <h1>${book.title}</h1>
-                            <h3>by ${book.author}</h3>
-                            <p><strong>Genre:</strong> ${book.genre || 'Not specified'}</p>
-                            <p><strong>Condition:</strong> ${book.condition || 'Not specified'}</p>
-                            <p><strong>Language:</strong> ${book.language || 'Not specified'}</p>
-                            <p><strong>Availability:</strong> ${book.availability === 'available' ? 'Available for swap' : 'Not available'}</p>
-                            <p><strong>Description:</strong> ${book.description || 'No description provided'}</p>
-                            <div class="mt-4">
-                                <a href="/library" class="btn btn-primary">Back to Library</a>
-                                <button class="btn btn-danger remove-book-btn ml-2" 
-                                        data-book-id="${book._id}" 
-                                        data-book-title="${book.title}">
-                                    Remove Book
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-                <script>
-                    // Remove book functionality
-                    $('.remove-book-btn').click(function() {
-                        const bookId = $(this).data('book-id');
-                        const bookTitle = $(this).data('book-title');
-                        
-                        if (confirm('Are you sure you want to remove "' + bookTitle + '" from your library?')) {
-                            fetch('/api/books/' + bookId, {
-                                method: 'DELETE',
-                                headers: { 'Content-Type': 'application/json' }
-                            })
-                            .then(response => response.json())
-                            .then(data => {
-                                if (data.success) {
-                                    alert('Book removed successfully!');
-                                    window.location.href = '/library';
-                                } else {
-                                    alert('Error: ' + data.message);
-                                }
-                            })
-                            .catch(error => {
-                                alert('Error removing book. Please try again.');
-                            });
-                        }
-                    });
-                </script>
-            </body>
-            </html>
-        `);
+        // Get user information for navbar
+        const user = await User.findById(userId);
+        const userLoggedIn = req.session && req.session.user;
+        const userName = user?.name || user?.fullname || user?.email?.split('@')[0] || 'User';
+        const userPhoto = user?.profilePicture || '/images/default-avatar.png';
+        
+        // Render the professional book details page
+        res.render('book-details', {
+            book: book,
+            userLoggedIn: userLoggedIn,
+            userName: userName,
+            userPhoto: userPhoto,
+            activePage: 'library'
+        });
         
     } catch (error) {
         console.error('Book details error:', error);
