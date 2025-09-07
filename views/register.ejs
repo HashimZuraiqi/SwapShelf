@@ -477,7 +477,15 @@
           </div>
         </div>
 
-  <!-- Username section removed as requested -->
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <div class="input-container">
+            <i class="input-icon bi bi-at"></i>
+            <input id="username" name="username" type="text" class="form-control" 
+                   placeholder="Choose a unique username" value="<%= typeof username !== 'undefined' ? username : '' %>" required>
+          </div>
+          <div id="username-status" class="field-status"></div>
+        </div>
 
         <div class="form-group">
           <label for="email" class="form-label">Email Address</label>
