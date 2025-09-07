@@ -688,9 +688,14 @@
                                           }
                                         %>
                                         <% if (coverSrc) { %>
-                                            <img src="<%= coverSrc %>" class="book-cover-professional" alt="<%= book.title %>" 
-                                                 style="width: 100%; max-width: 120px; height: 160px; object-fit: cover; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease;">
+                                            <img src="<%= coverSrc %>" class="book-cover-professional" alt=""
+     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';"
+     style="width: 100%; max-width: 120px; height: 160px; object-fit: cover; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease;">
                                         <% } else { %>
+
+                                          <div class="book-cover-placeholder" style="display:none; width:120px; height:160px; background:linear-gradient(135deg,#3BB7FB,#34a0e0); border-radius:10px; display:flex; align-items:center; justify-content:center; margin:0 auto; box-shadow:0 6px 20px rgba(0,0,0,0.4);">
+  <i class="bi bi-book text-white" style="font-size:2.5rem;"></i>
+</div>
                                             <div class="book-cover-placeholder" style="width: 120px; height: 160px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 10px; display: flex; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 6px 20px rgba(0,0,0,0.4);">
                                                 <i class="bi bi-book text-white" style="font-size: 2.5rem;"></i>
                                             </div>
@@ -709,10 +714,7 @@
                                         <h6 class="book-title-professional" style="color: #fff; font-weight: 600; font-size: 0.9rem; line-height: 1.3; margin-bottom: 0.5rem; height: 2.6rem; overflow: hidden; text-align: center; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; line-clamp: 2;">
                                             <%= book.title %>
                                         </h6>
-                                        <p class="book-author-professional" style="color: #3BB7FB; font-size: 0.75rem; font-weight: 500; text-align: center; margin-bottom: 1rem; opacity: 0.9;">
-                                            <%= book.author %>
-                                        </p>
-                                        
+                                        <% const _author = (book.author || (Array.isArray(book.authors) ? book.authors.join(', ') : book.authors) || '').trim();const _title  = (book.title || '').trim(); %><% if (_author && _author.toLowerCase() !== _title.toLowerCase()) { %><p class="book-author-professional" style="color:#3BB7FB;font-size:0.75rem;font-weight:500;text-align:center;margin-bottom:1rem;opacity:.9;"><%= _author %></p><% } %>
                                         <div class="book-meta text-center mb-3">
                                             <small class="date-added" style="color: #b0b3b8; font-size: 0.7rem; background: rgba(120,130,150,.1); padding: 0.2rem 0.6rem; border-radius: 8px; display: inline-block;">
                                                 <i class="bi bi-calendar3 me-1"></i> 
