@@ -809,11 +809,15 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     margin-bottom: 28px;
 }
 .welcome-title {
-    color: #222;
+    color: #ffffff;
     font-size: 1.6rem;
     font-weight: 700;
     margin-bottom: 6px;
     text-align: center;
+    background: linear-gradient(90deg, #3BB7FB 0%, #F6B443 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
 }
 .welcome-desc {
     color: #D5D8DF;
