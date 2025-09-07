@@ -167,6 +167,14 @@
           <input id="name" name="name" type="text" class="form-control" placeholder="Enter your full name" value="<%= name %>" required>
         </div>
 
+        <!-- Username with icon (NEW) -->
+        <div class="form-group input-icon">
+          <label for="username">Username</label>
+          <span class="input-icon-left"><i class="bi bi-at"></i></span>
+          <input id="username" name="username" type="text" class="form-control" placeholder="Choose a unique username" value="<%= username %>" required>
+          <small id="username-status" class="d-block mt-1" style="font-size:.9rem;"></small>
+        </div>
+
         <!-- Email with icon -->
         <div class="form-group input-icon">
           <label for="email">Email Address</label>
@@ -355,5 +363,48 @@
       });
     })();
   </script>
+
+  <!-- Username availability (added) -->
+  <script>
+    (function () {
+      const input = document.getElementById('username');
+      const status = document.getElementById('username-status');
+      if (!input || !status) return;
+
+      let t = null;
+
+      function setStatus(txt, ok){
+        status.textContent = txt;
+        status.style.color = ok ? '#28a745' : '#dc3545';
+        input.style.borderColor = ok ? '#28a745' : '#dc3545';
+      }
+
+      input.addEventListener('input', () => {
+        clearTimeout(t);
+        const val = input.value.trim();
+
+        if (val.length < 3) {
+          setStatus('Too short', false);
+          return;
+        }
+
+        t = setTimeout(async () => {
+          try {
+            // Adjust this path if your route differs (e.g., /users/check-username)
+            const res = await fetch(`/auth/check-username?username=${encodeURIComponent(val)}`);
+            const data = await res.json();
+            if (data && data.available) {
+              setStatus('✔ Available', true);
+            } else {
+              setStatus('✘ Taken', false);
+            }
+          } catch (e) {
+            setStatus('Error checking username', false);
+          }
+        }, 500); // debounce
+      });
+    })();
+  </script>
+  <script src="/js/username-checker.js"></script>
 </body>
 </html>

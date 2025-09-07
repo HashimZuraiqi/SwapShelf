@@ -56,15 +56,35 @@ class UserController {
     
     /**
      * Update user profile
+     * (username-enabled)
      */
     static async updateProfile(req, res) {
         try {
             const userId = req.session.user._id || req.session.user.id;
-            const { fullname, location, preferences } = req.body;
+            const { fullname, location, preferences, username } = req.body;
             
             const updateData = {
                 updatedAt: new Date()
             };
+
+            // ✅ Username handling (only change for the "username thing")
+            if (typeof username === 'string' && username.trim()) {
+                const clean = username.trim();
+                // match schema: 3–30 chars, letters/numbers/underscore/dot
+                const valid = /^[a-zA-Z0-9_.]{3,30}$/.test(clean);
+                if (!valid) {
+                    return res.status(400).json({ error: 'Username must be 3–30 chars and use letters, numbers, underscores, or dots.' });
+                }
+                // store lowercase to match schema's lowercase normalization
+                const cleanLower = clean.toLowerCase();
+
+                // ensure unique (exclude self)
+                const existing = await User.findOne({ username: cleanLower, _id: { $ne: userId } }).lean();
+                if (existing) {
+                    return res.status(409).json({ error: 'Username already taken. Please choose another.' });
+                }
+                updateData.username = cleanLower;
+            }
             
             if (fullname) updateData.fullname = fullname.trim();
             if (location) updateData.location = location.trim();
@@ -86,12 +106,13 @@ class UserController {
                 { new: true, select: '-password' }
             );
             
-            // Update session data
+            // Update session data (also include username if present)
             req.session.user = {
                 ...req.session.user,
                 fullname: updatedUser.fullname,
                 location: updatedUser.location,
-                photo: updatedUser.photo
+                photo: updatedUser.photo,
+                username: updatedUser.username || req.session.user.username
             };
             
             res.json({
@@ -101,6 +122,10 @@ class UserController {
             });
             
         } catch (error) {
+            // Handle race-condition duplicate username
+            if (error && error.code === 11000 && (error.keyPattern?.username || error.keyValue?.username)) {
+                return res.status(409).json({ error: 'Username already taken. Please choose another.' });
+            }
             console.error('Update profile error:', error);
             res.status(500).json({ error: 'Failed to update profile' });
         }
@@ -485,12 +510,7 @@ exports.handleResetPassword = async (req, res) => {
   }
 };
 
-/* 
- * IMPORTANT FIX:
- * Previously: `module.exports = UserController;` overwrote the `exports.*` handlers above.
- * We now merge them so routes like `router.get('/forgot-password', userCtrl.renderForgotPassword)`
- * receive a real function.
- */
+
 module.exports = Object.assign(UserController, {
   renderForgotPassword: exports.renderForgotPassword,
   renderResetPassword: exports.renderResetPassword,

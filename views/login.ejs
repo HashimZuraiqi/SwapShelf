@@ -27,7 +27,7 @@
               <stop offset="1" stop-color="#F6B443"/>
             </linearGradient>
           </defs>
-          <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
+        <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
           <g>
             <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
             <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
@@ -90,12 +90,25 @@
                 </div>
             <% } %>
 
+            <!-- Success Message (optional) -->
+            <% if (successMessage) { %>
+                <div class="alert alert-success" role="alert" style="border-radius:10px; font-weight:600;">
+                    <i class="bi bi-check-circle mr-2"></i><%= successMessage %>
+                </div>
+            <% } %>
+
             <!-- FIXED form action and forgot-password link -->
             <form action="/auth/login" method="post">
                 <div class="form-group input-icon">
-                    <label for="email" class="form-label">Email Address</label>
-                    <span class="input-icon-left"><i class="fa-regular fa-envelope fa-lg"></i></span>
-                    <input type="email" name="email" id="email" class="form-control" placeholder="Enter your email" required />
+                    <label for="identifier" class="form-label">Email or Username</label>
+                    <span class="input-icon-left"><i class="bi bi-person"></i></span>
+                    <input type="text"
+                           name="identifier"
+                           id="identifier"
+                           class="form-control"
+                           placeholder="Enter email or username"
+                           value="<%= email || '' %>"
+                           required />
                 </div>
                 <div class="form-group input-icon">
                     <label for="password" class="form-label">Password</label>
