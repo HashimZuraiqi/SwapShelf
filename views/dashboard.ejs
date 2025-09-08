@@ -93,12 +93,25 @@
     <section class="welcome-hero mb-5">
         <div class="container">
             <div class="row align-items-center">
-                <div class="col-lg-8">
+                <!-- User Photo - Shows first on mobile -->
+                <div class="col-lg-4 order-1 order-lg-2 text-center mb-4 mb-lg-0">
+                    <div class="user-avatar-large">
+                        <% if (userPhoto) { %>
+                            <img src="<%= userPhoto %>" alt="Profile" class="rounded-circle profile-img-large">
+                        <% } else { %>
+                            <div class="avatar-placeholder">
+                                <i class="bi bi-person-circle"></i>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+                <!-- Welcome Content - Shows second on mobile, centered -->
+                <div class="col-lg-8 order-2 order-lg-1 text-center text-lg-left">
                     <h1 class="hero-title mb-3">
                         Welcome back, <span class="gradient-text"><%= userName || 'Reader' %>!</span>
                     </h1>
                     <p class="hero-subtitle mb-4">Ready to discover your next great read? Check out what's happening in your reading community.</p>
-                    <div class="d-flex flex-wrap gap-3">
+                    <div class="d-flex flex-wrap gap-3 justify-content-center justify-content-lg-start">
                         <a href="/library" class="btn btn-gradient">
                             <i class="bi bi-book"></i> My Library
                         </a>
@@ -108,17 +121,6 @@
                         <button type="button" class="btn btn-outline-info" id="refresh-dashboard" title="Refresh All Data">
                             <i class="bi bi-arrow-clockwise"></i> Refresh Data
                         </button>
-                    </div>
-                </div>
-                <div class="col-lg-4 text-center">
-                    <div class="user-avatar-large">
-                        <% if (userPhoto) { %>
-                            <img src="<%= userPhoto %>" alt="Profile" class="rounded-circle profile-img-large">
-                        <% } else { %>
-                            <div class="avatar-placeholder">
-                                <i class="bi bi-person-circle"></i>
-                            </div>
-                        <% } %>
                     </div>
                 </div>
             </div>
