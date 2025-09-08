@@ -1,0 +1,610 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title><%= book.title %> - Book Details | SwapShelf</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+        <div class="container-fluid">
+            <!-- Logo on far left -->
+            <a class="navbar-brand d-flex align-items-center" href="/">
+                <span class="logo-icon mr-2">📚</span>
+                <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <!-- Navigation options in the center -->
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+                        <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+                        <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+                        <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+                        <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+                    </li>
+                    <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+                        <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+                    </li>
+                </ul>
+                
+                <!-- Profile dropdown on far right -->
+                <ul class="navbar-nav ml-auto">
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                           data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                          <i class="bi bi-person-circle"></i> Profile
+                        </a>
+                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                          <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                          <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <main class="main-content">
+        <!-- Clean & Stylish Header Section with Rounded Design (matching wishlist style) -->
+        <div class="details-header" style="background: linear-gradient(135deg, #1a1b21 0%, #23242a 50%, #1e1f24 100%); border: 1px solid rgba(59, 183, 251, 0.1); border-radius: 20px; padding: 2.5rem 2rem; position: relative; overflow: hidden; margin: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
+            <!-- Subtle Background Pattern -->
+            <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 25% 25%, rgba(59, 183, 251, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(246, 180, 67, 0.05) 0%, transparent 50%); pointer-events: none; border-radius: 20px;"></div>
+            
+            <div class="container-fluid px-4">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10 col-xl-8">
+                        <!-- Breadcrumb Navigation -->
+                        <nav aria-label="breadcrumb" style="margin-bottom: 1.5rem;">
+                            <ol class="breadcrumb" style="background: transparent; padding: 0; margin: 0;">
+                                <li class="breadcrumb-item"><a href="/dashboard" style="color: #3BB7FB; text-decoration: none; font-size: 0.9rem;"><i class="bi bi-house-door"></i> Home</a></li>
+                                <li class="breadcrumb-item"><a href="/library" style="color: #3BB7FB; text-decoration: none; font-size: 0.9rem;"><i class="bi bi-book"></i> Library</a></li>
+                                <li class="breadcrumb-item active" aria-current="page" style="color: #b0b3b8; font-size: 0.9rem;"><%= book.title %></li>
+                            </ol>
+                        </nav>
+
+                        <div class="header-content" style="position: relative; z-index: 2;">
+                            <div class="row align-items-center">
+                                <div class="col-lg-4 text-center mb-4 mb-lg-0">
+                                    <!-- Book Cover with Google Books API Integration -->
+                                    <div id="book-cover-container" 
+                                         data-book-title="<%= book.title.replace(/"/g, '&quot;') %>"
+                                         data-book-author="<%= book.author.replace(/"/g, '&quot;') %>"
+                                         style="position: relative;">
+                                        <img id="book-cover-img" 
+                                             src="/images/placeholder-book.jpg" 
+                                             alt="<%= book.title %> cover"
+                                             style="width: 240px; height: 350px; object-fit: cover; border-radius: 16px; margin: 0 auto; box-shadow: 0 12px 40px rgba(0,0,0,0.4); position: relative; z-index: 2; image-rendering: -webkit-optimize-contrast; image-rendering: crisp-edges; background: #1a1b21;"
+                                             onerror="this.style.display='none'; document.getElementById('book-cover-placeholder').style.display='flex';">
+                                        
+                                        <!-- Fallback placeholder (hidden by default) -->
+                                        <div id="book-cover-placeholder" style="width: 240px; height: 350px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 16px; display: none; align-items: center; justify-content: center; margin: 0 auto; box-shadow: 0 12px 40px rgba(0,0,0,0.4); position: relative;">
+                                            <i class="bi bi-book text-white" style="font-size: 3.5rem;"></i>
+                                            <!-- Glow effect -->
+                                            <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 16px; opacity: 0.3; filter: blur(8px); z-index: -1;"></div>
+                                        </div>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-lg-8">
+                                    <!-- Main Title Section -->
+                                    <div class="title-section mb-3">
+                                        <h1 class="page-title" style="font-size: 2.2rem; font-weight: 900; color: #fff; margin: 0 0 0.8rem; letter-spacing: -0.5px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; line-height: 1.2;">
+                                            <%= book.title %>
+                                        </h1>
+                                        
+                                        <h3 class="subtitle" style="font-size: 1.2rem; color: #3BB7FB; line-height: 1.4; margin: 0 0 1rem; font-weight: 600;">
+                                            by <%= book.author %>
+                                        </h3>
+                                        
+                                        <!-- Status Badge -->
+                                        <div id="status-badge" class="status-badge mb-2" style="display: inline-flex; align-items: center; gap: 0.5rem; border-radius: 50px; padding: 0.5rem 1rem; backdrop-filter: blur(20px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                                            <div id="status-indicator" style="border-radius: 50%; width: 20px; height: 20px; display: flex; align-items: center; justify-content: center;">
+                                                <i id="status-icon" class="bi" style="color: #fff; font-size: 0.6rem;"></i>
+                                            </div>
+                                            <span id="status-text" style="color: #fff; font-weight: 600; font-size: 0.85rem;">
+                                            </span>
+                                        </div>
+                                        
+                                        <script>
+                                        // Set status badge styling based on availability
+                                        (function() {
+                                            const isAvailable = '<%= book.availability %>' === 'available';
+                                            const badge = document.getElementById('status-badge');
+                                            const indicator = document.getElementById('status-indicator');
+                                            const icon = document.getElementById('status-icon');
+                                            const text = document.getElementById('status-text');
+                                            
+                                            if (isAvailable) {
+                                                badge.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                                                badge.style.border = '1px solid transparent';
+                                                indicator.style.background = '#10b981';
+                                                icon.className = 'bi bi-check';
+                                                text.textContent = 'Available for Swap';
+                                            } else {
+                                                badge.style.background = 'rgba(220, 53, 69, 0.2)';
+                                                badge.style.border = '1px solid rgba(220, 53, 69, 0.3)';
+                                                indicator.style.background = '#ff6b6b';
+                                                icon.className = 'bi bi-x';
+                                                text.textContent = 'Not Available';
+                                            }
+                                        })();
+                                        </script>
+                                    </div>
+                                    
+                                    <!-- Subtitle -->
+                                    <p class="subtitle" style="font-size: 0.95rem; color: #b0b3b8; line-height: 1.6; margin: 0; opacity: 0.9;">
+                                        View detailed information about this book in your personal library
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content Section (matching wishlist style) -->
+        <div class="details-content" style="padding: 1.5rem 0;">
+            <div class="container-fluid px-4">
+                <!-- Book Information Grid -->
+                <div class="content-controls mb-4" style="background: rgba(35, 36, 42, 0.4); border: 1px solid rgba(120,130,150,.15); border-radius: 18px; padding: 1.8rem; backdrop-filter: blur(15px); box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                    <div class="row">
+                        <div class="col-12 mb-3">
+                            <h4 class="text-white mb-3" style="font-weight: 700; display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem;">
+                                <i class="bi bi-info-circle" style="color: #3BB7FB;"></i>
+                                Book Information
+                            </h4>
+                        </div>
+                        
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.3rem; transition: all 0.3s ease; height: 100%;">
+                                <div class="d-flex align-items-center">
+                                    <div style="background: linear-gradient(135deg, #F6B443, #e09f3e); border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0;">
+                                        <i class="bi bi-tag-fill text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem; margin-bottom: 0.2rem; color: #8b949e;">Genre</small>
+                                        <strong class="text-white" style="font-size: 0.95rem;"><%= Array.isArray(book.genre) ? book.genre.join(', ') : (book.genre || 'Not specified') %></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.3rem; transition: all 0.3s ease; height: 100%;">
+                                <div class="d-flex align-items-center">
+                                    <div style="background: linear-gradient(135deg, #059669, #047857); border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0;">
+                                        <i class="bi bi-star-fill text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem; margin-bottom: 0.2rem; color: #8b949e;">Condition</small>
+                                        <strong class="text-white" style="font-size: 0.95rem;"><%= book.condition || 'Not specified' %></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.3rem; transition: all 0.3s ease; height: 100%;">
+                                <div class="d-flex align-items-center">
+                                    <div style="background: linear-gradient(135deg, #6366f1, #4f46e5); border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0;">
+                                        <i class="bi bi-globe text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem; margin-bottom: 0.2rem; color: #8b949e;">Language</small>
+                                        <strong class="text-white" style="font-size: 0.95rem;"><%= book.language || 'Not specified' %></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.3rem; transition: all 0.3s ease; height: 100%;">
+                                <div class="d-flex align-items-center">
+                                    <div style="background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0;">
+                                        <i class="bi bi-calendar3 text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem; margin-bottom: 0.2rem; color: #8b949e;">Year</small>
+                                        <strong class="text-white" style="font-size: 0.95rem;"><%= book.year || 'Not specified' %></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <% if (book.isbn) { %>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.3rem; transition: all 0.3s ease; height: 100%;">
+                                <div class="d-flex align-items-center">
+                                    <div style="background: linear-gradient(135deg, #ef4444, #dc2626); border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0;">
+                                        <i class="bi bi-upc-scan text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem; margin-bottom: 0.2rem; color: #8b949e;">ISBN</small>
+                                        <strong class="text-white" style="font-size: 0.95rem;"><%= book.isbn %></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+
+                        <% if (book.publisher) { %>
+                        <div class="col-md-6 mb-3">
+                            <div class="info-card" style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.3rem; transition: all 0.3s ease; height: 100%;">
+                                <div class="d-flex align-items-center">
+                                    <div style="background: linear-gradient(135deg, #06b6d4, #0891b2); border-radius: 12px; width: 45px; height: 45px; display: flex; align-items: center; justify-content: center; margin-right: 1rem; flex-shrink: 0;">
+                                        <i class="bi bi-building text-white" style="font-size: 1.1rem;"></i>
+                                    </div>
+                                    <div>
+                                        <small class="text-muted d-block" style="font-size: 0.75rem; margin-bottom: 0.2rem; color: #8b949e;">Publisher</small>
+                                        <strong class="text-white" style="font-size: 0.95rem;"><%= book.publisher %></strong>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <% } %>
+                    </div>
+                </div>
+
+                <!-- Description Section -->
+                <% if (book.description && book.description.trim()) { %>
+                <div class="content-controls mb-4" style="background: rgba(35, 36, 42, 0.4); border: 1px solid rgba(120,130,150,.15); border-radius: 18px; padding: 1.8rem; backdrop-filter: blur(15px); box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                    <h4 class="text-white mb-3" style="font-weight: 700; display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem;">
+                        <i class="bi bi-file-text" style="color: #3BB7FB;"></i>
+                        Description
+                    </h4>
+                    <div style="background: linear-gradient(135deg, #23242a, #1E1F23); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; padding: 1.5rem;">
+                        <p class="text-light" style="line-height: 1.6; margin: 0; font-size: 0.95rem; color: #e2e8f0;">
+                            <%= book.description %>
+                        </p>
+                    </div>
+                </div>
+                <% } %>
+
+                <!-- Action Buttons Section -->
+                <div class="content-controls" style="background: rgba(35, 36, 42, 0.4); border: 1px solid rgba(120,130,150,.15); border-radius: 18px; padding: 1.8rem; backdrop-filter: blur(15px); box-shadow: 0 4px 20px rgba(0,0,0,0.1);">
+                    <div class="row align-items-center">
+                        <div class="col-md-6 mb-3 mb-md-0">
+                            <h4 class="text-white mb-0" style="font-weight: 700; display: flex; align-items: center; gap: 0.75rem; font-size: 1.3rem;">
+                                <i class="bi bi-gear" style="color: #3BB7FB;"></i>
+                                Book Actions
+                            </h4>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="d-flex flex-column flex-md-row justify-content-md-end" style="gap: 1rem;">
+                                <a href="/library" class="btn btn-gradient" style="font-weight: 600; border-radius: 12px; padding: 0.8rem 1.5rem; font-size: 0.9rem; text-decoration: none; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border: 1px solid rgba(59, 183, 251, 0.3); color: white; transition: all 0.3s ease; box-shadow: 0 4px 15px rgba(59, 183, 251, 0.25);">
+                                    <i class="bi bi-arrow-left me-2"></i>
+                                    Back to Library
+                                </a>
+                                <button class="btn btn-gradient" id="edit-book-btn" style="font-weight: 600; border-radius: 12px; padding: 0.8rem 1.5rem; font-size: 0.9rem; box-shadow: 0 4px 16px rgba(59, 183, 251, 0.3);">
+                                    <i class="bi bi-pencil-square me-2"></i>
+                                    Edit Book
+                                </button>
+                                <button class="btn btn-outline-danger" id="remove-book-btn" 
+                                        data-book-id="<%= book._id %>" 
+                                        data-book-title="<%= book.title %>"
+                                        style="font-weight: 600; border-radius: 12px; padding: 0.8rem 1.5rem; font-size: 0.9rem; transition: all 0.3s ease; border-color: rgba(220, 53, 69, 0.5); background: transparent;">
+                                    <i class="bi bi-trash me-2"></i>
+                                    Remove Book
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- Professional Confirmation Modal -->
+    <div class="modal fade" id="confirmRemovalModal" tabindex="-1" role="dialog" aria-labelledby="confirmRemovalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content" style="background: linear-gradient(135deg,#18191E,#15181D,#0D0E10); border: 1px solid rgba(120,130,150,.1); border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.5);">
+                <div class="modal-header" style="border-bottom: 1px solid rgba(120,130,150,.2); padding: 2rem 2rem 1.5rem 2rem;">
+                    <h5 class="modal-title text-white" style="font-weight: 600; display: flex; align-items: center; gap: 0.75rem; font-size: 1.25rem; margin: 0; width: 100%; justify-content: center;">
+                        <i class="bi bi-exclamation-triangle" style="color: #F6B443; font-size: 1.5rem;"></i>
+                        Remove Book
+                    </h5>
+                </div>
+                <div class="modal-body" style="padding: 2rem 2.5rem 2.5rem 2.5rem; text-align: center;">
+                    <p class="text-muted" style="font-size: 1.1rem; line-height: 1.6; margin-bottom: 2rem; color: #b0b3b8;">
+                        Are you sure you want to remove<br>
+                        "<span id="book-title-confirm" class="text-white font-weight-bold" style="color: #3BB7FB !important;"></span>"<br>
+                        from your library?
+                    </p>
+                    <div class="d-flex gap-3" style="margin-top: 2rem;">
+                        <button type="button" class="btn btn-outline-secondary flex-fill" data-dismiss="modal" 
+                                style="padding: 0.8rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 1rem; border-color: rgba(120,130,150,.4); color: #b0b3b8; transition: all 0.3s ease;">
+                            Cancel
+                        </button>
+                        <button type="button" class="btn btn-danger flex-fill" id="confirm-remove-btn" 
+                                style="background: linear-gradient(135deg, #dc3545, #c82333); border: none; padding: 0.8rem 1.5rem; border-radius: 10px; font-weight: 600; font-size: 1rem; transition: all 0.3s ease;">
+                            <i class="bi bi-trash me-2"></i>Remove
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Success Toast -->
+    <div class="toast" id="successToast" style="position: fixed; top: 20px; right: 20px; z-index: 9999; background: linear-gradient(135deg, #059669, #047857); border: none; border-radius: 12px;" data-delay="3000">
+        <div class="toast-body text-white" style="padding: 1rem 1.25rem; font-weight: 600;">
+            <i class="bi bi-check-circle-fill me-2" style="color: #10b981;"></i>
+            <span id="toast-message">Action completed successfully!</span>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="/js/navigation.js"></script>
+
+    <style>
+        /* Enhanced Styling to Match Other Pages */
+        .details-header {
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            transition: all 0.3s ease;
+        }
+        
+        .details-header:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 40px rgba(0,0,0,0.4) !important;
+            border-color: rgba(59, 183, 251, 0.2) !important;
+        }
+        
+        .info-card {
+            transition: all 0.3s ease;
+        }
+        
+        .info-card:hover {
+            background: linear-gradient(135deg, #2A2D35, #23242a) !important;
+            border-color: rgba(59, 183, 251, 0.4) !important;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+        }
+        
+        .content-controls {
+            transition: all 0.3s ease;
+        }
+        
+        .content-controls:hover {
+            border-color: rgba(59, 183, 251, 0.2);
+            transform: translateY(-1px);
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 183, 251, 0.4);
+        }
+        
+        .btn-outline-danger:hover {
+            background: linear-gradient(135deg, #dc3545, #c82333) !important;
+            border-color: #dc3545 !important;
+            color: #fff !important;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+        }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .details-header {
+                padding: 2.5rem 1.5rem 2rem !important;
+                margin: 1rem !important;
+                border-radius: 16px !important;
+            }
+            
+            .page-title {
+                font-size: 2rem !important;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem !important;
+            }
+            
+            .content-controls {
+                padding: 1.5rem !important;
+            }
+            
+            .info-card {
+                padding: 1.2rem !important;
+            }
+        }
+        
+        @media (max-width: 576px) {
+            .details-header {
+                padding: 2rem 1rem 1.5rem !important;
+                margin: 0.75rem !important;
+                border-radius: 12px !important;
+            }
+            
+            .page-title {
+                font-size: 1.8rem !important;
+            }
+            
+            .status-badge {
+                padding: 0.5rem 1rem !important;
+                font-size: 0.85rem !important;
+            }
+        }
+    </style>
+
+    <script>
+        // Remove book functionality
+        let bookToRemove = null;
+        
+        document.getElementById('remove-book-btn').addEventListener('click', function() {
+            const bookId = this.dataset.bookId;
+            const bookTitle = this.dataset.bookTitle;
+            
+            document.getElementById('book-title-confirm').textContent = bookTitle;
+            bookToRemove = { id: bookId, title: bookTitle };
+            
+            $('#confirmRemovalModal').modal('show');
+        });
+
+        // Handle confirmed removal
+        document.getElementById('confirm-remove-btn').addEventListener('click', async function() {
+            if (!bookToRemove) return;
+            
+            try {
+                const response = await fetch('/api/books/' + bookToRemove.id, {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                
+                const result = await response.json();
+                
+                if (response.ok && result.success) {
+                    showSuccessToast('Book removed successfully!');
+                    $('#confirmRemovalModal').modal('hide');
+                    setTimeout(() => {
+                        window.location.href = '/library';
+                    }, 1500);
+                } else {
+                    showSuccessToast(result.message || 'Failed to remove book', 'error');
+                }
+                
+            } catch (error) {
+                console.error('Error removing book:', error);
+                showSuccessToast('Error removing book. Please try again.', 'error');
+            }
+            
+            bookToRemove = null;
+        });
+
+        // Edit book functionality (placeholder)
+        document.getElementById('edit-book-btn').addEventListener('click', function() {
+            showSuccessToast('Edit functionality coming soon!', 'info');
+        });
+
+        // Show success toast
+        function showSuccessToast(message, type = 'success') {
+            const toast = document.getElementById('successToast');
+            const messageSpan = document.getElementById('toast-message');
+            const icon = toast.querySelector('i');
+            
+            messageSpan.textContent = message;
+            
+            if (type === 'error') {
+                toast.style.background = 'linear-gradient(135deg, #dc3545, #c82333)';
+                icon.className = 'bi bi-exclamation-circle-fill me-2';
+                icon.style.color = '#ff6b6b';
+            } else if (type === 'info') {
+                toast.style.background = 'linear-gradient(135deg, #3BB7FB, #34a0e0)';
+                icon.className = 'bi bi-info-circle-fill me-2';
+                icon.style.color = '#60a5fa';
+            } else {
+                toast.style.background = 'linear-gradient(135deg, #059669, #047857)';
+                icon.className = 'bi bi-check-circle-fill me-2';
+                icon.style.color = '#10b981';
+            }
+            
+            $(toast).toast('show');
+        }
+
+        // Load book cover from Google Books API
+        async function loadBookCover() {
+            try {
+                const container = document.getElementById('book-cover-container');
+                const title = container.dataset.bookTitle;
+                const author = container.dataset.bookAuthor;
+                const query = (title + ' ' + author).replace(/\s+/g, '+');
+                
+                const response = await fetch('https://www.googleapis.com/books/v1/volumes?q=' + query + '&maxResults=5');
+                const data = await response.json();
+                
+                if (data.items && data.items.length > 0) {
+                    let bestImageUrl = null;
+                    let bestImageSize = 0;
+                    
+                    // Search through multiple results to find the highest quality image
+                    for (const item of data.items) {
+                        const bookData = item.volumeInfo;
+                        if (bookData.imageLinks) {
+                            // Priority order: extraLarge > large > medium > small > thumbnail
+                            let imageUrl = null;
+                            let imageSize = 0;
+                            
+                            if (bookData.imageLinks.extraLarge) {
+                                imageUrl = bookData.imageLinks.extraLarge;
+                                imageSize = 5;
+                            } else if (bookData.imageLinks.large) {
+                                imageUrl = bookData.imageLinks.large;
+                                imageSize = 4;
+                            } else if (bookData.imageLinks.medium) {
+                                imageUrl = bookData.imageLinks.medium;
+                                imageSize = 3;
+                            } else if (bookData.imageLinks.small) {
+                                imageUrl = bookData.imageLinks.small;
+                                imageSize = 2;
+                            } else if (bookData.imageLinks.thumbnail) {
+                                imageUrl = bookData.imageLinks.thumbnail;
+                                imageSize = 1;
+                            }
+                            
+                            if (imageUrl && imageSize > bestImageSize) {
+                                bestImageUrl = imageUrl;
+                                bestImageSize = imageSize;
+                            }
+                        }
+                    }
+                    
+                    if (bestImageUrl) {
+                        const coverImg = document.getElementById('book-cover-img');
+                        const placeholder = document.getElementById('book-cover-placeholder');
+                        
+                        // Replace http with https for security
+                        bestImageUrl = bestImageUrl.replace('http://', 'https://');
+                        
+                        // Enhance image quality by modifying URL parameters
+                        if (bestImageUrl.includes('books.google.com')) {
+                            // Remove size restrictions and add quality parameters
+                            bestImageUrl = bestImageUrl.replace(/&edge=curl/g, '')
+                                                   .replace(/&zoom=\d+/g, '')
+                                                   .replace(/&w=\d+/g, '')
+                                                   .replace(/&h=\d+/g, '');
+                            // Add high quality parameters
+                            bestImageUrl += '&zoom=1&edge=curl&w=400&h=600&quality=95';
+                        }
+                        
+                        coverImg.src = bestImageUrl;
+                        coverImg.style.display = 'block';
+                        placeholder.style.display = 'none';
+                        
+                        // Add loading animation and fade-in effect
+                        coverImg.style.opacity = '0';
+                        coverImg.onload = function() {
+                            this.style.transition = 'opacity 0.5s ease-in-out';
+                            this.style.opacity = '1';
+                        };
+                    }
+                }
+            } catch (error) {
+                console.error('Error loading book cover:', error);
+                // Keep placeholder visible on error
+            }
+        }
+
+        // Load book cover when page loads
+        document.addEventListener('DOMContentLoaded', loadBookCover);
+    </script>
+</body>
+</html>

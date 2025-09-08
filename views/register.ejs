@@ -478,16 +478,6 @@
         </div>
 
         <div class="form-group">
-          <label for="username" class="form-label">Username</label>
-          <div class="input-container">
-            <i class="input-icon bi bi-at"></i>
-            <input id="username" name="username" type="text" class="form-control" 
-                   placeholder="Choose a unique username" value="<%= typeof username !== 'undefined' ? username : '' %>" required>
-          </div>
-          <div id="username-status" class="field-status"></div>
-        </div>
-
-        <div class="form-group">
           <label for="email" class="form-label">Email Address</label>
           <div class="input-container">
             <i class="input-icon bi bi-envelope"></i>
@@ -721,43 +711,6 @@
           firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
           firstInvalid.focus();
         }
-      });
-    })();
-
-    (function() {
-      const input = document.getElementById('username');
-      const status = document.getElementById('username-status');
-      let timeout = null;
-
-      input.addEventListener('input', () => {
-        clearTimeout(timeout);
-        const value = input.value.trim();
-
-        if (value.length < 3) {
-          status.textContent = 'Username too short';
-          status.className = 'field-status invalid';
-          return;
-        }
-
-        timeout = setTimeout(async () => {
-          try {
-            const response = await fetch(`/auth/check-username?username=${encodeURIComponent(value)}`);
-            const data = await response.json();
-            
-            if (data && data.available) {
-              status.textContent = '✓ Username available';
-              status.className = 'field-status valid';
-              input.style.borderColor = '#10B981';
-            } else {
-              status.textContent = '✗ Username taken';
-              status.className = 'field-status invalid';
-              input.style.borderColor = '#EF4444';
-            }
-          } catch (error) {
-            status.textContent = 'Error checking username';
-            status.className = 'field-status invalid';
-          }
-        }, 500);
       });
     })();
   </script>
