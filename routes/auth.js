@@ -19,7 +19,7 @@ router.get('/login', requireGuest, (req, res) => {
 
 // Register page
 router.get('/register', requireGuest, (req, res) => {
-  res.render('register', { error: null, name: '', email: '' });
+  res.render('register', { error: null, name: '', email: '', username: '' });
 });
 
 // (Optional aliases if someone hits these under /auth)
@@ -32,16 +32,53 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Auth router is working!' });
 });
 
+/* ---------------------- Username availability check --------------------- */
+/* Used by the registration page live-check: /auth/check-username?username=foo */
+router.get('/check-username', async (req, res) => {
+  try {
+    const raw = (req.query.username || '').trim().toLowerCase();
+
+    if (!raw) {
+      return res.status(400).json({
+        ok: false, available: false, reason: 'empty', message: 'Username is required'
+      });
+    }
+
+    // 3–30 chars, a–z 0–9 . _ - ; must start/end with alphanumeric; no spaces
+    const USERNAME_RE = /^[a-z0-9](?:[a-z0-9._-]{1,28}[a-z0-9])$/;
+    const valid = USERNAME_RE.test(raw);
+    if (!valid) {
+      return res.json({
+        ok: true,
+        available: false,
+        reason: 'format',
+        message: '3–30 chars; letters/numbers with . _ - ; must start/end with a letter or number'
+      });
+    }
+
+    const exists = await User.exists({ username: raw });
+    return res.json({
+      ok: true,
+      available: !exists,
+      reason: exists ? 'taken' : 'ok'
+    });
+  } catch (err) {
+    console.error('check-username error:', err);
+    return res.status(500).json({ ok: false, available: false, reason: 'server' });
+  }
+});
+
 /* -------------------------------- Register ------------------------------ */
 
 router.post('/register', requireGuest, async (req, res) => {
   try {
-    const { name, email, password, confirmPassword } = req.body;
+    const { name, username, email, password, confirmPassword } = req.body;
 
-    if (!name || !email || !password) {
+    if (!name || !username || !email || !password) {
       return res.render('register', {
-        error: 'Name, email, and password are required',
+        error: 'Name, username, email, and password are required',
         name: name || '',
+        username: username || '',
         email: email || ''
       });
     }
@@ -50,15 +87,27 @@ router.post('/register', requireGuest, async (req, res) => {
       return res.render('register', {
         error: 'Passwords do not match',
         name: name || '',
+        username: username || '',
         email: email || ''
       });
     }
 
-    const existingUser = await User.findOne({ email: email.toLowerCase() });
-    if (existingUser) {
+    const existingEmail = await User.findOne({ email: email.toLowerCase() });
+    if (existingEmail) {
       return res.render('register', {
         error: 'User with this email already exists',
         name: name || '',
+        username: username || '',
+        email: email || ''
+      });
+    }
+
+    const existingUsername = await User.findOne({ username: username.toLowerCase() });
+    if (existingUsername) {
+      return res.render('register', {
+        error: 'Username is already taken',
+        name: name || '',
+        username: username || '',
         email: email || ''
       });
     }
@@ -66,7 +115,8 @@ router.post('/register', requireGuest, async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 12);
 
     const newUser = new User({
-      name: name.trim(),
+      fullname: name.trim(),
+      username: username.trim().toLowerCase(),
       email: email.toLowerCase().trim(),
       password: hashedPassword
     });
@@ -75,7 +125,8 @@ router.post('/register', requireGuest, async (req, res) => {
 
     req.session.user = {
       _id: savedUser._id,
-      name: savedUser.name,
+      name: savedUser.fullname,
+      username: savedUser.username,
       email: savedUser.email
     };
 
@@ -85,6 +136,7 @@ router.post('/register', requireGuest, async (req, res) => {
     return res.render('register', {
       error: 'Registration failed. Please try again.',
       name: req.body.name || '',
+      username: req.body.username || '',
       email: req.body.email || ''
     });
   }
@@ -98,16 +150,25 @@ router.post('/login', requireGuest, async (req, res) => {
 
     if (!email || !password) {
       return res.render('login', {
-        errorMessage: 'Email and password are required',
+        errorMessage: 'Username/Email and password are required',
         successMessage: null,
         email: email || ''
       });
     }
 
-    const user = await User.findOne({ email: email.toLowerCase() });
+    // Allow login with either username or email
+    const identifier = email.trim().toLowerCase();
+    let user = null;
+
+    if (identifier.includes('@')) {
+      user = await User.findOne({ email: identifier });
+    } else {
+      user = await User.findOne({ username: identifier });
+    }
+
     if (!user) {
       return res.render('login', {
-        errorMessage: 'Invalid email or password',
+        errorMessage: 'Invalid username/email or password',
         successMessage: null,
         email: email || ''
       });
@@ -116,7 +177,7 @@ router.post('/login', requireGuest, async (req, res) => {
     const isPasswordValid = await bcrypt.compare(password, user.password);
     if (!isPasswordValid) {
       return res.render('login', {
-        errorMessage: 'Invalid email or password',
+        errorMessage: 'Invalid username/email or password',
         successMessage: null,
         email: email || ''
       });
@@ -124,7 +185,8 @@ router.post('/login', requireGuest, async (req, res) => {
 
     req.session.user = {
       _id: user._id,
-      name: user.name,
+      name: user.fullname,
+      username: user.username,
       email: user.email,
       photo: user.photo
     };

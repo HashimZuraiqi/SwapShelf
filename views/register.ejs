@@ -477,6 +477,22 @@
           </div>
         </div>
 
+        <!-- Username (added) -->
+        <div class="form-group">
+          <label for="username" class="form-label">Username</label>
+          <div class="input-container">
+            <i class="input-icon bi bi-at"></i>
+            <input id="username" name="username" type="text" class="form-control"
+                   placeholder="Choose a unique username"
+                   value="<%= typeof username !== 'undefined' ? username : '' %>"
+                   autocomplete="username"
+                   required>
+          </div>
+          <!-- live status line for username -->
+          <div id="username-status" class="field-status"></div>
+        </div>
+        <!-- /Username -->
+
         <div class="form-group">
           <label for="email" class="form-label">Email Address</label>
           <div class="input-container">
@@ -655,7 +671,7 @@
         const isMatch = pwd.value && cpwd.value && pwd.value === cpwd.value;
         
         if (cpwd.value.length) {
-          confirmFeedback.textContent = isMatch ? '✓ Passwords match' : '✗ Passwords do not match';
+          confirmFeedback.textContent = isMatch ? 'Passwords match' : 'Passwords do not match';
           confirmFeedback.className = `field-status ${isMatch ? 'valid' : 'invalid'}`;
         } else {
           confirmFeedback.textContent = '';
@@ -714,5 +730,7 @@
       });
     })();
   </script>
+  <!-- username live checker -->
+  <script src="/js/username-checker.js"></script>
 </body>
 </html>

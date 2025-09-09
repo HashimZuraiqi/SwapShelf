@@ -126,8 +126,10 @@ app.get('/create-test-user', async (req, res) => {
         const hashedPassword = await bcrypt.hash('password123', 12);
         
         const testUser = new User({
-            name: 'Test User',
+            fullname: 'Test User',
             email: 'test@gmail.com',
+            // 👇 add a username derived from email (lowercased)
+            username: 'test',
             password: hashedPassword,
             location: 'Test City'
         });
@@ -136,7 +138,7 @@ app.get('/create-test-user', async (req, res) => {
         
         res.json({ 
             message: 'Test user created successfully!', 
-            credentials: { email: 'test@gmail.com', password: 'password123' }
+            credentials: { email: 'test@gmail.com', username: 'test', password: 'password123' }
         });
         
     } catch (error) {
@@ -251,6 +253,15 @@ async function logActivity({ userId, action, message, entityType = null, entityI
   }
 }
 
+// 👉 username/email normalizer for login
+function parseIdentifier(identifierRaw) {
+  const id = (identifierRaw || '').trim().toLowerCase();
+  if (!id) return null;
+  return id.includes('@')
+    ? { by: 'email', query: { email: id } }
+    : { by: 'username', query: { username: id } };
+}
+
 // Helper function for time formatting
 function getTimeAgo(date) {
   if (!date) return 'Unknown time';
@@ -358,7 +369,8 @@ app.get('/dashboard', async (req, res) => {
     try {
         const userLoggedIn = req.session && req.session.user;
         const userId = req.session.user._id || req.session.user.id;
-        const userName = req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
+        // 👇 prefer username for greeting if present
+        const userName = req.session.user.username || req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
         const userPhoto = req.session.user.photo || null;
         
         // Verify user exists in database
@@ -464,7 +476,7 @@ app.get('/dashboard', async (req, res) => {
         res.render('dashboard', { 
             userLoggedIn: true, 
             activePage: 'dashboard',
-            userName: req.session.user.name || req.session.user.fullname || 'User',
+            userName: req.session.user.username || req.session.user.name || req.session.user.fullname || 'User',
             userPhoto: req.session.user.photo || null,
             ...fallbackData,
             error: 'Unable to load dashboard data. Please try again.'
@@ -608,7 +620,7 @@ app.get('/login', (req, res) => {
     let errorMessage = '';
     
     if (error === 'invalid') {
-        errorMessage = 'Invalid email or password. Please try again.';
+        errorMessage = 'Invalid email/username or password. Please try again.'; // 👈 wording
     } else if (error === 'server') {
         errorMessage = 'Server error. Please try again later.';
     } else if (message) {
@@ -723,12 +735,14 @@ app.get('/me', async (req, res) => {
 
   try {
     const userId = req.session.user._id || req.session.user.id;
-    const user = req.session.user.name ||
+    const user = req.session.user.username || // 👈 prefer username
+      req.session.user.name ||
       req.session.user.fullname ||
       req.session.user.email.split('@')[0] ||
       'User';
     const userEmail = req.session.user.email || 'user@example.com';
     const userPhoto = req.session.user.photo || '/images/default-avatar.png';
+    const username = req.session.user.username || ''; // 👈 pass explicit username to template
 
     // Get real user data from database
     let userBooks = [];
@@ -811,6 +825,7 @@ app.get('/me', async (req, res) => {
       user,
       userEmail,
       userPhoto,
+      username, // 👈 make available to EJS
       userBooks,
       recentActivity,
       userStats,
@@ -821,17 +836,20 @@ app.get('/me', async (req, res) => {
     console.error('Profile error:', error);
     
     // Fallback data
-    const user = req.session.user.name ||
+    const user = req.session.user.username ||
+      req.session.user.name ||
       req.session.user.fullname ||
       req.session.user.email.split('@')[0] ||
       'User';
     const userEmail = req.session.user.email || 'user@example.com';
     const userPhoto = req.session.user.photo || '/images/default-avatar.png';
+    const username = req.session.user.username || '';
 
     res.render('profile', {
       user,
       userEmail,
       userPhoto,
+      username,
       userBooks: [],
       recentActivity: [
         {
@@ -947,7 +965,7 @@ app.get('/books/:bookId', async (req, res) => {
         // Get user information for navbar
         const user = await User.findById(userId);
         const userLoggedIn = req.session && req.session.user;
-        const userName = user?.name || user?.fullname || user?.email?.split('@')[0] || 'User';
+        const userName = user?.username || user?.name || user?.fullname || user?.email?.split('@')[0] || 'User';
         const userPhoto = user?.profilePicture || '/images/default-avatar.png';
         
         // Render the professional book details page
@@ -1003,7 +1021,7 @@ app.get('/wishlist', async (req, res) => {
         res.render('wishlist', { 
             userLoggedIn, 
             activePage: 'wishlist',
-            userName: req.session.user.name || req.session.user.fullname || 'User',
+            userName: req.session.user.username || req.session.user.name || req.session.user.fullname || 'User',
             userPhoto: req.session.user.photo || null,
             wishlistBooks: wishlistBooks,
             wishlistStats: wishlistStats
@@ -1114,6 +1132,7 @@ app.delete('/wishlist/remove/:bookId', async (req, res) => {
 app.get('/swap-matcher', (req, res) => {
   if (!req.session || !req.session.user) return res.redirect('/login');
   const user =
+    req.session.user.username || // 👈 prefer username
     req.session.user.name ||
     req.session.user.fullname ||
     req.session.user.email.split('@')[0] ||
@@ -1140,6 +1159,7 @@ app.get('/swap-matcher', (req, res) => {
 app.get('/rewards', (req, res) => {
   if (!req.session || !req.session.user) return res.redirect('/login');
   const user =
+    req.session.user.username || // 👈 prefer username
     req.session.user.name ||
     req.session.user.fullname ||
     req.session.user.email.split('@')[0] ||
@@ -1187,15 +1207,28 @@ app.get('/test-session', (req, res) => {
   });
 });
 
+// ✅ Register (legacy endpoint) — add username support & lowercase
 app.post('/register', async (req, res) => {
-  const { fullname, email, password, location } = req.body;
+  const { fullname, email, password, location, username } = req.body;
   try {
     if (mongoose.connection.readyState !== 1) {
       console.warn("⚠️ MongoDB not connected - simulating registration");
       return res.redirect('/login?registered=true');
     }
+
+    // Ensure email and username uniqueness
+    const emailLc = (email || '').trim().toLowerCase();
+    const usernameLc = (username || '').trim().toLowerCase();
+    if (!usernameLc) {
+      return res.status(400).send('Username is required');
+    }
+    const exists = await User.findOne({ $or: [{ email: emailLc }, { username: usernameLc }] });
+    if (exists) {
+      return res.status(400).send('Email or username already in use');
+    }
+
     const hashedPassword = await bcrypt.hash(password, 10);
-    await User.create({ fullname, email, password: hashedPassword, location });
+    await User.create({ fullname, email: emailLc, username: usernameLc, password: hashedPassword, location });
     res.redirect('/login');
   } catch (err) {
     console.error("Error registering user:", err);
@@ -1203,34 +1236,45 @@ app.post('/register', async (req, res) => {
   }
 });
 
+// ✅ Login (legacy endpoint) — allow email OR username
 app.post('/login', async (req, res) => {
-  const { email, password } = req.body;
+  // Accept both "identifier" (new form) and "email" (older form)
+  const identifierRaw = req.body.identifier || req.body.email;
+  const { password } = req.body;
   try {
     if (mongoose.connection.readyState !== 1) {
       // Simulated login when DB is down
       const simId = 'sim-' + Date.now();
+      const idParsed = parseIdentifier(identifierRaw) || { by: 'email', query: {} };
+      const fakeEmail = idParsed.by === 'email' ? identifierRaw : (identifierRaw + '@example.local');
+      const fakeUsername = idParsed.by === 'username' ? identifierRaw.toLowerCase() : (fakeEmail.split('@')[0] || 'user');
       req.session.user = {
         _id: simId,           // normalize: include _id
         id: simId,
-        email,
-        name: email.split('@')[0],
-        fullname: email.split('@')[0].charAt(0).toUpperCase() + email.split('@')[0].slice(1),
+        email: fakeEmail,
+        username: fakeUsername, // 👈 include username in session
+        name: fakeUsername,
+        fullname: fakeUsername.charAt(0).toUpperCase() + fakeUsername.slice(1),
         photo: '/images/default-avatar.png'
       };
       return req.session.save(() => res.redirect('/dashboard'));
     }
 
-    const user = await User.findOne({ email });
+    // Real login
+    const parsed = parseIdentifier(identifierRaw);
+    if (!parsed) return res.redirect('/login?error=invalid');
+
+    const user = await User.findOne(parsed.query);
     if (!user || !(await bcrypt.compare(password, user.password))) {
       return res.redirect('/login?error=invalid');
     }
 
-    // Real login
     req.session.user = {
       _id: user._id,         // normalize: include _id
       id: user._id,
       email: user.email,
-      name: user.fullname,
+      username: user.username, // 👈 keep in session
+      name: user.fullname || user.username,
       fullname: user.fullname,
       photo: user.photo || '/images/default-avatar.png'
     };
@@ -1247,6 +1291,7 @@ app.get('/library', async (req, res) => {
     if (!req.session || !req.session.user) return res.redirect('/login');
 
     const user =
+      req.session.user.username || // 👈 prefer username
       req.session.user.name ||
       req.session.user.fullname ||
       (req.session.user.email ? req.session.user.email.split('@')[0] : 'User');
@@ -1480,7 +1525,8 @@ const openPaths = [
   '/login.html', '/register.html',
   '/test-login-error', '/logout',
   '/create-test-user', '/create-test-activity', '/debug-activities', // dev only; remove in prod
-  '/api/dashboard/trending' // keep only if you want this public
+  '/api/dashboard/trending', // keep only if you want this public
+  '/auth/check-username'
 ];
 
 // Use regexes for directories / assets
