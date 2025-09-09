@@ -3387,4 +3387,81 @@ main.container-fluid {
         padding: 0.6rem 1rem;
         font-size: 0.9rem;
     }
+
+    /* ===================== Country & Phone (intl-tel-input) ===================== */
+/* Make the phone widget fill the row */
+.iti { width: 100%; }
+
+/* Match your form control height */
+.iti input[type="tel"],
+.iti .form-control {
+  height: 52px !important;
+  line-height: 52px !important;
+}
+
+/* Leave room for flag + dial code (you’re using separateDialCode: true) */
+.iti--separate-dial-code input.form-control {
+  padding-left: 6.25rem !important; /* room for flag + +XXX */
+}
+
+/* Flag/dial-code box to match dark theme */
+.iti__flag-container {
+  background: #111418;
+  border: 1.5px solid rgba(55, 65, 81, 0.8);
+  border-right: none;
+  border-radius: 12px 0 0 12px;
+}
+
+.iti__selected-flag {
+  height: 50px;
+  padding: 0 12px;
+  position: relative; /* for the ISO2 badge below */
+}
+
+/* Show the ISO2 (state abbreviation) next to the flag box */
+.iti__selected-flag::after {
+  content: attr(data-iso2);
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  right: -34px;
+  font-size: 12px;
+  opacity: 0.8;
+  letter-spacing: 0.4px;
+  color: #E5E7EB;
+}
+
+/* Dial code style */
+.iti--separate-dial-code .iti__selected-dial-code {
+  color: #E5E7EB;
+  font-weight: 600;
+}
+
+/* Country dropdown theme */
+.iti__country-list {
+  background: #1f2229;
+  border: 1px solid rgba(55, 65, 81, 0.8);
+  border-radius: 10px;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+}
+
+.iti__country {
+  color: #E5E7EB;
+}
+
+.iti__country:hover,
+.iti__country.iti__highlight {
+  background: rgba(59, 183, 251, 0.1);
+  color: #3BB7FB;
+}
+
+/* Search box inside the dropdown (if shown) */
+.iti__search-input {
+  background: #18191E;
+  border: 1px solid #3a3b40;
+  color: #ffffff;
+}
+.input-container .iti { margin-left: 2.5rem; width: calc(100% - 2.5rem); }
+
+
 }

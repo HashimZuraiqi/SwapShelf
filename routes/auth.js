@@ -72,11 +72,50 @@ router.get('/check-username', async (req, res) => {
 
 router.post('/register', requireGuest, async (req, res) => {
   try {
-    const { name, username, email, password, confirmPassword } = req.body;
+    const { name, username, email, password, confirmPassword, location, phone } = req.body; // location (country from locked list), phone (number input)
 
     if (!name || !username || !email || !password) {
       return res.render('register', {
         error: 'Name, username, email, and password are required',
+        name: name || '',
+        username: username || '',
+        email: email || ''
+      });
+    }
+
+    // Require country selection (locked dropdown); block Israel; allow Palestine
+    const countryValue = (location || '').trim();
+    if (!countryValue) {
+      return res.render('register', {
+        error: 'Please choose your country.',
+        name: name || '',
+        username: username || '',
+        email: email || ''
+      });
+    }
+    if (/^israel$/i.test(countryValue)) {
+      return res.render('register', {
+        error: 'Selected country is not allowed.',
+        name: name || '',
+        username: username || '',
+        email: email || ''
+      });
+    }
+
+    // Require phone number (basic sanity check only)
+    const phoneValue = (phone || '').trim();
+    if (!phoneValue) {
+      return res.render('register', {
+        error: 'Please enter your phone number.',
+        name: name || '',
+        username: username || '',
+        email: email || ''
+      });
+    }
+    const BASIC_PHONE_RE = /^\+?\d[\d\s\-()]{5,}$/;
+    if (!BASIC_PHONE_RE.test(phoneValue)) {
+      return res.render('register', {
+        error: 'Please enter a valid phone number.',
         name: name || '',
         username: username || '',
         email: email || ''
@@ -118,7 +157,10 @@ router.post('/register', requireGuest, async (req, res) => {
       fullname: name.trim(),
       username: username.trim().toLowerCase(),
       email: email.toLowerCase().trim(),
-      password: hashedPassword
+      password: hashedPassword,
+      // Store selected country & phone if schema allows (ignored by mongoose if not in schema)
+      location: countryValue,
+      phone: phoneValue
     });
 
     const savedUser = await newUser.save();

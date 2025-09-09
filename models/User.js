@@ -14,6 +14,7 @@ const userSchema = new mongoose.Schema({
   email: String,
   password: String,
   location: String,
+  phone: String,
   resetPasswordToken: { type: String, index: true },
   resetPasswordExpires: { type: Date },
   photo: {
