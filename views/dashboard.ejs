@@ -275,7 +275,7 @@
                         <div class="card-body">
                             <div id="nearby-books-list">
                                 <% if (nearbyBooks && nearbyBooks.length > 0) { %>
-                                    <% nearbyBooks.forEach(book => { %>
+                                    <% nearbyBooks.slice(0, 3).forEach(book => { %>
                                         <div class="nearby-book-item mb-3">
                                             <div class="row align-items-center">
                                                 <div class="col-3">

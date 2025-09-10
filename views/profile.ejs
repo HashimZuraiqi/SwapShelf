@@ -80,6 +80,15 @@
             color: #b0b3b8;
             margin-bottom: 0;
         }
+
+        /* === Username (added) === */
+        .profile-username {
+            font-size: 1rem;
+            color: #9CA3AF;
+            margin: -4px 0 8px 0;
+        }
+        /* ======================== */
+
         .profile-content {
             width: 100%;
             max-width: 1200px;
@@ -540,6 +549,9 @@
             </div>
             <div class="profile-info">
                 <h1 class="profile-title"><%= user %></h1>
+                <!-- Username display (added) -->
+                <p class="profile-username">@<%= (username || '') %></p>
+                <!-- /Username -->
                 <p class="profile-email"><i class="bi bi-envelope"></i> <%= userEmail %></p>
             </div>
         </div>

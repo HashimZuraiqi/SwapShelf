@@ -365,17 +365,17 @@
 
         <form action="/auth/login" method="post" novalidate>
             <div class="form-group">
-                <label for="email" class="form-label">Email</label>
+                <label for="email" class="form-label">Email or Username</label>
                 <div class="input-container">
-                    <i class="input-icon bi bi-envelope"></i>
-                    <input type="email"
+                    <i class="input-icon bi bi-at"></i>
+                    <input type="text"
                            name="email"
                            id="email"
                            class="form-control"
-                           placeholder="Enter your email"
+                           placeholder="Enter your email or username"
                            value="<%= email || '' %>"
                            required
-                           autocomplete="email" />
+                           autocomplete="username" />
                 </div>
             </div>
             
