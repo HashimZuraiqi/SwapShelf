@@ -425,26 +425,17 @@
 
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
     <div class="container">
-      <a class="navbar-brand d-flex align-items-center" href="/">
-        <span class="logo-icon mr-2" style="display:flex;align-items:center;">
-          <!-- Book SVG ICON -->
-          <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
-            <defs>
-              <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-                <stop stop-color="#3BB7FB"/>
-                <stop offset="1" stop-color="#F6B443"/>
-              </linearGradient>
-            </defs>
-            <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
-            <g>
-              <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
-              <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
-              <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
-            </g>
-          </svg>
-        </span>
-        <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
-      </a>
+    <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 100px; margin-top: 10px;">
+      <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
+          height: 32px; 
+          width: auto; 
+          transform: scale(4);
+          filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+          transition: all 0.3s ease;
+          z-index: 10;
+          position: relative;
+      " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
+    </a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
         aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>

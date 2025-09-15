@@ -735,11 +735,13 @@ app.get('/me', async (req, res) => {
 
   try {
     const userId = req.session.user._id || req.session.user.id;
-    const user = req.session.user.username || // 👈 prefer username
-      req.session.user.name ||
-      req.session.user.fullname ||
-      req.session.user.email.split('@')[0] ||
-      'User';
+    const user = {
+      fullname: req.session.user.fullname || req.session.user.name || req.session.user.username || 'User',
+      email: req.session.user.email || 'user@example.com',
+      profilePhoto: req.session.user.photo || '/images/default-avatar.png',
+      bio: req.session.user.bio || '',
+      username: req.session.user.username || ''
+    };
     const userEmail = req.session.user.email || 'user@example.com';
     const userPhoto = req.session.user.photo || '/images/default-avatar.png';
     const username = req.session.user.username || ''; // 👈 pass explicit username to template
@@ -750,6 +752,8 @@ app.get('/me', async (req, res) => {
     let userStats = {
       booksOwned: 0,
       swapsCompleted: 0,
+      wishlistCount: 0,
+      joinedDays: 0,
       booksRead: 0,
       swapRating: 4.8,
       connections: 0
@@ -776,6 +780,7 @@ app.get('/me', async (req, res) => {
         // Format activities for profile display using the helper function
         recentActivity = activities.map(activity => {
           const formatted = formatActivity(activity);
+          console.log('📊 Formatted activity:', formatted);
           return {
             ...formatted,
             entityType: activity.entityType,
@@ -794,6 +799,8 @@ app.get('/me', async (req, res) => {
         userStats = {
           booksOwned: allUserBooks.length,
           swapsCompleted: userSwaps.filter(swap => swap.status === 'Completed').length,
+          wishlistCount: Math.floor(allUserBooks.length * 0.3), // Estimate wishlist items
+          joinedDays: Math.floor((Date.now() - new Date(req.session.user.createdAt || Date.now() - 30*24*60*60*1000)) / (24*60*60*1000)), // Days since joining
           booksRead: Math.floor(allUserBooks.length * 0.8), // Estimate
           swapRating: 4.8, // TODO: Calculate from ratings
           connections: Math.floor(userSwaps.length * 0.6) // Estimate unique connections

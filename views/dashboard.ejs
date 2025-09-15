@@ -17,31 +17,48 @@
             border-radius: 5px;
             font-weight: 600;
         }
+        
+        /* Default Avatar Styling */
+        .default-avatar-dashboard {
+            width: 120px;
+            height: 120px;
+            border-radius: 50%;
+            border: 4px solid rgba(59, 183, 251, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #6B7280, #9CA3AF);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            margin: 0 auto;
+        }
+        
+        .default-avatar-dashboard:hover {
+            transform: scale(1.05);
+            border-color: rgba(59, 183, 251, 0.5);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.4);
+        }
+        
+        .default-avatar-dashboard svg {
+            transition: all 0.3s ease;
+        }
     </style>
 </head>
 <body>
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
   <div class="container-fluid">
     <!-- Logo on far left -->
-    <a class="navbar-brand d-flex align-items-center" href="/">
-      <span class="logo-icon mr-2" style="display:flex;align-items:center;">
-        <!-- Book SVG ICON -->
-        <svg width="32" height="32" viewBox="0 0 56 56" fill="none">
-          <defs>
-            <linearGradient id="navGrad" x1="0" y1="0" x2="56" y2="56" gradientUnits="userSpaceOnUse">
-              <stop stop-color="#3BB7FB"/>
-              <stop offset="1" stop-color="#F6B443"/>
-            </linearGradient>
-          </defs>
-          <circle cx="28" cy="28" r="28" fill="url(#navGrad)"/>
-          <g>
-            <rect x="17" y="20" width="10" height="16" rx="2" fill="#fff"/>
-            <rect x="29" y="20" width="10" height="16" rx="2" fill="#fff"/>
-            <line x1="27.5" y1="20" x2="27.5" y2="36" stroke="#3BB7FB" stroke-width="1.5"/>
-          </g>
-        </svg>
-      </span>
-      <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+    <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
+      <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
+          height: 32px; 
+          width: auto; 
+          transform: scale(4);
+          filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+          transition: all 0.3s ease;
+          z-index: 10;
+          position: relative;
+      " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
     </a>
     
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
@@ -96,11 +113,15 @@
                 <!-- User Photo - Shows first on mobile -->
                 <div class="col-lg-4 order-1 order-lg-2 text-center mb-4 mb-lg-0">
                     <div class="user-avatar-large">
-                        <% if (userPhoto) { %>
+                        <% if (userPhoto && userPhoto !== '/images/default-avatar.png') { %>
                             <img src="<%= userPhoto %>" alt="Profile" class="rounded-circle profile-img-large">
                         <% } else { %>
-                            <div class="avatar-placeholder">
-                                <i class="bi bi-person-circle"></i>
+                            <div class="default-avatar-dashboard">
+                                <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                    <circle cx="60" cy="60" r="60" fill="#6B7280"/>
+                                    <circle cx="60" cy="45" r="20" fill="#9CA3AF"/>
+                                    <path d="M30 100 C30 85, 42 75, 60 75 C78 75, 90 85, 90 100" fill="#9CA3AF"/>
+                                </svg>
                             </div>
                         <% } %>
                     </div>
