@@ -1,0 +1,946 @@
+<!-- filepath: views/rewards.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rewards & Achievements | BookSwap</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    
+    <style>
+        /* Rewards Page Specific Styles */
+        .rewards-main {
+            background: linear-gradient(135deg, #18191E, #15181D, #0D0E10);
+            min-height: 100vh;
+            color: #fff;
+            padding-top: 2rem;
+        }
+        
+        .rewards-header {
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.1) 0%, rgba(246, 180, 67, 0.1) 100%);
+            border: 1px solid rgba(59, 183, 251, 0.2);
+            border-radius: 20px;
+            padding: 3rem 2.5rem;
+            margin: 1.5rem;
+            margin-bottom: 3rem;
+            text-align: center;
+        }
+        
+        .page-title {
+            font-size: 3rem;
+            font-weight: 900;
+            color: #fff;
+            margin: 0 0 1rem;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #fff, #e6e9ee);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .reputation-section {
+            background: rgba(35, 36, 42, 0.8);
+            border: 1px solid rgba(59, 183, 251, 0.2);
+            border-radius: 18px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(20px);
+        }
+        
+        .reputation-score {
+            font-size: 2.5rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, #3BB7FB, #F6B443);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .progress-bar-modern {
+            height: 12px;
+            background: #2A2D35;
+            border-radius: 6px;
+            overflow: hidden;
+            margin: 1rem 0;
+            border: 1px solid rgba(59, 183, 251, 0.2);
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #3BB7FB, #F6B443);
+            border-radius: 6px;
+            transition: width 0.8s ease;
+            box-shadow: 0 0 10px rgba(59, 183, 251, 0.3);
+        }
+        
+        .badge-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+        
+        .badge-card {
+            background: rgba(35, 36, 42, 0.8);
+            border: 1px solid rgba(120, 130, 150, 0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .badge-card.unlocked {
+            border-color: rgba(59, 183, 251, 0.4);
+            box-shadow: 0 4px 20px rgba(59, 183, 251, 0.1);
+        }
+        
+        .badge-card.locked {
+            opacity: 0.6;
+            filter: grayscale(50%);
+        }
+        
+        .badge-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(59, 183, 251, 0.6);
+            box-shadow: 0 8px 30px rgba(59, 183, 251, 0.15);
+        }
+        
+        .badge-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+            display: block;
+            text-align: center;
+        }
+        
+        .badge-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #fff;
+            margin-bottom: 0.5rem;
+            text-align: center;
+        }
+        
+        .badge-description {
+            color: #b0b3b8;
+            font-size: 0.9rem;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        
+        .badge-status {
+            text-align: center;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .status-unlocked {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .status-locked {
+            background: rgba(108, 117, 125, 0.2);
+            color: #6c757d;
+            border: 1px solid rgba(108, 117, 125, 0.3);
+        }
+        
+        .quest-card {
+            background: rgba(35, 36, 42, 0.8);
+            border: 1px solid rgba(246, 180, 67, 0.2);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .quest-card:hover {
+            border-color: rgba(246, 180, 67, 0.4);
+            transform: translateY(-2px);
+        }
+        
+        .quest-reward {
+            background: linear-gradient(135deg, #F6B443, #e09f3e);
+            color: #000;
+            padding: 0.3rem 0.8rem;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .leaderboard-card {
+            background: rgba(35, 36, 42, 0.8);
+            border: 1px solid rgba(120, 130, 150, 0.15);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .rank-medal {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            margin-right: 1rem;
+        }
+        
+        .rank-1 { background: linear-gradient(135deg, #FFD700, #FFA500); color: #000; }
+        .rank-2 { background: linear-gradient(135deg, #C0C0C0, #A0A0A0); color: #000; }
+        .rank-3 { background: linear-gradient(135deg, #CD7F32, #B8860B); color: #000; }
+        .rank-other { background: rgba(59, 183, 251, 0.2); color: #3BB7FB; }
+        
+        .leaderboard-filters .btn-group .filter-btn {
+            background: rgba(35, 36, 42, 0.8);
+            border: 1px solid rgba(120, 130, 150, 0.2);
+            color: #b0b3b8;
+            padding: 0.5rem 1rem;
+            font-size: 0.85rem;
+            transition: all 0.3s ease;
+        }
+        
+        .leaderboard-filters .btn-group .filter-btn:hover {
+            border-color: rgba(59, 183, 251, 0.4);
+            color: #3BB7FB;
+        }
+        
+        .leaderboard-filters .btn-group .filter-btn.active {
+            background: linear-gradient(135deg, #3BB7FB, #F6B443);
+            border-color: transparent;
+            color: #000;
+            font-weight: 600;
+        }
+        
+        .podium-section {
+            background: rgba(35, 36, 42, 0.4);
+            border-radius: 20px;
+            padding: 2rem 1rem;
+            border: 1px solid rgba(59, 183, 251, 0.1);
+        }
+        
+        .podium-card {
+            background: rgba(35, 36, 42, 0.8);
+            border-radius: 16px;
+            padding: 1.5rem 1rem;
+            margin: 0 0.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(120, 130, 150, 0.15);
+        }
+        
+        .rank-1-podium {
+            border-color: rgba(255, 215, 0, 0.5);
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.1);
+            transform: scale(1.05);
+        }
+        
+        .rank-2-podium {
+            border-color: rgba(192, 192, 192, 0.5);
+            box-shadow: 0 4px 20px rgba(192, 192, 192, 0.1);
+        }
+        
+        .rank-3-podium {
+            border-color: rgba(205, 127, 50, 0.5);
+            box-shadow: 0 4px 20px rgba(205, 127, 50, 0.1);
+        }
+        
+        .podium-avatar {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            margin: 0 auto 1rem;
+        }
+        
+        .podium-avatar.winner {
+            animation: winnerGlow 2s infinite alternate;
+        }
+        
+        @keyframes winnerGlow {
+            from { box-shadow: 0 0 10px rgba(255, 215, 0, 0.3); }
+            to { box-shadow: 0 0 20px rgba(255, 215, 0, 0.6); }
+        }
+        
+        .avatar-img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(59, 183, 251, 0.3);
+        }
+        
+        .rank-crown {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            font-size: 1.2rem;
+            background: rgba(35, 36, 42, 0.9);
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 1px solid rgba(120, 130, 150, 0.2);
+        }
+        
+        .podium-name {
+            color: #fff;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .podium-stats {
+            color: #3BB7FB;
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .podium-badges {
+            color: #F6B443;
+            font-size: 0.8rem;
+            margin-top: 0.25rem;
+        }
+        
+        .winner-glow {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 16px;
+            background: linear-gradient(135deg, rgba(255, 215, 0, 0.1), rgba(246, 180, 67, 0.1));
+            z-index: -1;
+        }
+        
+        .user-avatar {
+            margin-right: 1rem;
+        }
+        
+        .avatar-small {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(59, 183, 251, 0.2);
+        }
+        
+        .user-card .avatar-small {
+            border-color: rgba(59, 183, 251, 0.6);
+        }
+        
+        .rank-change {
+            padding: 0.25rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            min-width: 50px;
+            text-align: center;
+        }
+        
+        .rank-change.positive {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28a745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+        
+        .rank-change.negative {
+            background: rgba(220, 53, 69, 0.2);
+            color: #dc3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+        
+        .rank-change.stable {
+            background: rgba(108, 117, 125, 0.2);
+            color: #6c757d;
+            border: 1px solid rgba(108, 117, 125, 0.3);
+        }
+        
+        .leaderboard-list {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .leaderboard-list::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .leaderboard-list::-webkit-scrollbar-track {
+            background: rgba(35, 36, 42, 0.5);
+            border-radius: 3px;
+        }
+        
+        .leaderboard-list::-webkit-scrollbar-thumb {
+            background: rgba(59, 183, 251, 0.3);
+            border-radius: 3px;
+        }
+        
+        .leaderboard-list::-webkit-scrollbar-thumb:hover {
+            background: rgba(59, 183, 251, 0.5);
+        }
+        
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .section-title i {
+            color: #3BB7FB;
+        }
+        
+        /* Button Group Styles */
+        .button-group {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+        }
+        
+        .btn-refresh-style {
+            background: rgba(35, 36, 42, 0.8);
+            border: 1px solid rgba(59, 183, 251, 0.3);
+            color: #3BB7FB;
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            backdrop-filter: blur(10px);
+        }
+        
+        .btn-refresh-style:hover {
+            background: rgba(59, 183, 251, 0.1);
+            border-color: rgba(59, 183, 251, 0.5);
+            color: #3BB7FB;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 183, 251, 0.2);
+            text-decoration: none;
+        }
+        
+        .btn-refresh-style:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.3);
+        }
+        
+        .btn-gradient {
+            padding: 0.75rem 1.5rem;
+            border-radius: 12px;
+        }
+        
+        @media (max-width: 768px) {
+            .rewards-header {
+                padding: 2rem 1.5rem;
+                margin: 1rem;
+            }
+            
+            .page-title {
+                font-size: 2.2rem;
+            }
+            
+            .badge-grid {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+                gap: 1rem;
+                width: 100%;
+            }
+            
+            .btn-gradient,
+            .btn-refresh-style {
+                width: 100%;
+                max-width: 280px;
+                justify-content: center;
+            }
+            
+            .reputation-section {
+                margin: 1rem;
+                padding: 1.5rem;
+            }
+            
+            .reputation-score {
+                font-size: 2rem;
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .page-title {
+                font-size: 1.8rem;
+            }
+            
+            .rewards-header {
+                padding: 1.5rem 1rem;
+                margin: 0.5rem;
+            }
+            
+            .reputation-section .row {
+                text-align: center;
+            }
+            
+            .reputation-section .col-md-4 {
+                margin-bottom: 1rem;
+            }
+            
+            .badge-card {
+                padding: 1rem;
+            }
+            
+            .badge-icon {
+                font-size: 2rem;
+            }
+            
+            .badge-title {
+                font-size: 1rem;
+            }
+        }
+    </style>
+</head>
+<body class="rewards-main">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
+            <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
+                height: 32px; 
+                width: auto; 
+                transform: scale(4);
+                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+                transition: all 0.3s ease;
+                z-index: 10;
+                position: relative;
+            " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>">
+                    <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                </li>
+                <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>">
+                    <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+                </li>
+                <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>">
+                    <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+                </li>
+                <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>">
+                    <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+                </li>
+                <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>">
+                    <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+                </li>
+            </ul>
+            
+            <!-- Profile dropdown -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> Profile
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                        <a class="dropdown-item" href="/history"><i class="bi bi-clock-history"></i> Activity History</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="rewards-header">
+        <h1 class="page-title">My Achievements</h1>
+        <p style="color: #b0b3b8; font-size: 1.2rem; margin-bottom: 2rem;">
+            Complete swaps, help the community, and earn badges to build your reputation
+        </p>
+        
+        <div class="button-group">
+            <button class="btn btn-gradient" id="exploreQuests">
+                <i class="bi bi-search"></i> Explore Quests
+            </button>
+            <a href="/leaderboard" class="btn btn-refresh-style">
+                <i class="bi bi-trophy-fill"></i> View Leaderboard
+            </a>
+        </div>
+    </div>
+
+    <!-- Reputation Section -->
+    <div class="reputation-section">
+        <div class="row text-center">
+            <div class="col-md-4">
+                <div class="reputation-score" id="reputationPoints">1,250</div>
+                <div style="color: #b0b3b8;">Reputation Points</div>
+            </div>
+            <div class="col-md-4">
+                <div class="reputation-score" id="badgesUnlocked">8</div>
+                <div style="color: #b0b3b8;">Badges Unlocked</div>
+            </div>
+            <div class="col-md-4">
+                <div class="reputation-score" id="totalBadges">15</div>
+                <div style="color: #b0b3b8;">Total Badges</div>
+            </div>
+        </div>
+        
+        <div class="progress-bar-modern mt-3">
+            <div class="progress-fill" style="width: 53%"></div>
+        </div>
+        <div class="text-center mt-2" style="color: #b0b3b8; font-size: 0.9rem;">
+            Unlock 2 more badges to reach "The Collector" milestone
+        </div>
+    </div>
+
+    <!-- Badges Section -->
+    <div class="section-title">
+        <i class="bi bi-award"></i>
+        Achievement Badges
+    </div>
+    
+    <!-- Login & Visit Achievements -->
+    <h5 style="color: #F6B443; margin-bottom: 1rem;">🕐 Login & Visit Streaks</h5>
+    <div class="badge-grid">
+        <div class="badge-card unlocked">
+            <div class="badge-icon">🌙</div>
+            <div class="badge-title">Night Owl</div>
+            <div class="badge-description">Visit the website between 10pm and 5am</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">☀️</div>
+            <div class="badge-title">Early Bird</div>
+            <div class="badge-description">Visit the website between 5am and 8am</div>
+            <div class="badge-status status-locked">🔒 Locked</div>
+        </div>
+        
+        <div class="badge-card unlocked">
+            <div class="badge-icon">📅</div>
+            <div class="badge-title">Daily Visitor</div>
+            <div class="badge-description">Visit the website 7 days in a row</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+        
+        <div class="badge-card unlocked">
+            <div class="badge-icon">🎉</div>
+            <div class="badge-title">The Weekend</div>
+            <div class="badge-description">Logged in on a weekend (Friday/Saturday)</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+    </div>
+
+    <!-- Swapping Achievements -->
+    <h5 style="color: #3BB7FB; margin-bottom: 1rem;">📚 Swapping Achievements</h5>
+    <div class="badge-grid">
+        <div class="badge-card unlocked">
+            <div class="badge-icon">📖</div>
+            <div class="badge-title">Swap Rookie</div>
+            <div class="badge-description">Made your first successful swap</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+        
+        <div class="badge-card unlocked">
+            <div class="badge-icon">🍀</div>
+            <div class="badge-title">Lucky 7</div>
+            <div class="badge-description">Completed your 7th swap</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🔄</div>
+            <div class="badge-title">Swapaholic</div>
+            <div class="badge-description">Made 30 successful swaps</div>
+            <div class="badge-status status-locked">🔒 Progress: 12/30</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🏆</div>
+            <div class="badge-title">Trade Master</div>
+            <div class="badge-description">Completed 50 swaps</div>
+            <div class="badge-status status-locked">🔒 Progress: 12/50</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">👑</div>
+            <div class="badge-title">Trade Champion</div>
+            <div class="badge-description">Reached 100 successful swaps</div>
+            <div class="badge-status status-locked">🔒 Progress: 12/100</div>
+        </div>
+        
+        <div class="badge-card unlocked">
+            <div class="badge-icon">🛋️</div>
+            <div class="badge-title">Chill Trader</div>
+            <div class="badge-description">Completed a swap on weekend</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🌍</div>
+            <div class="badge-title">The Wanderer</div>
+            <div class="badge-description">Made a swap with someone in another country</div>
+            <div class="badge-status status-locked">🔒 Locked</div>
+        </div>
+    </div>
+
+    <!-- Community & Meta Achievements -->
+    <h5 style="color: #28a745; margin-bottom: 1rem;">🤝 Community & Meta</h5>
+    <div class="badge-grid">
+        <div class="badge-card unlocked">
+            <div class="badge-icon">🧪</div>
+            <div class="badge-title">Beta Tester</div>
+            <div class="badge-description">Joined the beta program</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+        
+        <div class="badge-card unlocked">
+            <div class="badge-icon">🤝</div>
+            <div class="badge-title">Community Helper</div>
+            <div class="badge-description">Reported duplicate/inaccurate listings</div>
+            <div class="badge-status status-unlocked">✅ Unlocked</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">📚</div>
+            <div class="badge-title">The Collector</div>
+            <div class="badge-description">Earned 10 badges</div>
+            <div class="badge-status status-locked">🔒 Progress: 8/10</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">⭐</div>
+            <div class="badge-title">All-Star</div>
+            <div class="badge-description">Earned all available badges</div>
+            <div class="badge-status status-locked">🔒 Progress: 8/20</div>
+        </div>
+    </div>
+
+    <!-- Monthly Champion Badges -->
+    <h5 style="color: #FFD700; margin-bottom: 1rem;">👑 Monthly Champions</h5>
+    <div class="badge-grid">
+        <div class="badge-card locked">
+            <div class="badge-icon">🥇</div>
+            <div class="badge-title">Monthly Champion</div>
+            <div class="badge-description">Finished #1 in monthly leaderboard</div>
+            <div class="badge-status status-locked">🔒 Elite Achievement</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🥈</div>
+            <div class="badge-title">Silver Medalist</div>
+            <div class="badge-description">Finished #2 in monthly leaderboard</div>
+            <div class="badge-status status-locked">🔒 Elite Achievement</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🥉</div>
+            <div class="badge-title">Bronze Winner</div>
+            <div class="badge-description">Finished #3 in monthly leaderboard</div>
+            <div class="badge-status status-locked">🔒 Elite Achievement</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🔥</div>
+            <div class="badge-title">Streak Master</div>
+            <div class="badge-description">Top 5 for 3 consecutive months</div>
+            <div class="badge-status status-locked">🔒 Legendary</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">💎</div>
+            <div class="badge-title">Diamond Tier</div>
+            <div class="badge-description">Won monthly champion 3 times</div>
+            <div class="badge-status status-locked">🔒 Legendary</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🌟</div>
+            <div class="badge-title">Rising Star</div>
+            <div class="badge-description">Jumped 10+ ranks in one month</div>
+            <div class="badge-status status-locked">🔒 Locked</div>
+        </div>
+    </div>
+
+    <!-- Special & Unique Achievements -->
+    <h5 style="color: #9C27B0; margin-bottom: 1rem;">✨ Special & Unique</h5>
+    <div class="badge-grid">
+        <div class="badge-card locked">
+            <div class="badge-icon">🎭</div>
+            <div class="badge-title">Genre Master</div>
+            <div class="badge-description">Swapped books from 10 different genres</div>
+            <div class="badge-status status-locked">🔒 Progress: 4/10</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">📜</div>
+            <div class="badge-title">Ancient Wisdom</div>
+            <div class="badge-description">Swapped a book published before 1950</div>
+            <div class="badge-status status-locked">🔒 Locked</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🚀</div>
+            <div class="badge-title">Speed Reader</div>
+            <div class="badge-description">Completed 5 swaps in 24 hours</div>
+            <div class="badge-status status-locked">🔒 Locked</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🎪</div>
+            <div class="badge-title">Social Butterfly</div>
+            <div class="badge-description">Swapped with 25 different users</div>
+            <div class="badge-status status-locked">🔒 Progress: 8/25</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🏴‍☠️</div>
+            <div class="badge-title">Treasure Hunter</div>
+            <div class="badge-description">Found and swapped a rare/out-of-print book</div>
+            <div class="badge-status status-locked">🔒 Locked</div>
+        </div>
+        
+        <div class="badge-card locked">
+            <div class="badge-icon">🎨</div>
+            <div class="badge-title">Art Enthusiast</div>
+            <div class="badge-description">Swapped 10 art or photography books</div>
+            <div class="badge-status status-locked">🔒 Progress: 2/10</div>
+        </div>
+    </div>
+
+    <!-- Active Quests Section -->
+    <div id="questsSection" style="display: none;">
+        <div class="section-title">
+            <i class="bi bi-list-task"></i>
+            Active Quests
+        </div>
+        
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <div class="quest-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 style="color: #fff; margin: 0;">Weekly Swapper</h6>
+                        <span class="quest-reward">+75 Points</span>
+                    </div>
+                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Complete 3 swaps this week
+                    </p>
+                    <div class="progress-bar-modern" style="height: 8px;">
+                        <div class="progress-fill" style="width: 66%;"></div>
+                    </div>
+                    <small style="color: #b0b3b8;">Progress: 2/3 swaps</small>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="quest-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 style="color: #fff; margin: 0;">Consistent Visitor</h6>
+                        <span class="quest-reward">+50 Points</span>
+                    </div>
+                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Visit the site 5 days in a row
+                    </p>
+                    <div class="progress-bar-modern" style="height: 8px;">
+                        <div class="progress-fill" style="width: 80%;"></div>
+                    </div>
+                    <small style="color: #b0b3b8;">Progress: 4/5 days</small>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="quest-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 style="color: #fff; margin: 0;">Community Guardian</h6>
+                        <span class="quest-reward">+100 Points</span>
+                    </div>
+                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Report 2 inaccurate book listings
+                    </p>
+                    <div class="progress-bar-modern" style="height: 8px;">
+                        <div class="progress-fill" style="width: 50%;"></div>
+                    </div>
+                    <small style="color: #b0b3b8;">Progress: 1/2 reports</small>
+                </div>
+            </div>
+            
+            <div class="col-md-6 mb-3">
+                <div class="quest-card">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <h6 style="color: #fff; margin: 0;">Library Builder</h6>
+                        <span class="quest-reward">+25 Points</span>
+                    </div>
+                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
+                        Add 5 books to your library
+                    </p>
+                    <div class="progress-bar-modern" style="height: 8px;">
+                        <div class="progress-fill" style="width: 100%;"></div>
+                    </div>
+                    <small style="color: #28a745;">✅ Completed! Claim your reward</small>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    </div>
+</div>
+
+<script>
+$(document).ready(function() {
+    // Toggle Quests Section
+    $('#exploreQuests').click(function() {
+        $('#questsSection').slideToggle();
+    });
+    
+    // Animate progress bars on page load
+    $('.progress-fill').each(function() {
+        const width = $(this).css('width');
+        $(this).css('width', '0').animate({ width: width }, 1000);
+    });
+    
+    // Badge hover effects
+    $('.badge-card').hover(
+        function() {
+            if ($(this).hasClass('unlocked')) {
+                $(this).find('.badge-icon').css('transform', 'scale(1.1)');
+            }
+        },
+        function() {
+            $(this).find('.badge-icon').css('transform', 'scale(1)');
+        }
+    );
+});
+</script>
+
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

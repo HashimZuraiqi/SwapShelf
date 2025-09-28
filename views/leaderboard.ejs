@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monthly Leaderboard | SwapShelf</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <!-- <link rel="stylesheet" href="/css/leaderboard.css"> -->
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</head>
+<body class="leaderboard-main">
+
+<!-- Navigation -->
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+    <div class="container-fluid">
+        <!-- Logo -->
+        <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
+            <img src="./images/Untitled design(1).png" alt="SwapShelf" class="logo-image" style="
+                height: 32px; 
+                width: auto; 
+                transform: scale(4);
+                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+                transition: all 0.3s ease;
+                z-index: 10;
+                position: relative;
+            " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
+        </a>
+        
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>">
+                    <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+                </li>
+                <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>">
+                    <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+                </li>
+                <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>">
+                    <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+                </li>
+                <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>">
+                    <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+                </li>
+                <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>">
+                    <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+                </li>
+                <li class="nav-item <%= activePage === 'leaderboard' ? 'active' : '' %>">
+                    <a class="nav-link" href="/leaderboard"><i class="bi bi-trophy-fill"></i> Leaderboard</a>
+                </li>
+            </ul>
+            
+            <!-- Profile dropdown -->
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown">
+                        <i class="bi bi-person-circle"></i> Profile
+                    </a>
+                    <div class="dropdown-menu dropdown-menu-right">
+                        <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                        <a class="dropdown-item" href="/history"><i class="bi bi-clock-history"></i> Activity History</a>
+                        <div class="dropdown-divider"></div>
+                        <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Main Content -->
+<div class="container-fluid px-4">
+    <!-- Header -->
+    <div class="leaderboard-header">
+        <div class="header-content">
+            <h1 class="page-title">
+                <i class="bi bi-trophy-fill title-icon"></i>
+                Monthly Leaderboard
+            </h1>
+            <p class="page-subtitle">
+                Compete with fellow book lovers and climb the ranks through swaps, achievements, and community engagement
+            </p>
+            
+            <!-- Period Selector -->
+            <div class="period-selector">
+                <button class="period-btn active" data-period="current">Current Month</button>
+                <button class="period-btn" data-period="previous">Previous Month</button>
+                <button class="period-btn" data-period="all-time">All Time</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Top 3 Champions Podium -->
+    <div class="champions-podium">
+        <div class="podium-container">
+
+<!-- 2nd Place -->
+<div class="podium-position second-place">
+    <div class="champion-card second">
+        <div class="rank-badge silver">2</div>
+        <div class="champion-avatar">
+            <img src="/images/default-avatar.png" alt="ReadingQueen" class="avatar-image">
+            <div class="crown-icon">🥈</div>
+        </div>
+        <h3 class="champion-name">ReadingQueen</h3>
+        <div class="champion-stats">
+            <div class="stat-item">
+                <span class="stat-value">2,420</span>
+                <span class="stat-label">Points</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">12</span>
+                <span class="stat-label">Badges</span>
+            </div>
+            <div class="stat-item">
+                <span class="stat-value">47</span>
+                <span class="stat-label">Swaps</span>
+            </div>
+        </div>
+    </div>
+</div>            
+            <!-- 1st Place -->
+            <div class="podium-position first-place">
+                <div class="champion-card winner">
+                    <div class="rank-badge gold">1</div>
+                    <div class="champion-avatar">
+                        <img src="/images/default-avatar.png" alt="BookMaster2024" class="avatar-image">
+                        <div class="crown-icon">👑</div>
+                    </div>
+                    <h3 class="champion-name">BookMaster2024</h3>
+                    <div class="champion-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">2,850</span>
+                            <span class="stat-label">Points</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">14</span>
+                            <span class="stat-label">Badges</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">52</span>
+                            <span class="stat-label">Swaps</span>
+                        </div>
+                    </div>
+                    <div class="winner-glow"></div>
+                </div>
+            </div>
+            
+            <!-- 3rd Place -->
+            <div class="podium-position third-place">
+                <div class="champion-card third">
+                    <div class="rank-badge bronze">3</div>
+                    <div class="champion-avatar">
+                        <img src="/images/default-avatar.png" alt="SwapExpert" class="avatar-image">
+                        <div class="crown-icon">🥉</div>
+                    </div>
+                    <h3 class="champion-name">SwapExpert</h3>
+                    <div class="champion-stats">
+                        <div class="stat-item">
+                            <span class="stat-value">2,180</span>
+                            <span class="stat-label">Points</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">11</span>
+                            <span class="stat-label">Badges</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-value">43</span>
+                            <span class="stat-label">Swaps</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Rankings -->
+    <div class="rankings-section">
+        <div class="section-header">
+            <h2 class="section-title">
+                <i class="bi bi-list-ol"></i>
+                Full Rankings
+            </h2>
+            <div class="ranking-filters">
+                <button class="filter-btn active" data-filter="all">All Users</button>
+                <button class="filter-btn" data-filter="friends">Friends Only</button>
+                <button class="filter-btn" data-filter="nearby">Nearby Users</button>
+            </div>
+        </div>
+
+        <div class="rankings-list">
+            <!-- Rank 4 -->
+            <div class="ranking-item">
+                <div class="rank-position">
+                    <span class="rank-number">4</span>
+                    <div class="rank-change positive">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+2</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="/images/default-avatar.png" alt="BookLover99" class="user-avatar">
+                    <div class="user-details">
+                        <h4 class="username">BookLover99</h4>
+                        <div class="user-stats">
+                            <span class="badge-count">10 badges</span>
+                            <span class="divider">•</span>
+                            <span class="swap-count">45 swaps</span>
+                            <span class="divider">•</span>
+                            <span class="join-date">Joined Mar 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-section">
+                    <span class="points">1,890</span>
+                    <span class="points-label">points</span>
+                </div>
+            </div>
+
+            <!-- Rank 5 -->
+            <div class="ranking-item">
+                <div class="rank-position">
+                    <span class="rank-number">5</span>
+                    <div class="rank-change negative">
+                        <i class="bi bi-arrow-down"></i>
+                        <span>-1</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="/images/default-avatar.png" alt="NovelNinja" class="user-avatar">
+                    <div class="user-details">
+                        <h4 class="username">NovelNinja</h4>
+                        <div class="user-stats">
+                            <span class="badge-count">9 badges</span>
+                            <span class="divider">•</span>
+                            <span class="swap-count">38 swaps</span>
+                            <span class="divider">•</span>
+                            <span class="join-date">Joined Feb 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-section">
+                    <span class="points">1,650</span>
+                    <span class="points-label">points</span>
+                </div>
+            </div>
+
+            <!-- Current User (highlighted) -->
+            <div class="ranking-item current-user">
+                <div class="rank-position">
+                    <span class="rank-number">7</span>
+                    <div class="rank-change positive">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+3</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="<%= userPhoto || '/images/default-avatar.png' %>" alt="<%= userName %>" class="user-avatar">
+                    <div class="user-details">
+                        <h4 class="username"><%= userName %> <span class="you-badge">YOU</span></h4>
+                        <div class="user-stats">
+                            <span class="badge-count">8 badges</span>
+                            <span class="divider">•</span>
+                            <span class="swap-count">12 swaps</span>
+                            <span class="divider">•</span>
+                            <span class="join-date">Joined Jan 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-section">
+                    <span class="points">1,250</span>
+                    <span class="points-label">points</span>
+                </div>
+            </div>
+
+            <!-- More rankings -->
+            <div class="ranking-item">
+                <div class="rank-position">
+                    <span class="rank-number">8</span>
+                    <div class="rank-change stable">
+                        <i class="bi bi-dash"></i>
+                        <span>0</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="/images/default-avatar.png" alt="StorySeeker" class="user-avatar">
+                    <div class="user-details">
+                        <h4 class="username">StorySeeker</h4>
+                        <div class="user-stats">
+                            <span class="badge-count">7 badges</span>
+                            <span class="divider">•</span>
+                            <span class="swap-count">28 swaps</span>
+                            <span class="divider">•</span>
+                            <span class="join-date">Joined Apr 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-section">
+                    <span class="points">1,180</span>
+                    <span class="points-label">points</span>
+                </div>
+            </div>
+
+            <div class="ranking-item">
+                <div class="rank-position">
+                    <span class="rank-number">9</span>
+                    <div class="rank-change negative">
+                        <i class="bi bi-arrow-down"></i>
+                        <span>-2</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="/images/default-avatar.png" alt="BookBuddy" class="user-avatar">
+                    <div class="user-details">
+                        <h4 class="username">BookBuddy</h4>
+                        <div class="user-stats">
+                            <span class="badge-count">6 badges</span>
+                            <span class="divider">•</span>
+                            <span class="swap-count">22 swaps</span>
+                            <span class="divider">•</span>
+                            <span class="join-date">Joined Mar 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-section">
+                    <span class="points">980</span>
+                    <span class="points-label">points</span>
+                </div>
+            </div>
+
+            <div class="ranking-item">
+                <div class="rank-position">
+                    <span class="rank-number">10</span>
+                    <div class="rank-change positive">
+                        <i class="bi bi-arrow-up"></i>
+                        <span>+1</span>
+                    </div>
+                </div>
+                <div class="user-info">
+                    <img src="/images/default-avatar.png" alt="ChapterChamp" class="user-avatar">
+                    <div class="user-details">
+                        <h4 class="username">ChapterChamp</h4>
+                        <div class="user-stats">
+                            <span class="badge-count">5 badges</span>
+                            <span class="divider">•</span>
+                            <span class="swap-count">18 swaps</span>
+                            <span class="divider">•</span>
+                            <span class="join-date">Joined May 2024</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="score-section">
+                    <span class="points">850</span>
+                    <span class="points-label">points</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Load More Button -->
+        <div class="load-more-section">
+            <button class="load-more-btn" id="loadMoreRankings">
+                <i class="bi bi-arrow-down-circle"></i>
+                Load More Rankings
+            </button>
+        </div>
+    </div>
+
+    <!-- Monthly Stats -->
+    <div class="monthly-stats">
+        <h2 class="section-title">
+            <i class="bi bi-calendar-month"></i>
+            This Month's Highlights
+        </h2>
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-icon">🔥</div>
+                <div class="stat-content">
+                    <h3>Most Active Day</h3>
+                    <p>September 15th - 847 swaps completed</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🚀</div>
+                <div class="stat-content">
+                    <h3>Biggest Climber</h3>
+                    <p>PageTurner jumped 23 positions</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-content">
+                    <h3>New Achievers</h3>
+                    <p>142 users earned their first badge</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script src="/js/leaderboard.js"></script>
+<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+
+</body>
+</html>

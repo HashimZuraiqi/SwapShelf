@@ -343,7 +343,7 @@ function formatActivity(activity) {
 app.get('/', (req, res) => {
   const userLoggedIn = !!(req.session && req.session.user);
   if (userLoggedIn) {
-    res.render('home', { userLoggedIn: true, activePage: 'home' });
+    return res.redirect('/dashboard');
   } else {
     res.sendFile(path.join(__dirname, 'public', 'landing.html'));
   }
@@ -1165,19 +1165,39 @@ app.get('/swap-matcher', (req, res) => {
 
 app.get('/rewards', (req, res) => {
   if (!req.session || !req.session.user) return res.redirect('/login');
-  const user =
-    req.session.user.username || // 👈 prefer username
-    req.session.user.name ||
-    req.session.user.fullname ||
-    req.session.user.email.split('@')[0] ||
-    'User';
-  res.render('placeholder', {
-    userLoggedIn: true,
-    activePage: 'rewards',
-    user,
-    pageTitle: 'Rewards',
-    pageDescription: 'Earn points and unlock achievements',
-    pageIcon: 'bi bi-trophy'
+  
+  const userLoggedIn = req.session && req.session.user;
+  const userName = req.session.user.username || req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
+  const userPhoto = req.session.user.photo || '/images/default-avatar.png';
+  
+  // TODO: Add rewards-specific data fetching here
+  // Example: user achievements, points, badges, etc.
+  
+  res.render('rewards', {
+    userLoggedIn,
+    userName,
+    userPhoto,
+    activePage: 'rewards'
+    // Add additional rewards data as needed
+  });
+});
+
+app.get('/leaderboard', (req, res) => {
+  if (!req.session || !req.session.user) return res.redirect('/login');
+  
+  const userLoggedIn = req.session && req.session.user;
+  const userName = req.session.user.username || req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
+  const userPhoto = req.session.user.photo || '/images/default-avatar.png';
+  
+  // TODO: Add leaderboard-specific data fetching here
+  // Example: monthly rankings, user position, stats, etc.
+  
+  res.render('leaderboard', {
+    userLoggedIn,
+    userName,
+    userPhoto,
+    activePage: 'leaderboard'
+    // Add additional leaderboard data as needed
   });
 });
 
