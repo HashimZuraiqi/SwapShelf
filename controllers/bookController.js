@@ -329,23 +329,23 @@ class BookController {
     
             // 4. Calculate a match score for each candidate book
             const matches = candidates.map(candidate => {
-                let score = 40; // Base score for any available book
+                let score = 60; // Higher base score so all books show up
                 
-                // Score based on genre similarity
+                // Score based on genre similarity (bonus points, not required)
                 const sourceGenres = Array.isArray(sourceBook.genre) ? sourceBook.genre : [sourceBook.genre];
                 const candidateGenres = Array.isArray(candidate.genre) ? candidate.genre : [candidate.genre];
                 if (candidateGenres.some(g => sourceGenres.includes(g))) {
-                    score += 35;
+                    score += 25; // Bonus for genre match
                 }
                 
-                // Score based on matching author
+                // Score based on matching author (bonus points)
                 if (candidate.author === sourceBook.author) {
-                    score += 20;
+                    score += 15; // Bonus for author match
                 }
     
-                // Score based on matching language
+                // Score based on matching language (bonus points)
                 if (candidate.language === sourceBook.language) {
-                    score += 10;
+                    score += 10; // Bonus for language match
                 }
     
                 // Debug: Log image data for each candidate
@@ -376,7 +376,7 @@ class BookController {
                     matchPercentage: Math.min(100, score) // Cap score at 100
                 };
             })
-            .filter(match => match.matchPercentage > 50) // Only return matches with a reasonable score
+            .filter(match => match.matchPercentage > 30) // Lower threshold to show more books
             .sort((a, b) => b.matchPercentage - a.matchPercentage); // Sort by highest match first
     
             console.log(`Returning ${matches.length} filtered and sorted matches.`);

@@ -280,29 +280,6 @@
             margin-top: auto;
         }
 
-        .match-percentage {
-            position: absolute;
-            top: 8px;
-            right: 8px;
-            background: linear-gradient(45deg, #FF6B6B, #FFE66D);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 10px;
-            font-weight: bold;
-        }
-
-        .owner-badge {
-            position: absolute;
-            bottom: 8px;
-            left: 8px;
-            background: rgba(0,0,0,0.8);
-            color: white;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 9px;
-        }
-
         /* Preferences modal & selection clarity */
         .pref-section-title { color: #ffffff; font-weight: 600; margin-bottom: 0.5rem; }
         .pref-hint { color: #b0b3b8; font-size: 0.9rem; margin-bottom: 0.75rem; }
@@ -358,6 +335,164 @@
             transform: none;
         }
 
+        /* Advanced Filter Bar Styling */
+        #matches-filter-bar {
+            background: transparent;
+            border: none;
+            border-radius: 0;
+            padding: 0;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        /* Remove box animations and effects */
+
+        /* Enhanced Form Controls */
+        #matches-filter-bar .form-control {
+            background: rgba(30, 30, 30, 0.8);
+            border: 1px solid rgba(120, 130, 150, 0.2);
+            border-radius: 8px;
+            color: #ffffff;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            height: auto;
+            transition: all 0.3s ease;
+            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        }
+
+        #matches-filter-bar .form-control:focus {
+            background: rgba(30, 30, 30, 0.95) !important;
+            border-color: #3BB7FB !important;
+            box-shadow: 
+                inset 0 1px 4px rgba(0, 0, 0, 0.3),
+                0 0 0 2px rgba(59, 183, 251, 0.15),
+                0 2px 8px rgba(59, 183, 251, 0.15) !important;
+            color: #ffffff !important;
+            outline: none;
+        }
+
+        #matches-filter-bar .form-control:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            background: rgba(30, 30, 30, 0.9);
+        }
+
+        /* Filter Labels */
+        #matches-filter-bar label {
+            color: #B0B3B8;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+            margin-bottom: 4px;
+            display: block;
+        }
+
+        /* Clear Filters Button */
+        #clear-filters {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(220, 53, 69, 0.25));
+            border: 1px solid rgba(220, 53, 69, 0.3);
+            color: #DC3545;
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            height: auto;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        #clear-filters:hover {
+            background: linear-gradient(135deg, rgba(220, 53, 69, 0.25), rgba(220, 53, 69, 0.35));
+            border-color: rgba(220, 53, 69, 0.5);
+            color: #ffffff;
+            transform: translateY(-1px);
+            box-shadow: 0 3px 12px rgba(220, 53, 69, 0.25);
+        }
+
+        #clear-filters:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
+        }
+
+        /* Matches Count Styling */
+        #matches-count {
+            color: #B0B3B8;
+            font-size: 0.8rem;
+            font-weight: 500;
+            padding: 4px 12px;
+            background: rgba(59, 183, 251, 0.1);
+            border: 1px solid rgba(59, 183, 251, 0.2);
+            border-radius: 15px;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        #matches-count::before {
+            content: '🔍';
+            font-size: 0.75rem;
+        }
+
+        /* Filter Row Spacing */
+        #matches-filter-bar .row {
+            margin-left: -6px;
+            margin-right: -6px;
+        }
+
+        #matches-filter-bar .row > [class*="col-"] {
+            padding-left: 6px;
+            padding-right: 6px;
+        }
+
+        /* Filter Section Header */
+        .filter-section-header {
+            color: #ffffff;
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .filter-section-header i {
+            color: #3BB7FB;
+            font-size: 1rem;
+        }
+
+        /* Simplified Select Styling - Use browser default arrow */
+        #matches-filter-bar select.form-control {
+            background-color: rgba(30, 30, 30, 0.8) !important;
+            color: #ffffff !important;
+            /* Let browser handle the arrow */
+        }
+
+        #matches-filter-bar select.form-control:focus {
+            background-color: rgba(30, 30, 30, 0.95) !important;
+            color: #ffffff !important;
+        }
+
+        #matches-filter-bar select.form-control:hover {
+            background-color: rgba(30, 30, 30, 0.9) !important;
+            color: #ffffff !important;
+        }
+
+        /* Select Options Styling */
+        #matches-filter-bar select.form-control option {
+            background-color: #1E1E1E !important;
+            color: #ffffff !important;
+            padding: 8px 12px;
+        }
+
+        #matches-filter-bar select.form-control option:hover,
+        #matches-filter-bar select.form-control option:checked {
+            background-color: #3BB7FB !important;
+            color: #ffffff !important;
+        }
+
         @media (max-width: 768px) {
             .swap-hero {
                 padding: 20px;
@@ -367,6 +502,48 @@
             .matches-grid {
                 grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
                 gap: 15px;
+            }
+            
+            /* Filter Bar Responsive Styles */
+            #matches-filter-bar {
+                padding: 0;
+                margin-bottom: 16px;
+            }
+            
+            #matches-filter-bar .form-control {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+                border-radius: 6px;
+            }
+            
+            #matches-filter-bar label {
+                font-size: 0.7rem;
+                margin-bottom: 3px;
+            }
+            
+            #clear-filters {
+                padding: 6px 10px;
+                font-size: 0.8rem;
+                border-radius: 6px;
+            }
+            
+            #matches-count {
+                font-size: 0.75rem;
+                padding: 3px 8px;
+            }
+            
+            .filter-section-header {
+                font-size: 0.85rem;
+                margin-bottom: 8px;
+            }
+            
+            /* Stack filter controls vertically on mobile */
+            #matches-filter-bar .row > [class*="col-"] {
+                margin-bottom: 12px;
+            }
+            
+            #matches-filter-bar .row > [class*="col-"]:last-child {
+                margin-bottom: 0;
             }
         }
     </style>
@@ -565,6 +742,62 @@
                                 <small class="text-muted">Smart matches based on your preferences</small>
                             </div>
                             <div class="card-body">
+                                <!-- Filter Bar -->
+                                <div id="matches-filter-bar" class="mb-3" style="display: none;">
+                                    <div class="filter-section-header">
+                                        <i class="bi bi-funnel"></i>
+                                        Filter & Sort Matches
+                                    </div>
+                                    <div class="row align-items-end">
+                                        <div class="col-md-3 col-sm-6">
+                                            <label>Filter by Genre</label>
+                                            <select id="genre-filter" class="form-control">
+                                                <option value="">All Genres</option>
+                                                <option value="Fiction">Fiction</option>
+                                                <option value="Science Fiction">Science Fiction</option>
+                                                <option value="Romance">Romance</option>
+                                                <option value="Mystery">Mystery</option>
+                                                <option value="Fantasy">Fantasy</option>
+                                                <option value="Biography">Biography</option>
+                                                <option value="History">History</option>
+                                                <option value="Non-Fiction">Non-Fiction</option>
+                                                <option value="Thriller">Thriller</option>
+                                                <option value="Self-Help">Self-Help</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <label>Filter by Condition</label>
+                                            <select id="condition-filter" class="form-control">
+                                                <option value="">All Conditions</option>
+                                                <option value="New">New</option>
+                                                <option value="Like New">Like New</option>
+                                                <option value="Very Good">Very Good</option>
+                                                <option value="Good">Good</option>
+                                                <option value="Fair">Fair</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <label>Sort by</label>
+                                            <select id="sort-filter" class="form-control">
+                                                <option value="title">Title A-Z</option>
+                                                <option value="author">Author A-Z</option>
+                                                <option value="condition">Condition</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-3 col-sm-6">
+                                            <label>&nbsp;</label>
+                                            <button id="clear-filters" class="btn btn-block">
+                                                <i class="bi bi-x-circle"></i> Clear
+                                            </button>
+                                        </div>
+                                    </div>
+                                    <div class="row mt-2">
+                                        <div class="col-12">
+                                            <small class="text-muted" id="matches-count">0 matches found</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                
                                 <div id="matches-container">
                                     <div class="empty-state" id="matches-empty">
                                         <i class="bi bi-arrow-left"></i>
@@ -813,11 +1046,7 @@
                               placeholder="Add a personal touch to your swap request..."></textarea>
                 </div>
                 <div class="row">
-                    <div class="col-md-6">
-                        <h6 class="text-info">Match Score</h6>
-                        <div id="match-score-display"></div>
-                    </div>
-                    <div class="col-md-6">
+                    <div class="col-md-12">
                         <h6 class="text-info">Swap Timeline</h6>
                         <small class="text-muted">Typical completion: 5-7 days</small>
                     </div>
@@ -882,6 +1111,8 @@ let targetBook = null;
 let currentMatchData = null;
 let matchPrefs = null;
 let matchesState = { items: [], page: 1, pageSize: 6 };
+let allMatches = []; // Store all unfiltered matches
+let filteredMatches = []; // Store filtered matches
 
 // Select a book from user's library
 function selectBook(bookId) {
@@ -939,7 +1170,21 @@ function quickMatch(bookId) {
 
 // Display potential matches
 function displayMatches(matches) {
-    if (matches.length === 0) {
+    // Store all matches for filtering
+    allMatches = matches;
+    filteredMatches = [...matches];
+    
+    // Show filter bar when we have matches
+    if (matches.length > 0) {
+        $('#matches-filter-bar').show();
+        updateMatchesCount();
+        
+        // Save and render first page
+        matchesState.items = filteredMatches;
+        matchesState.page = 1;
+        renderMatchesPage();
+    } else {
+        $('#matches-filter-bar').hide();
         $('#matches-container').html(`
             <div class="empty-state">
                 <i class="bi bi-search text-muted"></i>
@@ -948,13 +1193,7 @@ function displayMatches(matches) {
                 <button class="btn btn-outline-primary" onclick="showMatchPreferences()">Adjust Preferences</button>
             </div>
         `);
-        return;
     }
-
-    // Save and render first page
-    matchesState.items = matches;
-    matchesState.page = 1;
-    renderMatchesPage();
 }
 
 function renderMatchesPage() {
@@ -1002,8 +1241,6 @@ function renderMatchesPage() {
                     <div class="book-cover-placeholder" style="display: none;">
                         <i class="bi bi-book text-white" style="font-size: 2rem;"></i>
                     </div>
-                    <span class="match-percentage">${match.matchPercentage}%</span>
-                    <span class="owner-badge"><i class="bi bi-person"></i> ${match.owner.username || match.owner.fullname}</span>
                 </div>
                 <div class="match-card-content">
                     <div>
@@ -1014,8 +1251,7 @@ function renderMatchesPage() {
                             <small class="text-muted" style="font-size: 0.7rem;">${match.condition}</small>
                         </div>
                     </div>
-                    <div class="book-actions d-flex align-items-center justify-content-between">
-                        <button class="btn btn-outline-professional btn-sm" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;" onclick="event.stopPropagation(); toggleLike('${match._id}', this)"><i class="bi bi-heart"></i> <span class="like-count" data-id="${match._id}">—</span></button>
+                    <div class="book-actions d-flex align-items-center justify-content-center">
                         <button class="btn btn-professional btn-sm" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;" onclick="event.stopPropagation(); proposeSwap('${match._id}', '${match.owner._id}')"><i class="bi bi-arrow-left-right"></i> Swap</button>
                     </div>
                 </div>
@@ -1093,25 +1329,71 @@ function showSwapModal(offeredBook, requestedBook) {
         <small class="badge badge-secondary">${requestedBook.genre}</small>
     `);
     
-    // Calculate and display match score
-    let matchScore = calculateMatchScore(offeredBook, requestedBook);
-    $('#match-score-display').html(`
-        <div class="progress mb-2">
-            <div class="progress-bar bg-success" style="width: ${matchScore}%"></div>
-        </div>
-        <small class="text-muted">${matchScore}% compatibility</small>
-    `);
-    
     $('#swapRequestModal').modal('show');
 }
 
-// Calculate match score
-function calculateMatchScore(book1, book2) {
-    let score = 50; // Base score
-    if (book1.genre === book2.genre) score += 30;
-    if (book1.author === book2.author) score += 20;
-    if (book1.language === book2.language) score += 15;
-    return Math.min(score, 100);
+// Filter and sort functionality
+function applyFilters() {
+    const genreFilter = $('#genre-filter').val();
+    const conditionFilter = $('#condition-filter').val();
+    const sortBy = $('#sort-filter').val();
+    
+    // Start with all matches
+    filteredMatches = [...allMatches];
+    
+    // Apply genre filter
+    if (genreFilter) {
+        filteredMatches = filteredMatches.filter(match => {
+            const matchGenres = Array.isArray(match.genre) ? match.genre : [match.genre];
+            return matchGenres.includes(genreFilter);
+        });
+    }
+    
+    // Apply condition filter
+    if (conditionFilter) {
+        filteredMatches = filteredMatches.filter(match => match.condition === conditionFilter);
+    }
+    
+    // Apply sorting
+    switch (sortBy) {
+        case 'title':
+            filteredMatches.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+        case 'author':
+            filteredMatches.sort((a, b) => a.author.localeCompare(b.author));
+            break;
+        case 'condition':
+            const conditionOrder = ['New', 'Like New', 'Very Good', 'Good', 'Fair'];
+            filteredMatches.sort((a, b) => {
+                const aIndex = conditionOrder.indexOf(a.condition);
+                const bIndex = conditionOrder.indexOf(b.condition);
+                return aIndex - bIndex;
+            });
+            break;
+        case 'match':
+        default:
+            filteredMatches.sort((a, b) => a.title.localeCompare(b.title));
+            break;
+    }
+    
+    // Update matches state and re-render
+    matchesState.items = filteredMatches;
+    matchesState.page = 1;
+    updateMatchesCount();
+    renderMatchesPage();
+}
+
+function clearFilters() {
+    $('#genre-filter').val('');
+    $('#condition-filter').val('');
+    $('#sort-filter').val('title');
+    applyFilters();
+}
+
+function updateMatchesCount() {
+    const count = filteredMatches.length;
+    const total = allMatches.length;
+    $('#matches-count').text(`${count} of ${total} matches found`);
 }
 
 // Submit swap request
@@ -1131,21 +1413,6 @@ function submitSwapRequest() {
     .fail(function(xhr) {
         showErrorMessage('Failed to send swap request: ' + (xhr.responseJSON?.message || 'Unknown error'));
     });
-}
-
-// Like / Unlike a book
-function toggleLike(bookId, btn) {
-    $.post(`/api/books/${bookId}/like`)
-        .done(function(res) {
-            const liked = res.liked;
-            const count = res.likes;
-            $(btn).toggleClass('btn-outline-light btn-danger');
-            $(btn).find('i').toggleClass('bi-heart bi-heart-fill');
-            $(`.like-count[data-id="${bookId}"]`).text(count);
-        })
-        .fail(function(xhr) {
-            showErrorMessage('Failed to like: ' + (xhr.responseJSON?.message || 'Unknown error'));
-        });
 }
 
 // Quick match all books
@@ -1305,6 +1572,10 @@ $(document).ready(function() {
             setTimeout(() => selectBook(bookId), 1000);
         }
     }
+    
+    // Initialize filter event listeners
+    $('#genre-filter, #condition-filter, #sort-filter').on('change', applyFilters);
+    $('#clear-filters').on('click', clearFilters);
     
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
