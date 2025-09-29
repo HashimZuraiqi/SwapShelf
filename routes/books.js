@@ -56,6 +56,13 @@ router.get('/', requireAuth, BookController.getUserBooks);
 router.get('/search', requireAuth, BookController.searchBooks);
 
 /**
+ * @route   GET /api/books/:bookId/matches
+ * @desc    Get potential matches for a given book (owned by user)
+ * @access  Private
+ */
+router.get('/:bookId/matches', requireAuth, BookController.getMatches);
+
+/**
  * @route   GET /api/books/:bookId
  * @desc    Get book details
  * @access  Private
@@ -95,5 +102,12 @@ router.patch('/:bookId/availability',
     requireOwnership(Book, 'bookId'), 
     BookController.toggleAvailability
 );
+
+/**
+ * @route   POST /api/books/:bookId/like
+ * @desc    Toggle like on a book
+ * @access  Private
+ */
+router.post('/:bookId/like', requireAuth, BookController.toggleLike);
 
 module.exports = router;

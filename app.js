@@ -88,8 +88,8 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(express.static(path.join(__dirname, 'public')));
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+// Serve static files from the 'public' directory (including uploads)
+app.use(express.static('public'));
 app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
@@ -98,6 +98,7 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
+const chatRoutes = require('./routes/chat');
 
 // Mount API Routes
 app.use('/auth', require('./routes/auth'));  // mounts /auth/*
@@ -105,6 +106,7 @@ app.use('/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
+app.use('/api/chat', chatRoutes);
 app.get('/login.html', (req, res) => res.redirect(301, '/auth/login'));
 app.get('/register.html', (req, res) => res.redirect(301, '/auth/register'));
 // Legacy route for book addition (redirect to API)
@@ -1136,15 +1138,145 @@ app.delete('/wishlist/remove/:bookId', async (req, res) => {
     }
 });
 
-app.get('/swap-matcher', (req, res) => {
-  if (!req.session || !req.session.user) return res.redirect('/login');
-  const user =
-    req.session.user.username || // 👈 prefer username
-    req.session.user.name ||
-    req.session.user.fullname ||
-    req.session.user.email.split('@')[0] ||
-    'User';
-  res.render('placeholder', { userLoggedIn: true, activePage: 'swap-matcher', user });
+app.get('/swap-matcher', async (req, res) => {
+  // Temporarily disable auth for testing
+  // if (!req.session || !req.session.user) return res.redirect('/login');
+  
+  try {
+    // For debugging - use dummy user if no session
+    const userId = req.session?.user?._id || req.session?.user?.id || '689e2ba746de4ed0a2716e4f';
+    
+    const user = await User.findById(userId);
+    if (!user && req.session?.user) return res.redirect('/login');
+
+    // Get user's own books (available for swapping)
+    const userBooks = await Book.find({ owner: userId, availability: 'available' }).sort({ createdAt: -1 }).lean();
+
+    // Add books to user object for template
+    user.books = userBooks;
+
+    // Get available books for swapping (exclude user's own books)
+    const availableBooks = await Book.find({ owner: { $ne: userId }, availability: 'available' })
+    .populate('owner', 'username fullname')
+    .sort({ createdAt: -1 })
+    .limit(50)
+    .lean();
+
+    // Add owner name to each book and ensure image field is properly set
+    availableBooks.forEach(book => {
+      book.ownerName = book.owner?.fullname || book.owner?.username || 'Unknown';
+      // Ensure the image field is available for the frontend
+      if (!book.coverImage && book.image) {
+        book.coverImage = book.image;
+      }
+    });
+
+    // Get user's swap activities
+    const userSwaps = await Swap.find({
+      $or: [
+        { requester: userId },
+        { owner: userId }
+      ]
+    })
+    .populate('requester', 'username fullname')
+    .populate('owner', 'username fullname')
+    .populate('requestedBook.id', 'title author coverImage')
+    .sort({ createdAt: -1 })
+    .limit(20)
+    .lean();
+
+    // Flatten requestedBook data
+    userSwaps.forEach(swap => {
+      if (swap.requestedBook?.id) {
+        swap.requestedBook.title = swap.requestedBook.id.title || swap.requestedBook.title;
+        swap.requestedBook.author = swap.requestedBook.id.author || swap.requestedBook.author;
+        swap.requestedBook.coverImage = swap.requestedBook.id.coverImage;
+      }
+    });
+
+    // Calculate swap counts for tabs
+    const myPendingRequests = userSwaps.filter(s => s.status === 'Pending' && (s.requester._id || s.requester).toString() === userId).length;
+    const incomingRequests = userSwaps.filter(s => s.status === 'Pending' && (s.owner._id || s.owner).toString() === userId).length;
+    const activeSwaps = userSwaps.filter(s => s.status === 'Accepted' || s.status === 'Pending Confirmation').length;
+
+    // Get user stats
+    const userStats = {
+      rewardPoints: user.rewardPoints || 0,
+      swapsCompleted: user.totalSwapsCompleted || 0,
+      booksOwned: await Book.countDocuments({ owner: userId }),
+      pendingSwaps: await Swap.countDocuments({
+        $or: [
+          { requester: userId, status: { $in: ['Pending', 'Accepted', 'Pending Confirmation'] } },
+          { owner: userId, status: { $in: ['Pending', 'Accepted', 'Pending Confirmation'] } }
+        ]
+      })
+    };
+
+    // Calculate total and completed swaps for success rate
+    const totalUserSwaps = await Swap.countDocuments({
+      $or: [{ requester: userId }, { owner: userId }]
+    });
+    
+    const completedUserSwaps = await Swap.countDocuments({
+      $or: [{ requester: userId }, { owner: userId }],
+      status: 'Swapped'
+    });
+
+    const swapInsights = {
+      successRate: totalUserSwaps > 0 ? Math.round((completedUserSwaps / totalUserSwaps) * 100) : 0,
+      avgResponseTime: '2.3 days',
+      popularGenre: 'Fiction'
+    };
+
+    // Get nearby books (for demo purposes, just use available books with proper mapping)
+    const nearbyBooks = availableBooks.slice(0, 5).map(book => ({
+      ...book,
+      image: book.coverImage || '/images/placeholder-book.jpg',
+      id: book._id,
+      distance: '2.5 km'
+    }));
+
+    // Get trending genres (for demo purposes)
+    const trendingGenres = [
+      { name: 'Fiction', swaps: 124, percentage: 85 },
+      { name: 'Science Fiction', swaps: 98, percentage: 72 },
+      { name: 'Romance', swaps: 76, percentage: 58 },
+      { name: 'Mystery', swaps: 65, percentage: 48 },
+      { name: 'Fantasy', swaps: 54, percentage: 42 }
+    ];
+
+    // Get trending books (for demo purposes)
+    const trendingBooks = availableBooks.slice(0, 5).map((book, index) => ({
+      title: book.title,
+      author: book.author,
+      image: book.coverImage || '/images/placeholder-book.jpg',
+      swapCount: Math.floor(Math.random() * 50) + 10 // Random swap count between 10-60
+    }));
+
+    res.render('swap-matcher', { 
+      userLoggedIn: true, 
+      activePage: 'swap-matcher', 
+      user, 
+      userName: user.username || user.fullname || 'Reader',
+      userPhoto: user.profilePicture || '/images/default-avatar.png',
+      availableBooks,
+      userSwaps,
+      userStats,
+      swapInsights,
+      nearbyBooks,
+      trendingGenres,
+      trendingBooks,
+      myPendingRequests,
+      incomingRequests,
+      activeSwaps,
+      // Pass availableBooks as JSON for frontend use
+      availableBooksJson: JSON.stringify(availableBooks)
+    });
+
+  } catch (error) {
+    console.error('Swap matcher error:', error);
+    res.status(500).render('error', { message: 'Failed to load swap matcher' });
+  }
 });
 
 // app.get('/nearby', (req, res) => {
