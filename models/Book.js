@@ -83,6 +83,11 @@ const bookSchema = new mongoose.Schema({
       default: 0
     }
   },
+  // Track users who liked this book
+  likedBy: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'User'
+  }],
   featured: {
     type: Boolean,
     default: false

@@ -1,3 +1,4 @@
+const mongoose = require('mongoose');
 const Book = require('../models/Book');
 const User = require('../models/User');
 const Swap = require('../models/Swap');
@@ -266,6 +267,155 @@ class BookController {
         }
     }
     
+    /**
+     * Get AI-like matches for a given user-owned book
+     * Lightweight heuristic using genre/author/language overlap
+     */
+    static async getMatches(req, res) {
+        try {
+            const userId = req.session.user._id || req.session.user.id;
+            const { bookId } = req.params;
+
+            if (!userId) {
+                console.log('❌ No user ID found in session');
+                console.log('Session user:', req.session.user);
+                return res.status(401).json({ success: false, error: 'User not authenticated' });
+            }
+
+            console.log('--- DEBUGGING MATCHES ---');
+            console.log('User ID from session:', userId);
+            console.log('Book ID from URL:', bookId);
+            console.log('User ID type:', typeof userId);
+            console.log('Book ID type:', typeof bookId);
+            console.log('Session user object:', req.session.user);
+    
+            // 1. Validate the incoming bookId to prevent crashes
+            if (!mongoose.Types.ObjectId.isValid(bookId)) {
+                console.log('Invalid book ID format received:', bookId);
+                return res.status(400).json({ success: false, error: 'Invalid book ID format' });
+            }
+    
+            // 2. Find the user's book to use as the source for matching
+            const sourceBook = await Book.findOne({ _id: bookId, owner: userId });
+            if (!sourceBook) {
+                console.log('❌ Source book not found or does not belong to user. ID:', bookId);
+                console.log('Expected owner:', userId);
+                
+                // Let's also check if the book exists at all
+                const anyBook = await Book.findOne({ _id: bookId });
+                if (anyBook) {
+                    console.log('Book exists but owner is:', anyBook.owner);
+                    console.log('Owner types - Expected:', typeof userId, 'Actual:', typeof anyBook.owner);
+                    console.log('Owner match check:', anyBook.owner.toString() === userId.toString());
+                } else {
+                    console.log('Book does not exist at all');
+                }
+                
+                return res.status(404).json({ success: false, error: 'Book not found in your library' });
+            }
+            
+            console.log('Finding matches for:', sourceBook.title);
+    
+            // 3. Find all available books from other users to serve as candidates
+            const candidates = await Book.find({ 
+                owner: { $ne: userId }, 
+                availability: 'available' 
+            })
+            .populate('owner', 'username fullname') // Get owner's name for display
+            .limit(200) // Limit candidates for performance
+            .lean(); // Use .lean() for faster read-only operations
+    
+            console.log(`Found ${candidates.length} potential candidates.`);
+    
+            // 4. Calculate a match score for each candidate book
+            const matches = candidates.map(candidate => {
+                let score = 40; // Base score for any available book
+                
+                // Score based on genre similarity
+                const sourceGenres = Array.isArray(sourceBook.genre) ? sourceBook.genre : [sourceBook.genre];
+                const candidateGenres = Array.isArray(candidate.genre) ? candidate.genre : [candidate.genre];
+                if (candidateGenres.some(g => sourceGenres.includes(g))) {
+                    score += 35;
+                }
+                
+                // Score based on matching author
+                if (candidate.author === sourceBook.author) {
+                    score += 20;
+                }
+    
+                // Score based on matching language
+                if (candidate.language === sourceBook.language) {
+                    score += 10;
+                }
+    
+                // Debug: Log image data for each candidate
+                console.log(`Image data for ${candidate.title}:`, {
+                    image: candidate.image,
+                    coverImage: candidate.coverImage,
+                    imageUrl: candidate.imageUrl,
+                    coverUrl: candidate.coverUrl,
+                    hasImage: !!(candidate.image || candidate.coverImage || candidate.imageUrl || candidate.coverUrl)
+                });
+                
+                // Get the actual image from the database
+                const actualImage = candidate.image || candidate.coverImage || candidate.imageUrl || candidate.coverUrl;
+                console.log(`Using image for ${candidate.title}:`, actualImage);
+                
+                return {
+                    _id: candidate._id,
+                    title: candidate.title,
+                    author: candidate.author,
+                    genre: candidate.genre,
+                    condition: candidate.condition,
+                    coverImage: actualImage || '/images/placeholder-book.jpg', // Use actual image or fallback
+                    image: actualImage || '/images/placeholder-book.jpg', // Use actual image or fallback
+                    owner: {
+                        _id: candidate.owner._id,
+                        username: candidate.owner.username || candidate.owner.fullname,
+                    },
+                    matchPercentage: Math.min(100, score) // Cap score at 100
+                };
+            })
+            .filter(match => match.matchPercentage > 50) // Only return matches with a reasonable score
+            .sort((a, b) => b.matchPercentage - a.matchPercentage); // Sort by highest match first
+    
+            console.log(`Returning ${matches.length} filtered and sorted matches.`);
+    
+            return res.json({ success: true, matches });
+    
+        } catch (error) {
+            console.error('Fatal error in getMatches:', error);
+            return res.status(500).json({ success: false, error: 'Failed to get matches due to a server error' });
+        }
+    }
+
+    /** Toggle like on a book */
+    static async toggleLike(req, res) {
+        try {
+            const userId = req.session.user._id || req.session.user.id;
+            const { bookId } = req.params;
+
+            const book = await Book.findById(bookId);
+            if (!book) return res.status(404).json({ error: 'Book not found' });
+            if (String(book.owner) === String(userId)) {
+                return res.status(400).json({ error: 'Cannot like your own book' });
+            }
+
+            const already = (book.likedBy || []).some(u => String(u) === String(userId));
+            if (already) {
+                book.likedBy = book.likedBy.filter(u => String(u) !== String(userId));
+            } else {
+                book.likedBy = [...(book.likedBy || []), userId];
+            }
+            await book.save();
+
+            return res.json({ liked: !already, likes: (book.likedBy || []).length });
+        } catch (error) {
+            console.error('Toggle like error:', error);
+            return res.status(500).json({ error: 'Failed to toggle like' });
+        }
+    }
+
     /**
      * Get book details
      */

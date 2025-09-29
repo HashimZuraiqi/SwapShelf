@@ -22,6 +22,28 @@ router.post('/', requireAuth, SwapController.createSwapRequest);
 router.get('/', requireAuth, SwapController.getUserSwaps);
 
 /**
+ * @route GET /api/swaps/:swapId
+ * @desc  Get swap details
+ * @access Private (Participants only)
+ */
+router.get('/:swapId', requireAuth, requireSwapParticipation, SwapController.getSwapDetails);
+
+// Aliases used by frontend UI
+router.put('/:swapId/accept', requireAuth, requireSwapParticipation, (req, res) => {
+  req.body.action = 'accept';
+  return SwapController.respondToSwap(req, res);
+});
+
+router.put('/:swapId/reject', requireAuth, requireSwapParticipation, (req, res) => {
+  req.body.action = 'decline';
+  return SwapController.respondToSwap(req, res);
+});
+
+router.post('/:swapId/confirm', requireAuth, requireSwapParticipation, SwapController.completeSwap);
+
+router.delete('/:swapId', requireAuth, requireSwapParticipation, SwapController.cancelSwap);
+
+/**
  * @route   POST /api/swaps/:swapId/respond
  * @desc    Respond to a swap request (accept/decline)
  * @access  Private (Participants only)

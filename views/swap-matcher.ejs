@@ -3,341 +3,1313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Swap Matcher - SwapShelf</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <title>Swap Matcher | BookSwap</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <style>
+        /* Active navigation styling for dynamic page */
+        .nav-item.active .nav-link {
+            color: #3BB7FB !important;
+            background: rgba(59, 183, 251, 0.1);
+            border-radius: 5px;
+            font-weight: 600;
+        }
+
+        /* Professional Swap Matcher Styles */
+        .swap-hero {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 20px;
+            padding: 40px;
+            margin-bottom: 30px;
+            color: white;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .swap-stats {
+            background: rgba(255,255,255,0.15);
+            border-radius: 15px;
+            padding: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .swap-section-card {
+            background: #1E1E1E;
+            border-radius: 20px;
+            border: 1px solid rgba(59, 183, 251, 0.2);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+
+        .swap-section-card:hover {
+            border-color: rgba(59, 183, 251, 0.4);
+            transform: translateY(-5px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
+        }
+
+        .swap-section-header {
+            background: linear-gradient(135deg, #2A2D35, #23242a);
+            padding: 20px;
+            border-bottom: 1px solid rgba(59, 183, 251, 0.2);
+        }
+
+        .book-swap-item {
+            background: #2A2D35;
+            border-radius: 15px;
+            padding: 15px;
+            margin-bottom: 15px;
+            border: 1px solid rgba(59, 183, 251, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .book-swap-item:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            transform: translateX(5px);
+            background: #2E3138;
+        }
+
+        .book-cover-small {
+            width: 60px;
+            height: 80px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .match-indicator {
+            background: linear-gradient(45deg, #FF6B6B, #FFE66D);
+            color: white;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            display: inline-block;
+        }
+
+        .swap-status-badge {
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.2);
+            color: #FFC107;
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-accepted {
+            background: rgba(40, 167, 69, 0.2);
+            color: #28A745;
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-rejected {
+            background: rgba(220, 53, 69, 0.2);
+            color: #DC3545;
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .swap-action-btn {
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            border: none;
+            border-radius: 10px;
+            padding: 8px 16px;
+            color: white;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .swap-action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(59, 183, 251, 0.3);
+            color: white;
+        }
+
+        .swap-tabs {
+            background: #1E1E1E;
+            border-radius: 15px;
+            padding: 10px;
+            margin-bottom: 30px;
+        }
+
+        .swap-tabs .nav-link {
+            background: transparent;
+            border: 1px solid rgba(59, 183, 251, 0.2);
+            color: #CCCCCC;
+            border-radius: 10px;
+            margin: 0 5px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
+        }
+
+        .swap-tabs .nav-link.active {
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            border-color: transparent;
+            color: white;
+        }
+
+        .swap-tabs .nav-link:hover:not(.active) {
+            background: rgba(59, 183, 251, 0.1);
+            border-color: rgba(59, 183, 251, 0.3);
+            color: #3BB7FB;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #888;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        .quick-match-btn {
+            background: linear-gradient(135deg, #FF6B6B, #FFE66D);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
+
+        .quick-match-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
+            color: white;
+        }
+
+        .matches-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 12px;
+            padding: 15px 0;
+        }
+
+        .match-card {
+            background: linear-gradient(135deg, #23242a, #1E1F23);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid rgba(120,130,150,0.10);
+            transition: all 0.3s ease;
+            height: 320px;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .match-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
+            border-color: rgba(59, 183, 251, 0.2);
+        }
+
+        .book-cover-container {
+            position: relative;
+            text-align: center;
+            margin-bottom: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .book-cover-professional {
+            width: 100%;
+            max-width: 120px;
+            height: 140px;
+            object-fit: cover;
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .book-cover-placeholder {
+            width: 120px;
+            height: 140px;
+            background: linear-gradient(135deg, #3BB7FB, #34a0e0);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+        }
+
+        .match-card-content {
+            padding: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+            justify-content: space-between;
+        }
+
+        .book-title {
+            font-size: 0.9rem;
+            line-height: 1.2;
+            margin-bottom: 0.25rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            min-height: 2.4rem;
+        }
+
+        .book-author {
+            font-size: 0.75rem;
+            color: #888;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .book-badges {
+            margin-bottom: 0.75rem;
+        }
+
+        .book-actions {
+            margin-top: auto;
+        }
+
+        .match-percentage {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: linear-gradient(45deg, #FF6B6B, #FFE66D);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .owner-badge {
+            position: absolute;
+            bottom: 8px;
+            left: 8px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 9px;
+        }
+
+        /* Preferences modal & selection clarity */
+        .pref-section-title { color: #ffffff; font-weight: 600; margin-bottom: 0.5rem; }
+        .pref-hint { color: #b0b3b8; font-size: 0.9rem; margin-bottom: 0.75rem; }
+        .pref-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.4rem .75rem; border:1px solid rgba(59,183,251,.25); color:#e4e6ea; border-radius:9999px; margin:.25rem; cursor:pointer; background:#1E1F23; transition:all .2s; font-size:.92rem; }
+        .pref-chip:hover { border-color: rgba(59,183,251,.5); }
+        .pref-chip.active { background: linear-gradient(135deg,#3BB7FB20,#F6B44320); border-color:#3BB7FB; color:#fff; box-shadow:0 6px 16px rgba(59,183,251,.15); }
+        .pref-btn-group .btn { margin-right:.5rem; margin-bottom:.5rem; }
+        .pref-range { width:100%; }
+        .range-value { color:#E5E7EB; font-weight:600; margin-left:.5rem; }
+        .book-swap-item.selected { border-color:#3BB7FB !important; background: rgba(59,183,251,.08); box-shadow:0 8px 24px rgba(59,183,251,.12); }
+
+        /* Custom Pagination Styling */
+        .pagination-custom {
+            margin: 0;
+        }
+
+        .pagination-custom .page-item .page-link {
+            background: #23242a;
+            border: 1px solid rgba(120,130,150,0.2);
+            color: #CCCCCC;
+            padding: 0.5rem 0.75rem;
+            margin: 0 2px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .pagination-custom .page-item .page-link:hover {
+            background: rgba(59, 183, 251, 0.1);
+            border-color: rgba(59, 183, 251, 0.3);
+            color: #3BB7FB;
+            transform: translateY(-1px);
+        }
+
+        .pagination-custom .page-item.active .page-link {
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 4px 12px rgba(59, 183, 251, 0.3);
+        }
+
+        .pagination-custom .page-item.disabled .page-link {
+            background: #1E1F23;
+            border-color: rgba(120,130,150,0.1);
+            color: #666;
+            cursor: not-allowed;
+        }
+
+        .pagination-custom .page-item.disabled .page-link:hover {
+            background: #1E1F23;
+            border-color: rgba(120,130,150,0.1);
+            color: #666;
+            transform: none;
+        }
+
+        @media (max-width: 768px) {
+            .swap-hero {
+                padding: 20px;
+                text-align: center;
+            }
+            
+            .matches-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 15px;
+            }
+        }
+    </style>
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-        <div class="container-fluid">
-            <!-- Logo on far left -->
-            <a class="navbar-brand d-flex align-items-center" href="/">
-                <span class="logo-icon mr-2">📚</span>
-                <span class="logo-text ml-2 gradient-text">Book<span class="swap">Swap</span></span>
+<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
+  <div class="container-fluid">
+    <a class="navbar-brand d-flex align-items-center" href="/dashboard">
+      <img src="/images/Untitled design(1).png" alt="BookSwap" height="40" class="me-2">
+      <span class="brand-text">BookSwap</span>
+    </a>
+    
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <!-- Navigation options in the center with correct order -->
+      <ul class="navbar-nav mx-auto">
+          <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+            <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+          </li>
+          <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+            <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+          </li>
+          <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+            <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+          </li>
+          <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+            <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+        </li>
+        <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+          <a class="nav-link" href="#"><i class="bi bi-trophy"></i> Rewards</a>
+        </li>
+      </ul>
+
+      <!-- User Profile on the right -->
+      <ul class="navbar-nav">
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="profileDropdown" 
+               role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+              <i class="bi bi-person-circle"></i> Profile
             </a>
-            
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <!-- Navigation options in the center with correct order -->
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item <%= activePage === 'home' ? 'active' : '' %>" data-page="home">
-                        <a class="nav-link" href="/"><i class="bi bi-house-door"></i> Home</a>
-                    </li>
-                    <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
-                        <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                    </li>
-                    <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
-                        <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
-                    </li>
-                    <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
-                        <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
-                    </li>
-                    <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
-                        <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
-                    </li>
-                    <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
-                        <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
-                    </li>
-                </ul>
-                
-                <!-- Profile dropdown on far right -->
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            <i class="bi bi-person-circle"></i> Profile
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                            <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
-                            <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+              <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+              <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+            </div>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Swap Matcher Main Content -->
+<main class="container-fluid py-4">
+    <div class="dashboard-content">
+    <!-- Swap Matcher Hero Section -->
+    <section class="welcome-hero">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="display-4 font-weight-bold mb-3">
+                        <i class="bi bi-arrow-left-right"></i> Smart Book Swap Matcher
+                    </h1>
+                    <p class="lead mb-4">
+                        Discover perfect matches for your books using our intelligent algorithm. 
+                        Connect with readers in your area and expand your literary horizons.
+                    </p>
+                    <div class="d-flex flex-wrap gap-3">
+                        <button class="btn-professional" onclick="quickMatchAll()">
+                            <i class="bi bi-lightning-charge"></i> Quick Match All
+                        </button>
+                        <button class="btn-outline-professional" onclick="showMatchPreferences()">
+                            <i class="bi bi-sliders"></i> Match Preferences
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-4 text-center">
+                    <div class="swap-stats">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h3 class="mb-1"><%= myPendingRequests || 0 %></h3>
+                                <small>My Requests</small>
+                            </div>
+                            <div class="col-6">
+                                <h3 class="mb-1"><%= incomingRequests || 0 %></h3>
+                                <small>Incoming</small>
+                            </div>
                         </div>
-                    </li>
-                </ul>
+                        <hr class="bg-white my-3">
+                        <div class="row text-center">
+                            <div class="col-6">
+                                <h3 class="mb-1"><%= activeSwaps || 0 %></h3>
+                                <small>Active Swaps</small>
+                            </div>
+                            <div class="col-6">
+                                <h3 class="mb-1"><%= userStats?.swapsCompleted || 0 %></h3>
+                                <small>Completed</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
         </div>
-    </nav>
+    </section>
 
-    <!-- Header -->
-    <main class="dashboard-main container mt-5">
-        <div class="dashboard-content mx-auto" style="max-width: 1200px;">
-            <!-- Welcome Section -->
-            <section class="dashboard-welcome mb-4 p-4">
-                <h1><i class="bi bi-arrow-left-right text-success"></i> Swap Matcher <span>🔄</span></h1>
-                <p>Find perfect book swap partners and discover new reads</p>
-                <div class="text-right mb-3">
-                    <div class="btn-group" role="group">
-                        <button class="btn btn-gradient active" id="browseTab">
-                            <i class="bi bi-grid"></i> Browse Books
-                        </button>
-                        <button class="btn btn-outline-primary" id="matchesTab">
-                            <i class="bi bi-heart"></i> Smart Matches
-                        </button>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Filter Section -->
-            <section class="filter-section mb-4 p-4">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="input-group">
-                            <input type="text" class="form-control search-input" placeholder="Search for books to swap...">
-                            <div class="input-group-append">
-                                <button class="btn btn-outline-secondary search-btn" type="button">
-                                    <i class="bi bi-search"></i>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <select class="form-control filter-select">
-                            <option>All Genres</option>
-                            <option>Fiction</option>
-                            <option>Science Fiction</option>
-                            <option>Fantasy</option>
-                            <option>Mystery</option>
-                            <option>Romance</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control filter-select">
-                            <option>All Conditions</option>
-                            <option>Excellent</option>
-                            <option>Good</option>
-                            <option>Fair</option>
-                        </select>
-                    </div>
-                    <div class="col-md-3">
-                        <select class="form-control filter-select">
-                            <option>Any Distance</option>
-                            <option>5 miles</option>
-                            <option>10 miles</option>
-                            <option>25 miles</option>
-                            <option>50 miles</option>
-                        </select>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Browse Books Section -->
-            <section id="browseContent" class="available-books mb-5 p-4">
-                <h2>Available Books for Swap</h2>
-                <p>Browse books from other users in your area</p>
-                <div class="row book-cards">
-                    <% availableBooks.forEach(function(book, index) { %>
-                    <div class="col-6 col-md-4 mb-4 d-flex">
-                        <div class="book-card flex-fill">
-                            <div class="book-img-placeholder mb-3">🔄</div>
-                            <div class="book-details">
-                                <div class="book-title"><%= book.title %></div>
-                                <div class="book-author text-muted">by <%= book.author %></div>
-                                <div class="book-meta mt-2">
-                                    <span class="badge condition-<%= book.condition.toLowerCase() %>">
-                                        <%= book.condition %>
-                                    </span>
-                                    <div class="owner-info text-muted mt-1">
-                                        <i class="bi bi-person-circle"></i> <%= book.owner %>
-                                    </div>
-                                    <div class="location-info text-muted">
-                                        <i class="bi bi-geo-alt"></i> <%= book.location %> • 4.2 miles away
-                                    </div>
-                                    <div class="rating-info text-muted">
-                                        <i class="bi bi-star-fill text-warning"></i> 4.8 rating • 23 swaps
-                                    </div>
-                                </div>
-                                <div class="book-actions mt-3">
-                                    <button class="btn btn-sm btn-gradient" data-toggle="modal" data-target="#swapModal<%= index %>">
-                                        <i class="bi bi-arrow-left-right"></i> Request Swap
-                                    </button>
-                                    <button class="btn btn-sm btn-outline-primary">
-                                        <i class="bi bi-chat"></i> Message
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <% }); %>
-                </div>
-            </section>
-
-            <!-- Smart Matches Section (Hidden by default) -->
-            <section id="matchesContent" class="smart-matches mb-5 p-4" style="display: none;">
-                <h2>Smart Matches for You</h2>
-                <p>Books from your wishlist available for swap</p>
-                
-                <div class="alert alert-info mb-4">
-                    <h5><i class="bi bi-lightbulb"></i> Smart Matches Based on Your Wishlist</h5>
-                    <p class="mb-0">We found books from your wishlist that are available for swap!</p>
-                </div>
-
-                <div class="row book-cards">
-                    <div class="col-6 col-md-6 mb-4 d-flex">
-                        <div class="book-card flex-fill border-success">
-                            <div class="book-img-placeholder mb-3 text-success">🎯</div>
-                            <div class="book-details">
-                                <div class="badge badge-success mb-2">Perfect Match!</div>
-                                <div class="book-title">Dune</div>
-                                <div class="book-author text-muted">by Frank Herbert</div>
-                                <div class="book-meta mt-2">
-                                    <div class="owner-info text-muted">
-                                        <strong>Available from:</strong> Sarah M. (Brooklyn, NY)
-                                    </div>
-                                    <div class="condition-info text-muted">
-                                        <strong>Condition:</strong> <span class="badge badge-success">Excellent</span>
-                                    </div>
-                                    <div class="distance-info text-muted">
-                                        <strong>Distance:</strong> 2.1 miles away
-                                    </div>
-                                    <div class="priority-info text-success mt-2">
-                                        This book is #1 on your wishlist!
-                                    </div>
-                                </div>
-                                <div class="book-actions mt-3">
-                                    <button class="btn btn-success btn-block">
-                                        <i class="bi bi-arrow-left-right"></i> Request Swap Now
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="col-6 col-md-6 mb-4 d-flex">
-                        <div class="book-card flex-fill border-warning">
-                            <div class="book-img-placeholder mb-3 text-warning">⭐</div>
-                            <div class="book-details">
-                                <div class="badge badge-warning mb-2">Great Match!</div>
-                                <div class="book-title">The Lord of the Rings</div>
-                                <div class="book-author text-muted">by J.R.R. Tolkien</div>
-                                <div class="book-meta mt-2">
-                                    <div class="owner-info text-muted">
-                                        <strong>Available from:</strong> Mike K. (Queens, NY)
-                                    </div>
-                                    <div class="condition-info text-muted">
-                                        <strong>Condition:</strong> <span class="badge badge-primary">Good</span>
-                                    </div>
-                                    <div class="distance-info text-muted">
-                                        <strong>Distance:</strong> 5.7 miles away
-                                    </div>
-                                    <div class="priority-info text-warning mt-2">
-                                        This book is #2 on your wishlist!
-                                    </div>
-                                </div>
-                                <div class="book-actions mt-3">
-                                    <button class="btn btn-warning btn-block">
-                                        <i class="bi bi-arrow-left-right"></i> Request Swap
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="text-center py-4">
-                    <p class="text-muted">Keep adding books to your wishlist to get better matches!</p>
-                    <a href="/wishlist" class="btn btn-outline-primary">
-                        <i class="bi bi-heart"></i> Manage Wishlist
+    <!-- Swap Navigation Tabs -->
+    <div class="container">
+        <div class="card-dark mb-4">
+            <div class="card-body p-3">
+            <ul class="nav nav-pills justify-content-center" id="swapTabs" role="tablist">
+                <li class="nav-item">
+                    <a class="nav-link active" id="find-matches-tab" data-toggle="pill" href="#find-matches" role="tab">
+                        <i class="bi bi-search"></i> Find Matches
                     </a>
-                </div>
-            </section>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="my-requests-tab" data-toggle="pill" href="#my-requests" role="tab">
+                        <i class="bi bi-arrow-up-right"></i> My Requests 
+                        <% if (myPendingRequests > 0) { %>
+                            <span class="badge badge-warning ml-1"><%= myPendingRequests %></span>
+                        <% } %>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="incoming-requests-tab" data-toggle="pill" href="#incoming-requests" role="tab">
+                        <i class="bi bi-arrow-down-left"></i> Incoming Requests
+                        <% if (incomingRequests > 0) { %>
+                            <span class="badge badge-success ml-1"><%= incomingRequests %></span>
+                        <% } %>
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" id="active-swaps-tab" data-toggle="pill" href="#active-swaps" role="tab">
+                        <i class="bi bi-hourglass-split"></i> Active Swaps
+                        <% if (activeSwaps > 0) { %>
+                            <span class="badge badge-info ml-1"><%= activeSwaps %></span>
+                        <% } %>
+                    </a>
+                </li>
+            </ul>
+            </div>
+        </div>
 
-            <!-- Current Swap Activity -->
-            <section class="swap-activity mb-5 p-4">
-                <h2>Your Recent Swap Activity</h2>
-                <p>Track your ongoing and completed swaps</p>
+        <!-- Tab Content -->
+        <div class="tab-content" id="swapTabsContent">
+            <!-- Find Matches Tab -->
+            <div class="tab-pane fade show active" id="find-matches" role="tabpanel">
                 <div class="row">
-                    <div class="col-md-6 mb-3">
-                        <div class="activity-card success">
-                            <div class="activity-header">
-                                <h6 class="text-success">Swap Request Sent</h6>
-                                <small class="text-muted">2 hours ago • Awaiting response</small>
+                    <!-- Your Books Section -->
+                    <div class="col-lg-4 mb-4">
+                        <div class="card-dark h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0 text-white">
+                                    <i class="bi bi-book-half text-primary"></i> Your Available Books
+                                </h5>
+                                <small class="text-muted">Select a book to find matches</small>
                             </div>
-                            <div class="activity-details">
-                                <div><strong>You offered:</strong> The Great Gatsby</div>
-                                <div><strong>You want:</strong> Harry Potter (from Alice)</div>
+                            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
+                                <% if (user.books && user.books.length > 0) { %>
+                                    <% user.books.forEach(book => { %>
+                                        <div class="book-swap-item" data-book-id="<%= book._id %>" onclick="selectBook('<%= book._id %>')">
+                                            <div class="d-flex align-items-center">
+                                                <img src="<%= book.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                     alt="<%= book.title %>" class="book-cover-small mr-3">
+                                                <div class="flex-grow-1">
+                                                    <h6 class="mb-1 text-white"><%= book.title %></h6>
+                                                    <small class="text-muted">by <%= book.author %></small>
+                                                    <br>
+                                                    <small class="badge badge-secondary"><%= book.genre %></small>
+                                                </div>
+                                                <button class="btn btn-gradient btn-sm" onclick="event.stopPropagation(); quickMatch('<%= book._id %>')">Find Matches</button>
+                                            </div>
+                                        </div>
+                                    <% }); %>
+                                <% } else { %>
+                                    <div class="empty-state">
+                                        <i class="bi bi-book"></i>
+                                        <h6>No Books Available</h6>
+                                        <p class="text-muted">Add books to your library to start swapping</p>
+                                        <a href="/library" class="btn btn-gradient">Add Books</a>
+                                    </div>
+                                <% } %>
                             </div>
                         </div>
                     </div>
-                    <div class="col-md-6 mb-3">
-                        <div class="activity-card warning">
-                            <div class="activity-header">
-                                <h6 class="text-warning">Swap Request Received</h6>
-                                <small class="text-muted">5 hours ago</small>
+
+                    <!-- Matches Section -->
+                    <div class="col-lg-8 mb-4">
+                        <div class="card-dark h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0 text-white">
+                                    <i class="bi bi-bullseye text-success"></i> Potential Matches
+                                </h5>
+                                <small class="text-muted">Smart matches based on your preferences</small>
                             </div>
-                            <div class="activity-details">
-                                <div><strong>Bob wants:</strong> 1984</div>
-                                <div><strong>Bob offers:</strong> Brave New World</div>
-                                <div class="mt-2">
-                                    <button class="btn btn-sm btn-success">Accept</button>
-                                    <button class="btn btn-sm btn-outline-secondary">Decline</button>
+                            <div class="card-body">
+                                <div id="matches-container">
+                                    <div class="empty-state" id="matches-empty">
+                                        <i class="bi bi-arrow-left"></i>
+                                        <h6>Select a Book</h6>
+                                        <p class="text-muted">Choose a book from your library to discover amazing swap opportunities</p>
+                                    </div>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </section>
-        </div>
-    </main>
+            </div>
 
-    <!-- Swap Request Modals -->
-    <% availableBooks.forEach(function(book, index) { %>
-    <div class="modal fade" id="swapModal<%= index %>" tabindex="-1" role="dialog">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content bg-dark text-white">
-                <div class="modal-header border-secondary">
-                    <h5 class="modal-title">Request Swap: <%= book.title %></h5>
-                    <button type="button" class="close text-white" data-dismiss="modal">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    <p><strong>You want:</strong> <%= book.title %> by <%= book.author %></p>
-                    <p><strong>Owner:</strong> <%= book.owner %> (<%= book.location %>)</p>
-                    
-                    <div class="form-group">
-                        <label>What would you like to offer in return?</label>
-                        <select class="form-control bg-dark text-white border-secondary">
-                            <option>Select a book from your library...</option>
-                            <option>The Great Gatsby - F. Scott Fitzgerald</option>
-                            <option>1984 - George Orwell</option>
-                        </select>
+            <!-- My Requests Tab -->
+            <div class="tab-pane fade" id="my-requests" role="tabpanel">
+                <div class="card-dark">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-white">
+                            <i class="bi bi-arrow-up-right text-primary"></i> Your Swap Requests
+                        </h5>
+                        <small class="text-muted">Track the status of your swap proposals</small>
                     </div>
-                    
-                    <div class="form-group">
-                        <label>Message to <%= book.owner %> (Optional)</label>
-                        <textarea class="form-control bg-dark text-white border-secondary" rows="3" placeholder="Hi! I'd love to swap for this book..."></textarea>
+                    <div class="card-body">
+                        <% const myRequests = userSwaps?.filter(swap => (swap.requester._id || swap.requester).toString() === user._id.toString()); %>
+                        <% if (myRequests && myRequests.length > 0) { %>
+                            <% myRequests.forEach(swap => { %>
+                                <div class="book-swap-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <img src="<%= swap.requestedBook.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.requestedBook.title %>" class="img-fluid rounded">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <h6 class="text-white">You want: <%= swap.requestedBook.title %></h6>
+                                            <small class="text-muted">by <%= swap.requestedBook.author %></small>
+                                            <br>
+                                            <small class="text-info">From: <%= swap.owner.username || swap.owner.fullname %></small>
+                                        </div>
+                                        <div class="col-md-2 text-center">
+                                            <i class="bi bi-arrow-left-right text-primary" style="font-size: 1.5rem;"></i>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <img src="<%= swap.offeredBook.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.offeredBook.title %>" class="img-fluid rounded">
+                                        </div>
+                                        <div class="col-md-2 text-right">
+                                            <span class="swap-status-badge status-<%= swap.status.toLowerCase().replace(' ', '-') %>">
+                                                <%= swap.status %>
+                                            </span>
+                                            <% if (swap.status === 'Pending') { %>
+                                                <br>
+                                                <button class="btn btn-sm btn-outline-danger mt-2" onclick="cancelSwapRequest('<%= swap._id %>')">
+                                                    Cancel
+                                                </button>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="bi bi-arrow-up-right"></i>
+                                <h6>No Requests Sent</h6>
+                                <p class="text-muted">You haven't made any swap requests yet. Start browsing to find great books!</p>
+                                <button class="btn btn-gradient" onclick="$('#find-matches-tab').tab('show')">Find Books to Swap</button>
+                            </div>
+                        <% } %>
                     </div>
                 </div>
-                <div class="modal-footer border-secondary">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                    <button type="button" class="btn btn-gradient">Send Swap Request</button>
+            </div>
+
+            <!-- Incoming Requests Tab -->
+            <div class="tab-pane fade" id="incoming-requests" role="tabpanel">
+                <div class="card-dark">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-white">
+                            <i class="bi bi-arrow-down-left text-success"></i> Incoming Swap Requests
+                        </h5>
+                        <small class="text-muted">Review and respond to swap proposals from other readers</small>
+                    </div>
+                    <div class="card-body">
+                        <% const incomingRequestsFiltered = userSwaps?.filter(swap => (swap.owner._id || swap.owner).toString() === user._id.toString() && swap.status === 'Pending'); %>
+                        <% if (incomingRequestsFiltered && incomingRequestsFiltered.length > 0) { %>
+                            <% incomingRequestsFiltered.forEach(swap => { %>
+                                <div class="book-swap-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-2">
+                                            <img src="<%= swap.requestedBook.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.requestedBook.title %>" class="img-fluid rounded">
+                                        </div>
+                                        <div class="col-md-3">
+                                            <h6 class="text-white">They want: <%= swap.requestedBook.title %></h6>
+                                            <small class="text-muted">by <%= swap.requestedBook.author %></small>
+                                            <br>
+                                            <small class="text-success">Your book</small>
+                                        </div>
+                                        <div class="col-md-1 text-center">
+                                            <i class="bi bi-arrow-left-right text-warning" style="font-size: 1.5rem;"></i>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <img src="<%= swap.offeredBook.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.offeredBook.title %>" class="img-fluid rounded">
+                                        </div>
+                                        <div class="col-md-2">
+                                            <h6 class="text-white">They offer: <%= swap.offeredBook.title %></h6>
+                                            <small class="text-muted">by <%= swap.offeredBook.author %></small>
+                                            <br>
+                                            <small class="text-info">From: <%= swap.requester.username || swap.requester.fullname %></small>
+                                        </div>
+                                        <div class="col-md-2 text-right">
+                                            <button class="btn btn-success btn-sm mb-2 d-block" onclick="acceptSwapRequest('<%= swap._id %>')">
+                                                <i class="bi bi-check"></i> Accept
+                                            </button>
+                                            <button class="btn btn-outline-danger btn-sm d-block" onclick="rejectSwapRequest('<%= swap._id %>')">
+                                                <i class="bi bi-x"></i> Decline
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="bi bi-arrow-down-left"></i>
+                                <h6>No Incoming Requests</h6>
+                                <p class="text-muted">No one has requested your books yet. Make sure your library is visible to other readers!</p>
+                                <a href="/library" class="btn btn-gradient">Manage My Library</a>
+                            </div>
+                        <% } %>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Active Swaps Tab -->
+            <div class="tab-pane fade" id="active-swaps" role="tabpanel">
+                <div class="card-dark">
+                    <div class="card-header">
+                        <h5 class="mb-0 text-white">
+                            <i class="bi bi-hourglass-split text-warning"></i> Active Swaps
+                        </h5>
+                        <small class="text-muted">Confirm completion when you receive your books</small>
+                    </div>
+                    <div class="card-body">
+                        <% const activeSwapsFiltered = userSwaps?.filter(swap => swap.status === 'Accepted' || swap.status === 'Pending Confirmation'); %>
+                        <% if (activeSwapsFiltered && activeSwapsFiltered.length > 0) { %>
+                            <% activeSwapsFiltered.forEach(swap => { %>
+                                <div class="book-swap-item">
+                                    <div class="row align-items-center">
+                                        <div class="col-md-8">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="<%= swap.requestedBook.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                             alt="<%= swap.requestedBook.title %>" 
+                                                             class="book-cover-small mr-3">
+                                                        <div>
+                                                            <h6 class="mb-1 text-white"><%= swap.requestedBook.title %></h6>
+                                                            <small class="text-muted"><%= swap.requestedBook.author %></small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-6">
+                                                    <div class="d-flex align-items-center">
+                                                        <img src="<%= swap.offeredBook.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                             alt="<%= swap.offeredBook.title %>" 
+                                                             class="book-cover-small mr-3">
+                                                        <div>
+                                                            <h6 class="mb-1 text-white"><%= swap.offeredBook.title %></h6>
+                                                            <small class="text-muted"><%= swap.offeredBook.author %></small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <hr class="bg-secondary">
+                                            <div class="row">
+                                                <div class="col-6">
+                                                    <strong class="text-white">Partner:</strong> 
+                                                    <span class="text-info">
+                                                        <%= (swap.requester._id.toString() === user._id.toString()) ? (swap.owner.username || swap.owner.fullname) : (swap.requester.username || swap.requester.fullname) %>
+                                                    </span>
+                                                </div>
+                                                <div class="col-6">
+                                                    <strong class="text-white">Status:</strong> 
+                                                    <span class="swap-status-badge status-<%= swap.status.toLowerCase().replace(' ', '-') %>">
+                                                        <%= swap.status %>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4 text-right">
+                                            <% if (swap.status === 'Accepted') { %>
+                                                <button class="btn swap-action-btn btn-block mb-2" onclick="confirmSwapCompletion('<%= swap._id %>')">
+                                                    <i class="bi bi-check-circle"></i> Confirm Received
+                                                </button>
+                                                <small class="text-muted">Both parties must confirm</small>
+                                            <% } else if (swap.status === 'Pending Confirmation') { %>
+                                                <div class="alert alert-info mb-0">
+                                                    <i class="bi bi-hourglass"></i>
+                                                    <small>Waiting for confirmation...</small>
+                                                </div>
+                                            <% } %>
+                                        </div>
+                                    </div>
+                                </div>
+                            <% }); %>
+                        <% } else { %>
+                            <div class="empty-state">
+                                <i class="bi bi-hourglass-split"></i>
+                                <h6>No Active Swaps</h6>
+                                <p class="text-muted">You don't have any active swaps at the moment. Start by finding books you'd like to read!</p>
+                                <button class="btn btn-gradient" onclick="$('#find-matches-tab').tab('show')">Start Swapping</button>
+                            </div>
+                        <% } %>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
-    <% }); %>
+</div>
+</main>
 
-    <!-- Scripts -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Tab switching functionality
-        $('#browseTab').click(function() {
-            $(this).addClass('active').siblings().removeClass('active');
-            $('#browseContent').show();
-            $('#matchesContent').hide();
+<!-- Swap Request Modal -->
+<div class="modal fade" id="swapRequestModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    <i class="bi bi-arrow-left-right text-primary"></i> Propose Book Swap
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-6 text-center">
+                        <h6 class="text-success">You Offer:</h6>
+                        <div id="offered-book-preview" class="p-3 bg-secondary rounded"></div>
+                    </div>
+                    <div class="col-6 text-center">
+                        <h6 class="text-warning">You Want:</h6>
+                        <div id="requested-book-preview" class="p-3 bg-secondary rounded"></div>
+                    </div>
+                </div>
+                <hr class="bg-secondary">
+                <div class="form-group">
+                    <label class="text-white">Personal Message (optional):</label>
+                    <textarea class="form-control bg-dark text-white border-secondary" id="swap-message" rows="3" 
+                              placeholder="Add a personal touch to your swap request..."></textarea>
+                </div>
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-info">Match Score</h6>
+                        <div id="match-score-display"></div>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-info">Swap Timeline</h6>
+                        <small class="text-muted">Typical completion: 5-7 days</small>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn swap-action-btn" onclick="submitSwapRequest()">
+                    <i class="bi bi-send"></i> Send Swap Request
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Match Preferences Modal -->
+<div class="modal fade" id="matchPreferencesModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content card-dark">
+            <div class="modal-header card-header">
+                <h5 class="modal-title">
+                    <i class="bi bi-sliders text-primary"></i> Match Preferences
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body card-body">
+                <div class="form-group">
+                    <div class="pref-section-title">Preferred Genres</div>
+                    <div class="pref-hint">Pick a few genres you enjoy</div>
+                    <div id="genre-chips" class="d-flex flex-wrap"></div>
+                </div>
+                <hr class="bg-secondary">
+                <div class="form-group">
+                    <div class="pref-section-title">Match Distance <span id="distanceValue" class="range-value"></span></div>
+                    <input type="range" min="5" max="100" step="5" id="match-distance-range" class="pref-range">
+                    <div class="pref-hint">Set maximum distance for matches</div>
+                </div>
+                <hr class="bg-secondary">
+                <div class="form-group">
+                    <div class="pref-section-title">Book Condition</div>
+                    <div class="pref-btn-group" id="condition-group">
+                        <button type="button" data-cond="Any" class="btn btn-outline-professional btn-sm">Any</button>
+                        <button type="button" data-cond="Excellent" class="btn btn-outline-professional btn-sm">Excellent</button>
+                        <button type="button" data-cond="Good" class="btn btn-outline-professional btn-sm">Good</button>
+                        <button type="button" data-cond="Fair" class="btn btn-outline-professional btn-sm">Fair</button>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer card-header" style="border-top:1px solid #2A2D35">
+                <button type="button" class="btn btn-outline-professional" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-professional" onclick="saveMatchPreferences()">Save Preferences</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+let selectedUserBook = null;
+let targetBook = null;
+let currentMatchData = null;
+let matchPrefs = null;
+let matchesState = { items: [], page: 1, pageSize: 6 };
+
+// Select a book from user's library
+function selectBook(bookId) {
+    selectedUserBook = bookId;
+    
+    // Visual feedback
+    $('.book-swap-item').removeClass('selected');
+    $(`.book-swap-item[data-book-id="${bookId}"]`).addClass('selected');
+    
+    // Auto-trigger quick match
+    quickMatch(bookId);
+}
+
+// Quick match for a specific book
+function quickMatch(bookId) {
+    selectedUserBook = bookId;
+    // ensure prefs loaded
+    loadMatchPreferences();
+    
+    // Show loading state
+    $('#matches-container').html(`
+        <div class="empty-state">
+            <div class="spinner-border text-primary mb-3" role="status"></div>
+            <h6>Finding Perfect Matches...</h6>
+            <p class="text-muted">Our AI is analyzing compatibility...</p>
+        </div>
+    `);
+    
+    // Fallback to API call if server-side data fails
+    $.get(`/api/books/${bookId}/matches`)
+        .done(function(data) {
+            console.log('API response:', data);
+            let matches = data.matches || [];
+            console.log('Matches from API:', matches);
+            
+            // Apply client-side filtering
+            if (matchPrefs && matchPrefs.condition && matchPrefs.condition !== 'Any') {
+                matches = matches.filter(m => (m.condition || '') === matchPrefs.condition);
+            }
+            
+            displayMatches(matches);
+        })
+        .fail(function(xhr) {
+            console.error('API call failed:', xhr);
+            $('#matches-container').html(`
+                <div class="empty-state">
+                    <i class="bi bi-exclamation-triangle text-warning"></i>
+                    <h6>Match Search Failed</h6>
+                    <p class="text-muted">Unable to find matches. Please try again.</p>
+                    <button class="btn btn-outline-primary" onclick="quickMatch('${bookId}')">Retry</button>
+                </div>
+            `);
+        });
+}
+
+// Display potential matches
+function displayMatches(matches) {
+    if (matches.length === 0) {
+        $('#matches-container').html(`
+            <div class="empty-state">
+                <i class="bi bi-search text-muted"></i>
+                <h6>No Matches Found</h6>
+                <p class="text-muted">Try selecting a different book or adjusting your preferences</p>
+                <button class="btn btn-outline-primary" onclick="showMatchPreferences()">Adjust Preferences</button>
+            </div>
+        `);
+        return;
+    }
+
+    // Save and render first page
+    matchesState.items = matches;
+    matchesState.page = 1;
+    renderMatchesPage();
+}
+
+function renderMatchesPage() {
+    const start = (matchesState.page - 1) * matchesState.pageSize;
+    const end = start + matchesState.pageSize;
+    const pageItems = matchesState.items.slice(start, end);
+
+    let html = '<div class="matches-grid">';
+    pageItems.forEach(match => {
+        // Debug: Log the match data to see what image fields are available
+        console.log('Rendering match:', match.title, 'Image fields:', {
+            coverImage: match.coverImage,
+            image: match.image,
+            imageUrl: match.imageUrl,
+            coverUrl: match.coverUrl,
+            hasImage: match.coverImage || match.image || match.imageUrl || match.coverUrl
         });
         
-        $('#matchesTab').click(function() {
-            $(this).addClass('active').siblings().removeClass('active');
-            $('#browseContent').hide();
-            $('#matchesContent').show();
+        // Try multiple image field sources
+        const hasImage = match.coverImage || match.image || match.imageUrl || match.coverUrl;
+        let imageSrc = '/images/placeholder-book.jpg'; // Default fallback
+        
+        if (hasImage) {
+            // If it's a full URL, use it directly
+            if (hasImage.startsWith('http')) {
+                imageSrc = hasImage;
+            } 
+            // If it's a relative path, ensure it starts with /
+            else if (hasImage.startsWith('/')) {
+                imageSrc = hasImage;
+            } 
+            // If it doesn't start with /, add it
+            else {
+                imageSrc = '/' + hasImage;
+            }
+        }
+        
+        console.log('Final image source for', match.title, ':', imageSrc);
+        
+        html += `
+            <div class="match-card" onclick="proposeSwap('${match._id}', '${match.owner._id}')">
+                <div class="book-cover-container">
+                    <img src="${imageSrc}" class="book-cover-professional" alt="${match.title}" 
+                         onerror="console.log('Image failed to load:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                    <div class="book-cover-placeholder" style="display: none;">
+                        <i class="bi bi-book text-white" style="font-size: 2rem;"></i>
+                    </div>
+                    <span class="match-percentage">${match.matchPercentage}%</span>
+                    <span class="owner-badge"><i class="bi bi-person"></i> ${match.owner.username || match.owner.fullname}</span>
+                </div>
+                <div class="match-card-content">
+                    <div>
+                        <h6 class="book-title">${match.title}</h6>
+                        <small class="book-author">by ${match.author}</small>
+                        <div class="book-badges d-flex justify-content-between align-items-center">
+                            <small class="badge badge-info" style="font-size: 0.65rem;">${match.genre}</small>
+                            <small class="text-muted" style="font-size: 0.7rem;">${match.condition}</small>
+                        </div>
+                    </div>
+                    <div class="book-actions d-flex align-items-center justify-content-between">
+                        <button class="btn btn-outline-professional btn-sm" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;" onclick="event.stopPropagation(); toggleLike('${match._id}', this)"><i class="bi bi-heart"></i> <span class="like-count" data-id="${match._id}">—</span></button>
+                        <button class="btn btn-professional btn-sm" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;" onclick="event.stopPropagation(); proposeSwap('${match._id}', '${match.owner._id}')"><i class="bi bi-arrow-left-right"></i> Swap</button>
+                    </div>
+                </div>
+            </div>`;
+    });
+    html += '</div>';
+
+    html += renderPagination();
+    $('#matches-container').html(html);
+}
+
+function renderPagination() {
+    const total = matchesState.items.length;
+    const totalPages = Math.max(1, Math.ceil(total / matchesState.pageSize));
+    if (totalPages <= 1) return '';
+    let pager = '<div class="d-flex justify-content-center mt-4">';
+    pager += `<nav aria-label="Matches pagination"><ul class="pagination pagination-custom">`;
+    const prevDisabled = matchesState.page === 1 ? 'disabled' : '';
+    const nextDisabled = matchesState.page === totalPages ? 'disabled' : '';
+    pager += `<li class="page-item ${prevDisabled}"><a class="page-link" href="#" onclick="changeMatchesPage(${matchesState.page - 1}); return false;"><i class="bi bi-chevron-left"></i> Prev</a></li>`;
+    for (let p = 1; p <= totalPages; p++) {
+        const active = matchesState.page === p ? 'active' : '';
+        pager += `<li class="page-item ${active}"><a class="page-link" href="#" onclick="changeMatchesPage(${p}); return false;">${p}</a></li>`;
+    }
+    pager += `<li class="page-item ${nextDisabled}"><a class="page-link" href="#" onclick="changeMatchesPage(${matchesState.page + 1}); return false;">Next <i class="bi bi-chevron-right"></i></a></li>`;
+    pager += `</ul></nav>`;
+    pager += '</div>';
+    return pager;
+}
+
+function changeMatchesPage(p) {
+    const totalPages = Math.max(1, Math.ceil(matchesState.items.length / matchesState.pageSize));
+    if (p < 1 || p > totalPages) return;
+    matchesState.page = p;
+    renderMatchesPage();
+}
+
+// Propose a swap
+function proposeSwap(requestedBookId, ownerId) {
+    if (!selectedUserBook) {
+        alert('Please select a book from your library first');
+        return;
+    }
+    
+    targetBook = requestedBookId;
+    
+    // Get book details for modal
+    Promise.all([
+        $.get(`/api/books/${selectedUserBook}`),
+        $.get(`/api/books/${requestedBookId}`)
+    ]).then(([offeredBook, requestedBook]) => {
+        showSwapModal(offeredBook.book, requestedBook.book);
+    }).catch(() => {
+        alert('Failed to load book details');
+    });
+}
+
+// Show swap proposal modal
+function showSwapModal(offeredBook, requestedBook) {
+    $('#offered-book-preview').html(`
+        <img src="${offeredBook.coverImage || '/images/placeholder-book.jpg'}" 
+             class="img-fluid mb-2" style="max-height: 120px;">
+        <h6 class="text-white">${offeredBook.title}</h6>
+        <small class="text-muted">${offeredBook.author}</small>
+        <br>
+        <small class="badge badge-secondary">${offeredBook.genre}</small>
+    `);
+    
+    $('#requested-book-preview').html(`
+        <img src="${requestedBook.coverImage || '/images/placeholder-book.jpg'}" 
+             class="img-fluid mb-2" style="max-height: 120px;">
+        <h6 class="text-white">${requestedBook.title}</h6>
+        <small class="text-muted">${requestedBook.author}</small>
+        <br>
+        <small class="badge badge-secondary">${requestedBook.genre}</small>
+    `);
+    
+    // Calculate and display match score
+    let matchScore = calculateMatchScore(offeredBook, requestedBook);
+    $('#match-score-display').html(`
+        <div class="progress mb-2">
+            <div class="progress-bar bg-success" style="width: ${matchScore}%"></div>
+        </div>
+        <small class="text-muted">${matchScore}% compatibility</small>
+    `);
+    
+    $('#swapRequestModal').modal('show');
+}
+
+// Calculate match score
+function calculateMatchScore(book1, book2) {
+    let score = 50; // Base score
+    if (book1.genre === book2.genre) score += 30;
+    if (book1.author === book2.author) score += 20;
+    if (book1.language === book2.language) score += 15;
+    return Math.min(score, 100);
+}
+
+// Submit swap request
+function submitSwapRequest() {
+    const message = $('#swap-message').val();
+    
+    $.post('/api/swaps', {
+        offeredBookId: selectedUserBook,
+        requestedBookId: targetBook,
+        message: message
+    })
+    .done(function(response) {
+        $('#swapRequestModal').modal('hide');
+        showSuccessMessage('Swap request sent successfully!');
+        setTimeout(() => location.reload(), 1500);
+    })
+    .fail(function(xhr) {
+        showErrorMessage('Failed to send swap request: ' + (xhr.responseJSON?.message || 'Unknown error'));
+    });
+}
+
+// Like / Unlike a book
+function toggleLike(bookId, btn) {
+    $.post(`/api/books/${bookId}/like`)
+        .done(function(res) {
+            const liked = res.liked;
+            const count = res.likes;
+            $(btn).toggleClass('btn-outline-light btn-danger');
+            $(btn).find('i').toggleClass('bi-heart bi-heart-fill');
+            $(`.like-count[data-id="${bookId}"]`).text(count);
+        })
+        .fail(function(xhr) {
+            showErrorMessage('Failed to like: ' + (xhr.responseJSON?.message || 'Unknown error'));
         });
-    </script>
-    <script src="/js/navigation.js"></script>
+}
+
+// Quick match all books
+function quickMatchAll() {
+    alert('Finding matches for all your books... This feature is coming soon!');
+}
+
+// Show match preferences modal
+function showMatchPreferences() {
+    loadMatchPreferences();
+    // build chips
+    const allGenres = ['Fiction','Science Fiction','Romance','Mystery','Fantasy','Biography','History','Non-Fiction','Thriller','Self-Help'];
+    const chipWrap = $('#genre-chips');
+    chipWrap.empty();
+    allGenres.forEach(g => {
+        const active = matchPrefs.genres.includes(g) ? 'active' : '';
+        const el = $(`<span class="pref-chip ${active}" data-genre="${g}"><i class="bi bi-book"></i>${g}</span>`);
+        el.on('click', () => { el.toggleClass('active'); });
+        chipWrap.append(el);
+    });
+    // distance
+    const range = $('#match-distance-range');
+    range.val(matchPrefs.distance || 10);
+    $('#distanceValue').text(`${range.val()} km`);
+    range.on('input', function(){ $('#distanceValue').text(`${this.value} km`); });
+    // condition buttons
+    $('#condition-group .btn').removeClass('btn-professional').addClass('btn-outline-professional');
+    const current = matchPrefs.condition || 'Any';
+    const btn = $(`#condition-group .btn[data-cond="${current}"]`);
+    btn.removeClass('btn-outline-professional').addClass('btn-professional');
+    $('#condition-group .btn').off('click').on('click', function(){
+        $('#condition-group .btn').removeClass('btn-professional').addClass('btn-outline-professional');
+        $(this).removeClass('btn-outline-professional').addClass('btn-professional');
+    });
+    $('#matchPreferencesModal').modal('show');
+}
+
+// Save match preferences
+function saveMatchPreferences() {
+    const genres = [];
+    $('#genre-chips .pref-chip.active').each(function(){ genres.push($(this).data('genre')); });
+    const distance = parseInt($('#match-distance-range').val(), 10) || 10;
+    const condBtn = $('#condition-group .btn.btn-professional').data('cond') || 'Any';
+    matchPrefs = { genres, distance, condition: condBtn };
+    localStorage.setItem('swapMatchPrefs', JSON.stringify(matchPrefs));
+    $('#matchPreferencesModal').modal('hide');
+    if (selectedUserBook) { quickMatch(selectedUserBook); }
+}
+
+function loadMatchPreferences() {
+    try {
+        matchPrefs = JSON.parse(localStorage.getItem('swapMatchPrefs') || 'null') || { genres: [], distance: 10, condition: 'Any' };
+    } catch(e) {
+        matchPrefs = { genres: [], distance: 10, condition: 'Any' };
+    }
+}
+
+// Accept swap request
+function acceptSwapRequest(swapId) {
+    if (confirm('Accept this swap request?')) {
+        $.ajax({
+            url: `/api/swaps/${swapId}/accept`,
+            method: 'PUT'
+        })
+        .done(function() {
+            showSuccessMessage('Swap request accepted!');
+            setTimeout(() => location.reload(), 1500);
+        })
+        .fail(function(xhr) {
+            showErrorMessage('Failed to accept swap: ' + (xhr.responseJSON?.message || 'Unknown error'));
+        });
+    }
+}
+
+// Reject swap request
+function rejectSwapRequest(swapId) {
+    if (confirm('Reject this swap request?')) {
+        $.ajax({
+            url: `/api/swaps/${swapId}/reject`,
+            method: 'PUT'
+        })
+        .done(function() {
+            showSuccessMessage('Swap request rejected');
+            setTimeout(() => location.reload(), 1500);
+        })
+        .fail(function(xhr) {
+            showErrorMessage('Failed to reject swap: ' + (xhr.responseJSON?.message || 'Unknown error'));
+        });
+    }
+}
+
+// Cancel swap request
+function cancelSwapRequest(swapId) {
+    if (confirm('Cancel this swap request?')) {
+        $.ajax({
+            url: `/api/swaps/${swapId}`,
+            method: 'DELETE'
+        })
+        .done(function() {
+            showSuccessMessage('Swap request cancelled');
+            setTimeout(() => location.reload(), 1500);
+        })
+        .fail(function(xhr) {
+            showErrorMessage('Failed to cancel swap: ' + (xhr.responseJSON?.message || 'Unknown error'));
+        });
+    }
+}
+
+// Confirm swap completion
+function confirmSwapCompletion(swapId) {
+    if (confirm('Have you received the book and want to confirm completion?')) {
+        $.post(`/api/swaps/${swapId}/confirm`)
+            .done(function(response) {
+                if (response.completed) {
+                    showSuccessMessage('Swap completed! You earned 10 reward points!');
+                } else {
+                    showSuccessMessage('Completion confirmed! Waiting for other party.');
+                }
+                setTimeout(() => location.reload(), 2000);
+            })
+            .fail(function(xhr) {
+                showErrorMessage('Failed to confirm completion: ' + (xhr.responseJSON?.message || 'Unknown error'));
+            });
+    }
+}
+
+// Utility functions for messages
+function showSuccessMessage(message) {
+    // Simple alert for now - could be enhanced with toast notifications
+    alert('✅ ' + message);
+}
+
+function showErrorMessage(message) {
+    // Simple alert for now - could be enhanced with toast notifications
+    alert('❌ ' + message);
+}
+
+// Auto-select first book on page load if available
+$(document).ready(function() {
+    loadMatchPreferences();
+    
+    // Debug: Test API call
+    console.log('Testing API call...');
+    $.get('/api/books/test/matches')
+        .done(function(data) {
+            console.log('API test successful:', data);
+        })
+        .fail(function(xhr) {
+            console.log('API test failed:', xhr.status, xhr.responseText);
+        });
+    
+    const firstBook = $('.book-swap-item').first();
+    if (firstBook.length > 0) {
+        const bookId = firstBook.data('book-id');
+        if (bookId) {
+            console.log('Auto-selecting first book:', bookId);
+            setTimeout(() => selectBook(bookId), 1000);
+        }
+    }
+    
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+});
+</script>
+
 </body>
 </html>

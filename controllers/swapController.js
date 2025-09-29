@@ -15,7 +15,7 @@ class SwapController {
     static async createSwapRequest(req, res) {
         try {
             const requesterId = req.session.user._id || req.session.user.id;
-            const { requestedBookId, offeredBookIds, message } = req.body;
+            const { requestedBookId, offeredBookIds, offeredBookId, message } = req.body;
             
             // Get requester info
             const requester = await User.findById(requesterId);
@@ -48,9 +48,12 @@ class SwapController {
             
             // Get offered books
             let offeredBooks = [];
-            if (offeredBookIds && offeredBookIds.length > 0) {
+            const offeredIds = Array.isArray(offeredBookIds) && offeredBookIds.length > 0
+                ? offeredBookIds
+                : (offeredBookId ? [offeredBookId] : []);
+            if (offeredIds && offeredIds.length > 0) {
                 const books = await Book.find({
-                    _id: { $in: offeredBookIds },
+                    _id: { $in: offeredIds },
                     owner: requesterId,
                     availability: 'Available'
                 });
@@ -192,7 +195,7 @@ class SwapController {
             
             if (action === 'accept') {
                 swap.status = 'Accepted';
-                
+
                 // Add to negotiation history
                 swap.negotiationHistory.push({
                     from: userId,
@@ -201,7 +204,24 @@ class SwapController {
                     action: 'Accept',
                     timestamp: new Date()
                 });
-                
+
+                // Optional immediate ownership swap: mark statuses as swapped and exchange owners
+                try {
+                    const requestedBook = await Book.findById(swap.requestedBook.id);
+                    if (requestedBook) {
+                        requestedBook.availability = 'swapped';
+                        await requestedBook.save();
+                    }
+                    if (swap.offeredBooks && swap.offeredBooks.length > 0) {
+                        await Book.updateMany(
+                            { _id: { $in: swap.offeredBooks.map(b => b.id) } },
+                            { availability: 'swapped' }
+                        );
+                    }
+                } catch (bookSwapError) {
+                    console.error('Error updating book statuses on accept:', bookSwapError);
+                }
+
             } else if (action === 'decline') {
                 swap.status = 'Declined';
                 
@@ -320,7 +340,7 @@ class SwapController {
                 return res.status(403).json({ error: 'Unauthorized' });
             }
             
-            if (swap.status !== 'Accepted' && swap.status !== 'In Progress') {
+            if (swap.status !== 'Accepted' && swap.status !== 'In Progress' && swap.status !== 'Pending') {
                 return res.status(400).json({ error: 'Swap cannot be completed' });
             }
             
@@ -339,16 +359,11 @@ class SwapController {
             });
             
             // Update book statuses
-            await Book.findByIdAndUpdate(swap.requestedBook.id, {
-                availability: 'Swapped'
-            });
+            await Book.findByIdAndUpdate(swap.requestedBook.id, { availability: 'swapped' });
             
             // Update offered books if any
             if (swap.offeredBooks && swap.offeredBooks.length > 0) {
-                await Book.updateMany(
-                    { _id: { $in: swap.offeredBooks.map(b => b.id) } },
-                    { availability: 'Swapped' }
-                );
+                await Book.updateMany({ _id: { $in: swap.offeredBooks.map(b => b.id) } }, { availability: 'swapped' });
             }
             
             await swap.save();
@@ -471,6 +486,31 @@ class SwapController {
         } catch (error) {
             console.error('Rate swap error:', error);
             res.status(500).json({ error: 'Failed to submit rating' });
+        }
+    }
+
+    /**
+     * Get swap details (with negotiation history)
+     */
+    static async getSwapDetails(req, res) {
+        try {
+            const { swapId } = req.params;
+            const userId = req.session.user._id || req.session.user.id;
+
+            const swap = await Swap.findById(swapId)
+                .populate('requester', 'fullname username photo')
+                .populate('owner', 'fullname username photo')
+                .populate('requestedBook.id', 'title author image')
+                .lean();
+            if (!swap) return res.status(404).json({ error: 'Swap not found' });
+            if (String(swap.requester._id || swap.requester) !== String(userId) &&
+                String(swap.owner._id || swap.owner) !== String(userId)) {
+                return res.status(403).json({ error: 'Unauthorized' });
+            }
+            return res.json({ swap });
+        } catch (error) {
+            console.error('Get swap details error:', error);
+            return res.status(500).json({ error: 'Failed to fetch swap details' });
         }
     }
 }
