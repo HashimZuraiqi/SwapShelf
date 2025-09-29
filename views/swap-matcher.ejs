@@ -249,6 +249,15 @@
             justify-content: space-between;
         }
 
+        .book-owner {
+            margin-bottom: 0.25rem;
+        }
+
+        .book-owner i {
+            margin-right: 3px;
+            opacity: 0.7;
+        }
+
         .book-title {
             font-size: 0.9rem;
             line-height: 1.2;
@@ -827,21 +836,21 @@
                                 <div class="book-swap-item">
                                     <div class="row align-items-center">
                                         <div class="col-md-2">
-                                            <img src="<%= swap.requestedBook.coverImage || '/images/placeholder-book.jpg' %>" 
-                                                 alt="<%= swap.requestedBook.title %>" class="img-fluid rounded">
+                                            <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.requestedBook ? swap.requestedBook.title : 'Book' %>" class="img-fluid rounded">
                                         </div>
                                         <div class="col-md-4">
-                                            <h6 class="text-white">You want: <%= swap.requestedBook.title %></h6>
-                                            <small class="text-muted">by <%= swap.requestedBook.author %></small>
+                                            <h6 class="text-white">You want: <%= swap.requestedBook ? swap.requestedBook.title : 'Unknown Book' %></h6>
+                                            <small class="text-muted">by <%= swap.requestedBook ? swap.requestedBook.author : 'Unknown Author' %></small>
                                             <br>
-                                            <small class="text-info">From: <%= swap.owner.username || swap.owner.fullname %></small>
+                                            <small class="text-info">From: <%= swap.owner ? (swap.owner.username || swap.owner.fullname) : 'Unknown User' %></small>
                                         </div>
                                         <div class="col-md-2 text-center">
                                             <i class="bi bi-arrow-left-right text-primary" style="font-size: 1.5rem;"></i>
                                         </div>
                                         <div class="col-md-2">
-                                            <img src="<%= swap.offeredBook.coverImage || '/images/placeholder-book.jpg' %>" 
-                                                 alt="<%= swap.offeredBook.title %>" class="img-fluid rounded">
+                                            <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.offeredBook ? swap.offeredBook.title : 'Book' %>" class="img-fluid rounded">
                                         </div>
                                         <div class="col-md-2 text-right">
                                             <span class="swap-status-badge status-<%= swap.status.toLowerCase().replace(' ', '-') %>">
@@ -885,12 +894,12 @@
                                 <div class="book-swap-item">
                                     <div class="row align-items-center">
                                         <div class="col-md-2">
-                                            <img src="<%= swap.requestedBook.coverImage || '/images/placeholder-book.jpg' %>" 
-                                                 alt="<%= swap.requestedBook.title %>" class="img-fluid rounded">
+                                            <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.requestedBook ? swap.requestedBook.title : 'Book' %>" class="img-fluid rounded">
                                         </div>
                                         <div class="col-md-3">
-                                            <h6 class="text-white">They want: <%= swap.requestedBook.title %></h6>
-                                            <small class="text-muted">by <%= swap.requestedBook.author %></small>
+                                            <h6 class="text-white">They want: <%= swap.requestedBook ? swap.requestedBook.title : 'Unknown Book' %></h6>
+                                            <small class="text-muted">by <%= swap.requestedBook ? swap.requestedBook.author : 'Unknown Author' %></small>
                                             <br>
                                             <small class="text-success">Your book</small>
                                         </div>
@@ -898,14 +907,14 @@
                                             <i class="bi bi-arrow-left-right text-warning" style="font-size: 1.5rem;"></i>
                                         </div>
                                         <div class="col-md-2">
-                                            <img src="<%= swap.offeredBook.coverImage || '/images/placeholder-book.jpg' %>" 
-                                                 alt="<%= swap.offeredBook.title %>" class="img-fluid rounded">
+                                            <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                 alt="<%= swap.offeredBook ? swap.offeredBook.title : 'Book' %>" class="img-fluid rounded">
                                         </div>
                                         <div class="col-md-2">
-                                            <h6 class="text-white">They offer: <%= swap.offeredBook.title %></h6>
-                                            <small class="text-muted">by <%= swap.offeredBook.author %></small>
+                                            <h6 class="text-white">They offer: <%= swap.offeredBook ? swap.offeredBook.title : 'Unknown Book' %></h6>
+                                            <small class="text-muted">by <%= swap.offeredBook ? swap.offeredBook.author : 'Unknown Author' %></small>
                                             <br>
-                                            <small class="text-info">From: <%= swap.requester.username || swap.requester.fullname %></small>
+                                            <small class="text-info">From: <%= swap.requester ? (swap.requester.username || swap.requester.fullname) : 'Unknown User' %></small>
                                         </div>
                                         <div class="col-md-2 text-right">
                                             <button class="btn btn-success btn-sm mb-2 d-block" onclick="acceptSwapRequest('<%= swap._id %>')">
@@ -949,23 +958,23 @@
                                             <div class="row">
                                                 <div class="col-6">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="<%= swap.requestedBook.coverImage || '/images/placeholder-book.jpg' %>" 
-                                                             alt="<%= swap.requestedBook.title %>" 
+                                                        <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                             alt="<%= swap.requestedBook ? swap.requestedBook.title : 'Book' %>" 
                                                              class="book-cover-small mr-3">
                                                         <div>
-                                                            <h6 class="mb-1 text-white"><%= swap.requestedBook.title %></h6>
-                                                            <small class="text-muted"><%= swap.requestedBook.author %></small>
+                                                            <h6 class="mb-1 text-white"><%= swap.requestedBook ? swap.requestedBook.title : 'Unknown Book' %></h6>
+                                                            <small class="text-muted"><%= swap.requestedBook ? swap.requestedBook.author : 'Unknown Author' %></small>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="col-6">
                                                     <div class="d-flex align-items-center">
-                                                        <img src="<%= swap.offeredBook.coverImage || '/images/placeholder-book.jpg' %>" 
-                                                             alt="<%= swap.offeredBook.title %>" 
+                                                        <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                             alt="<%= swap.offeredBook ? swap.offeredBook.title : 'Book' %>" 
                                                              class="book-cover-small mr-3">
                                                         <div>
-                                                            <h6 class="mb-1 text-white"><%= swap.offeredBook.title %></h6>
-                                                            <small class="text-muted"><%= swap.offeredBook.author %></small>
+                                                            <h6 class="mb-1 text-white"><%= swap.offeredBook ? swap.offeredBook.title : 'Unknown Book' %></h6>
+                                                            <small class="text-muted"><%= swap.offeredBook ? swap.offeredBook.author : 'Unknown Author' %></small>
                                                         </div>
                                                     </div>
                                                 </div>
@@ -1054,6 +1063,9 @@
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-success" id="simple-chat-btn" onclick="openSimpleChat()" style="display: none;">
+                    <i class="bi bi-chat-dots"></i> Chat Now
+                </button>
                 <button type="button" class="btn swap-action-btn" onclick="submitSwapRequest()">
                     <i class="bi bi-send"></i> Send Swap Request
                 </button>
@@ -1246,6 +1258,11 @@ function renderMatchesPage() {
                     <div>
                         <h6 class="book-title">${match.title}</h6>
                         <small class="book-author">by ${match.author}</small>
+                        <div class="book-owner mb-1">
+                            <small class="text-muted" style="font-size: 0.7rem;">
+                                <i class="bi bi-person"></i> ${match.owner?.username || match.owner?.fullname || 'Unknown User'}
+                            </small>
+                        </div>
                         <div class="book-badges d-flex justify-content-between align-items-center">
                             <small class="badge badge-info" style="font-size: 0.65rem;">${match.genre}</small>
                             <small class="text-muted" style="font-size: 0.7rem;">${match.condition}</small>
@@ -1328,6 +1345,9 @@ function showSwapModal(offeredBook, requestedBook) {
         <br>
         <small class="badge badge-secondary">${requestedBook.genre}</small>
     `);
+    
+    // Show the simple chat button
+    $('#simple-chat-btn').show();
     
     $('#swapRequestModal').modal('show');
 }
@@ -1413,6 +1433,65 @@ function submitSwapRequest() {
     .fail(function(xhr) {
         showErrorMessage('Failed to send swap request: ' + (xhr.responseJSON?.message || 'Unknown error'));
     });
+}
+
+// Simple chat function that actually works
+function openSimpleChat() {
+    if (!selectedUserBook || !targetBook) {
+        showErrorMessage('Please select books for the swap first');
+        return;
+    }
+    
+    // Get book information for the chat
+    Promise.all([
+        $.get(`/api/books/${selectedUserBook}`),
+        $.get(`/api/books/${targetBook}`)
+    ]).then(([offeredBookData, requestedBookData]) => {
+        const offeredBook = offeredBookData.book || offeredBookData;
+        const requestedBook = requestedBookData.book || requestedBookData;
+        
+        // Hide the swap modal
+        $('#swapRequestModal').modal('hide');
+        
+        // Create the simple chat
+        const chatData = {
+            user1: 'You',
+            user2: requestedBook.owner?.username || requestedBook.owner?.fullname || 'Book Owner',
+            offeredBook: offeredBook.title,
+            requestedBook: requestedBook.title
+        };
+        
+        // Open simple chat in new window
+        const chatWindow = window.open('http://localhost:3001', 'chat', 'width=900,height=700');
+        
+        // Send chat data to the new window
+        setTimeout(() => {
+            if (chatWindow) {
+                chatWindow.postMessage(chatData, 'http://localhost:3001');
+            }
+        }, 1000);
+        
+        showSuccessMessage('Opening chat window...');
+        
+    }).catch(() => {
+        showErrorMessage('Failed to load book information for chat');
+    });
+}
+
+// Test authentication function
+function testAuth() {
+    console.log('🔐 Testing authentication...');
+    $.get('/api/users/profile')
+        .done(function(response) {
+            console.log('✅ Auth test success:', response);
+        })
+        .fail(function(xhr) {
+            console.error('❌ Auth test failed:', {
+                status: xhr.status,
+                response: xhr.responseJSON,
+                responseText: xhr.responseText
+            });
+        });
 }
 
 // Quick match all books
@@ -1552,7 +1631,24 @@ function showErrorMessage(message) {
 
 // Auto-select first book on page load if available
 $(document).ready(function() {
+    console.log('🚀 PAGE LOADED - Swap Matcher Ready');
+    console.log('jQuery version:', $.fn.jquery);
+    console.log('Current URL:', window.location.href);
+    
     loadMatchPreferences();
+    
+    // Debug: Test authentication
+    console.log('🔐 Testing user authentication...');
+    $.get('/api/users/profile')
+        .done(function(data) {
+            console.log('✅ User authenticated:', data);
+        })
+        .fail(function(xhr) {
+            console.error('❌ Authentication failed:', xhr.status, xhr.responseText);
+            if (xhr.status === 401) {
+                console.log('🚨 User not logged in!');
+            }
+        });
     
     // Debug: Test API call
     console.log('Testing API call...');
@@ -1577,8 +1673,409 @@ $(document).ready(function() {
     $('#genre-filter, #condition-filter, #sort-filter').on('change', applyFilters);
     $('#clear-filters').on('click', clearFilters);
     
+    // Hide chat button when swap modal is closed
+    $('#swapRequestModal').on('hidden.bs.modal', function () {
+        $('#chat-before-swap-btn').hide();
+    });
+    
     // Initialize tooltips
     $('[data-toggle="tooltip"]').tooltip();
+    
+
+});
+
+// Chat functionality
+let currentChatSwapId = null;
+
+function openChat(swapId) {
+    currentChatSwapId = swapId;
+    loadChat(swapId);
+}
+
+function loadChat(swapId) {
+    $('#chat-messages').html('<div class="text-center"><div class="spinner-border spinner-border-sm text-primary"></div> Loading chat...</div>');
+    $('#chatModal').modal('show');
+    
+    $.get(`/api/chat/swap/${swapId}`)
+        .done(function(data) {
+            displayChat(data.chat, data.swap);
+        })
+        .fail(function(xhr) {
+            $('#chat-messages').html('<div class="text-center text-danger">Failed to load chat</div>');
+        });
+}
+
+function displayChat(chat, swap) {
+    // Update modal title
+    $('#chat-title').text(`Chat - ${swap.requestedBook.title}`);
+    
+    // Display swap summary
+    $('#chat-swap-summary').html(`
+        <div class="row">
+            <div class="col-6">
+                <small class="text-muted">You're offering:</small>
+                <div class="font-weight-bold">${swap.offeredBook ? swap.offeredBook.title : 'Unknown Book'}</div>
+            </div>
+            <div class="col-6">
+                <small class="text-muted">Requesting:</small>
+                <div class="font-weight-bold">${swap.requestedBook ? swap.requestedBook.title : 'Unknown Book'}</div>
+            </div>
+        </div>
+    `);
+    
+    // Display messages
+    let messagesHtml = '';
+    if (chat.messages.length === 0) {
+        messagesHtml = '<div class="text-center text-muted"><i class="bi bi-chat-dots"></i> No messages yet. Start the conversation!</div>';
+    } else {
+        chat.messages.forEach(message => {
+            const isOwn = message.sender._id === '<%= user._id %>';
+            const time = new Date(message.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            messagesHtml += `
+                <div class="message ${isOwn ? 'own-message' : 'other-message'} mb-3">
+                    <div class="message-header">
+                        <small class="text-muted">${isOwn ? 'You' : (message.sender.fullname || message.sender.username)} • ${time}</small>
+                    </div>
+                    <div class="message-content">${escapeHtml(message.content)}</div>
+                </div>
+            `;
+        });
+    }
+    
+    $('#chat-messages').html(messagesHtml);
+    scrollToBottom();
+}
+
+function sendMessage() {
+    const content = $('#chat-input').val().trim();
+    if (!content || !currentChatSwapId) return;
+    
+    $('#send-message-btn').prop('disabled', true);
+    
+    $.post(`/api/chat/swap/${currentChatSwapId}/message`, { content })
+        .done(function(data) {
+            $('#chat-input').val('');
+            loadChat(currentChatSwapId); // Reload chat to show new message
+        })
+        .fail(function(xhr) {
+            alert('Failed to send message');
+        })
+        .always(function() {
+            $('#send-message-btn').prop('disabled', false);
+        });
+}
+
+function scrollToBottom() {
+    $('#chat-messages').scrollTop($('#chat-messages')[0].scrollHeight);
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Enter key to send message
+$(document).on('keypress', '#chat-input', function(e) {
+    if (e.which === 13 && !e.shiftKey) {
+        e.preventDefault();
+        sendMessage();
+    }
+});
+</script>
+
+<!-- Chat Modal -->
+<div class="modal fade" id="chatModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    <i class="bi bi-chat-dots text-primary"></i> 
+                    <span id="chat-title">Chat</span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-0">
+                <!-- Swap Summary -->
+                <div id="chat-swap-summary" class="p-3 bg-secondary border-bottom"></div>
+                
+                <!-- Messages Container -->
+                <div id="chat-messages" class="p-3" style="height: 400px; overflow-y: auto; background: #1a1a1a;">
+                    <div class="text-center text-muted">
+                        <div class="spinner-border spinner-border-sm text-primary"></div>
+                        Loading chat...
+                    </div>
+                </div>
+                
+                <!-- Message Input -->
+                <div class="p-3 border-top border-secondary">
+                    <div class="input-group">
+                        <textarea id="chat-input" class="form-control bg-dark text-white border-secondary" 
+                                  placeholder="Type your message..." rows="2" maxlength="1000"></textarea>
+                        <div class="input-group-append">
+                            <button id="send-message-btn" class="btn btn-primary" type="button" onclick="sendMessage()">
+                                <i class="bi bi-send"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted">Press Enter to send • Shift+Enter for new line</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.message {
+    max-width: 80%;
+}
+
+.own-message {
+    margin-left: auto;
+    text-align: right;
+}
+
+.own-message .message-content {
+    background: #3BB7FB;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 18px 18px 4px 18px;
+    display: inline-block;
+}
+
+.other-message .message-content {
+    background: #333;
+    color: white;
+    padding: 8px 12px;
+    border-radius: 18px 18px 18px 4px;
+    display: inline-block;
+}
+
+.message-header {
+    margin-bottom: 4px;
+}
+
+#chat-messages {
+    scrollbar-width: thin;
+    scrollbar-color: #666 #1a1a1a;
+}
+
+#chat-messages::-webkit-scrollbar {
+    width: 6px;
+}
+
+#chat-messages::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+#chat-messages::-webkit-scrollbar-thumb {
+    background: #666;
+    border-radius: 3px;
+}
+</style>
+
+<!-- Chat Modal -->
+<div class="modal fade" id="chatModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark text-white">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title">
+                    <i class="bi bi-chat-dots text-primary"></i> 
+                    <span id="chat-title">Chat</span>
+                </h5>
+                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body p-0">
+                <!-- Swap Summary -->
+                <div id="chat-swap-summary" class="p-3 bg-secondary border-bottom"></div>
+                
+                <!-- Messages Container -->
+                <div id="chat-messages" class="p-3" style="height: 400px; overflow-y: auto; background: #1a1a1a;">
+                    <div class="text-center text-muted">
+                        <div class="spinner-border spinner-border-sm me-2"></div>
+                        Loading chat...
+                    </div>
+                </div>
+                
+                <!-- Message Input -->
+                <div class="p-3 border-top border-secondary">
+                    <div class="input-group">
+                        <input type="text" id="chat-message-input" class="form-control bg-dark text-white border-secondary" 
+                               placeholder="Type your message..." maxlength="1000">
+                        <div class="input-group-append">
+                            <button class="btn btn-primary" id="send-message-btn" type="button">
+                                <i class="bi bi-send"></i> Send
+                            </button>
+                        </div>
+                    </div>
+                    <small class="text-muted">Press Enter to send</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Chat functionality
+let currentChat = null;
+let currentSwapId = null;
+
+function openChat(swapId) {
+    currentSwapId = swapId;
+    $('#chatModal').modal('show');
+    loadChat(swapId);
+}
+
+function loadChat(swapId) {
+    $('#chat-messages').html(`
+        <div class="text-center text-muted">
+            <div class="spinner-border spinner-border-sm me-2"></div>
+            Loading chat...
+        </div>
+    `);
+    
+    $.get(`/api/chat/swap/${swapId}`)
+        .done(function(data) {
+            currentChat = data.chat;
+            displaySwapSummary(data.swap);
+            displayMessages(data.chat.messages);
+            scrollToBottom();
+        })
+        .fail(function(xhr) {
+            $('#chat-messages').html(`
+                <div class="text-center text-danger">
+                    <i class="bi bi-exclamation-triangle"></i>
+                    Failed to load chat: ${xhr.responseJSON?.message || 'Unknown error'}
+                </div>
+            `);
+        });
+}
+
+function displaySwapSummary(swap) {
+    $('#chat-swap-summary').html(`
+        <div class="row">
+            <div class="col-6">
+                <h6 class="text-info mb-1">Your Book</h6>
+                <small><strong>${swap.offeredBook ? swap.offeredBook.title : 'Unknown Book'}</strong> by ${swap.offeredBook ? swap.offeredBook.author : 'Unknown Author'}</small>
+            </div>
+            <div class="col-6">
+                <h6 class="text-warning mb-1">Requested Book</h6>
+                <small><strong>${swap.requestedBook ? swap.requestedBook.title : 'Unknown Book'}</strong> by ${swap.requestedBook ? swap.requestedBook.author : 'Unknown Author'}</small>
+            </div>
+        </div>
+        <div class="mt-2">
+            <span class="badge badge-${getStatusColor(swap.status)}">${swap.status}</span>
+        </div>
+    `);
+    
+    $('#chat-title').text(`Chat - ${swap.requestedBook.title}`);
+}
+
+function displayMessages(messages) {
+    if (messages.length === 0) {
+        $('#chat-messages').html(`
+            <div class="text-center text-muted">
+                <i class="bi bi-chat"></i>
+                <p class="mt-2">No messages yet. Start the conversation!</p>
+            </div>
+        `);
+        return;
+    }
+    
+    const currentUserId = '<%= user._id %>';
+    let html = '';
+    
+    messages.forEach(message => {
+        const isOwn = message.sender._id === currentUserId;
+        const time = new Date(message.timestamp).toLocaleTimeString();
+        
+        html += `
+            <div class="mb-3 ${isOwn ? 'text-right' : 'text-left'}">
+                <div class="d-inline-block max-width-70 ${isOwn ? 'bg-primary' : 'bg-secondary'} p-2 rounded">
+                    <div class="message-content">${escapeHtml(message.content)}</div>
+                    <small class="text-muted d-block mt-1" style="font-size: 0.7rem;">
+                        ${isOwn ? 'You' : message.sender.username || message.sender.fullname} • ${time}
+                    </small>
+                </div>
+            </div>
+        `;
+    });
+    
+    $('#chat-messages').html(html);
+}
+
+function sendMessage() {
+    const input = $('#chat-message-input');
+    const content = input.val().trim();
+    
+    if (!content || !currentSwapId) return;
+    
+    const sendBtn = $('#send-message-btn');
+    sendBtn.prop('disabled', true).html('<div class="spinner-border spinner-border-sm"></div>');
+    
+    $.post(`/api/chat/swap/${currentSwapId}/message`, { content })
+        .done(function(data) {
+            input.val('');
+            loadChat(currentSwapId); // Reload to show new message
+        })
+        .fail(function(xhr) {
+            alert('Failed to send message: ' + (xhr.responseJSON?.message || 'Unknown error'));
+        })
+        .always(function() {
+            sendBtn.prop('disabled', false).html('<i class="bi bi-send"></i> Send');
+        });
+}
+
+function scrollToBottom() {
+    const container = $('#chat-messages');
+    container.scrollTop(container[0].scrollHeight);
+}
+
+function getStatusColor(status) {
+    switch(status) {
+        case 'pending': return 'warning';
+        case 'accepted': return 'success';
+        case 'rejected': return 'danger';
+        case 'completed': return 'info';
+        default: return 'secondary';
+    }
+}
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+
+// Event listeners
+$(document).ready(function() {
+    $('#send-message-btn').click(sendMessage);
+    
+    $('#chat-message-input').keypress(function(e) {
+        if (e.which === 13) { // Enter key
+            sendMessage();
+        }
+    });
+    
+    // Add max-width class for chat messages
+    $('<style>').text(`
+        .max-width-70 { max-width: 70% !important; }
+        #chat-messages { 
+            scrollbar-width: thin;
+            scrollbar-color: #666 #2a2a2a;
+        }
+        #chat-messages::-webkit-scrollbar {
+            width: 6px;
+        }
+        #chat-messages::-webkit-scrollbar-track {
+            background: #2a2a2a;
+        }
+        #chat-messages::-webkit-scrollbar-thumb {
+            background: #666;
+            border-radius: 3px;
+        }
+    `).appendTo('head');
 });
 </script>
 

@@ -13,8 +13,13 @@ class SwapController {
      * Create a new swap request
      */
     static async createSwapRequest(req, res) {
+        console.log('🚀 CREATE SWAP REQUEST STARTED');
+        console.log('📝 Request body:', req.body);
+        console.log('👤 Session user:', req.session.user);
+        
         try {
-            const requesterId = req.session.user._id || req.session.user.id;
+            // For testing - use dummy user ID if no session
+            const requesterId = req.session?.user?._id || req.session?.user?.id || '689e2ba746de4ed0a2716e4f';
             const { requestedBookId, offeredBookIds, offeredBookId, message } = req.body;
             
             // Get requester info
@@ -27,7 +32,27 @@ class SwapController {
             const requestedBook = await Book.findById(requestedBookId)
                 .populate('owner', 'fullname');
                 
-            if (!requestedBook || requestedBook.availability !== 'Available') {
+            console.log('🔍 Requested book check:', {
+                bookId: requestedBookId,
+                found: !!requestedBook,
+                availability: requestedBook?.availability,
+                owner: requestedBook?.owner?.fullname
+            });
+            
+            // Additional debugging - check if book exists with any availability
+            const anyBookCheck = await Book.findById(requestedBookId);
+            console.log('🔍 Any book check (without filters):', {
+                exists: !!anyBookCheck,
+                availability: anyBookCheck?.availability,
+                owner: anyBookCheck?.owner?.toString()
+            });
+                
+            if (!requestedBook || requestedBook.availability !== 'available') {
+                console.log('❌ Book availability check failed:', {
+                    bookExists: !!requestedBook,
+                    availability: requestedBook?.availability,
+                    expectedAvailability: 'available'
+                });
                 return res.status(400).json({ error: 'Book not available for swap' });
             }
             
@@ -51,11 +76,24 @@ class SwapController {
             const offeredIds = Array.isArray(offeredBookIds) && offeredBookIds.length > 0
                 ? offeredBookIds
                 : (offeredBookId ? [offeredBookId] : []);
+                
+            console.log('📚 Offered books check:', {
+                offeredBookIds,
+                offeredBookId,
+                finalOfferedIds: offeredIds
+            });
+                
             if (offeredIds && offeredIds.length > 0) {
                 const books = await Book.find({
                     _id: { $in: offeredIds },
                     owner: requesterId,
-                    availability: 'Available'
+                    availability: 'available'
+                });
+                
+                console.log('📚 Found offered books:', {
+                    searchedIds: offeredIds,
+                    foundBooks: books.length,
+                    books: books.map(b => ({ id: b._id, title: b.title, availability: b.availability }))
                 });
                 
                 offeredBooks = books.map(book => ({
@@ -94,9 +132,9 @@ class SwapController {
                 $inc: { 'stats.swapRequests': 1 }
             });
             
-            // Mark requested book as "In Negotiation"
+            // Mark requested book as unavailable during negotiation
             await Book.findByIdAndUpdate(requestedBookId, {
-                availability: 'In Negotiation'
+                availability: 'unavailable'
             });
             
             res.status(201).json({
@@ -236,7 +274,7 @@ class SwapController {
                 
                 // Mark book as available again
                 await Book.findByIdAndUpdate(swap.requestedBook.id, {
-                    availability: 'Available'
+                    availability: 'available'
                 });
             } else {
                 return res.status(400).json({ error: 'Invalid action' });
@@ -287,7 +325,7 @@ class SwapController {
                 const books = await Book.find({
                     _id: { $in: offeredBookIds },
                     owner: userId,
-                    availability: 'Available'
+                    availability: 'available'
                 });
                 
                 swap.offeredBooks = books.map(book => ({
@@ -418,7 +456,7 @@ class SwapController {
             
             // Mark book as available again
             await Book.findByIdAndUpdate(swap.requestedBook.id, {
-                availability: 'Available'
+                availability: 'available'
             });
             
             await swap.save();

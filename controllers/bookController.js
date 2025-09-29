@@ -328,7 +328,7 @@ class BookController {
             console.log(`Found ${candidates.length} potential candidates.`);
     
             // 4. Calculate a match score for each candidate book
-            const matches = candidates.map(candidate => {
+            const matches = candidates.filter(candidate => candidate && candidate._id).map(candidate => {
                 let score = 60; // Higher base score so all books show up
                 
                 // Score based on genre similarity (bonus points, not required)
@@ -369,9 +369,12 @@ class BookController {
                     condition: candidate.condition,
                     coverImage: actualImage || '/images/placeholder-book.jpg', // Use actual image or fallback
                     image: actualImage || '/images/placeholder-book.jpg', // Use actual image or fallback
-                    owner: {
+                    owner: candidate.owner ? {
                         _id: candidate.owner._id,
                         username: candidate.owner.username || candidate.owner.fullname,
+                    } : {
+                        _id: 'unknown',
+                        username: 'Unknown User'
                     },
                     matchPercentage: Math.min(100, score) // Cap score at 100
                 };
