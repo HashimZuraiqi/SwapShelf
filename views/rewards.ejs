@@ -1,4 +1,3 @@
-<!-- filepath: views/rewards.ejs -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,19 +5,30 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rewards & Achievements | BookSwap</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/rewards.css">
-    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
-    
 </head>
 <body class="rewards-main">
+
+<!-- Badge Unlock Notification -->
+<div id="badgeNotification" class="badge-notification">
+    <div class="badge-notification-content">
+        <div class="badge-notification-icon" id="notificationIcon">🏆</div>
+        <div class="badge-notification-text">
+            <h4 id="notificationTitle">New Badge Unlocked!</h4>
+            <p id="notificationMessage">You've earned a new achievement</p>
+            <div class="badge-notification-points">+<span id="notificationPoints">0</span> Points</div>
+        </div>
+        <button class="badge-notification-close" onclick="closeNotification()">×</button>
+    </div>
+</div>
 
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
     <div class="container-fluid">
-        <!-- Logo -->
         <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
             <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
                 height: 32px; 
@@ -54,7 +64,6 @@
                 </li>
             </ul>
             
-            <!-- Profile dropdown -->
             <ul class="navbar-nav ml-auto">
                 <li class="nav-item dropdown">
                     <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown">
@@ -73,371 +82,414 @@
 </nav>
 
 <!-- Main Content -->
-<div class="container-fluid px-4">
-    <!-- Header -->
-    <div class="rewards-header">
-        <h1 class="page-title">My Achievements</h1>
-        <p style="color: #b0b3b8; font-size: 1.2rem; margin-bottom: 2rem;">
-            Complete swaps, help the community, and earn badges to build your reputation
-        </p>
-        
-        <div class="button-group">
-            <button class="btn btn-gradient" id="exploreQuests">
-                <i class="bi bi-search"></i> Explore Quests
-            </button>
-            <a href="/leaderboard" class="btn btn-refresh-style">
-                <i class="bi bi-trophy-fill"></i> View Leaderboard
-            </a>
+<div class="container-fluid px-4 py-4">
+    <!-- Loading Spinner -->
+    <div id="loadingSpinner" class="loading-spinner-modern">
+        <div class="spinner-border text-primary" role="status">
+            <span class="visually-hidden">Loading...</span>
         </div>
+        <p class="mt-3">Loading your achievements...</p>
     </div>
 
-    <!-- Reputation Section -->
-    <div class="reputation-section">
-        <div class="row text-center">
-            <div class="col-md-4">
-                <div class="reputation-score" id="reputationPoints">1,250</div>
-                <div style="color: #b0b3b8;">Reputation Points</div>
-            </div>
-            <div class="col-md-4">
-                <div class="reputation-score" id="badgesUnlocked">8</div>
-                <div style="color: #b0b3b8;">Badges Unlocked</div>
-            </div>
-            <div class="col-md-4">
-                <div class="reputation-score" id="totalBadges">15</div>
-                <div style="color: #b0b3b8;">Total Badges</div>
-            </div>
-        </div>
+    <!-- Main Content (hidden until loaded) -->
+    <div id="mainContent" class="d-none">
         
-        <div class="progress-bar-modern mt-3">
-            <div class="progress-fill" style="width: 53%"></div>
-        </div>
-        <div class="text-center mt-2" style="color: #b0b3b8; font-size: 0.9rem;">
-            Unlock 2 more badges to reach "The Collector" milestone
-        </div>
-    </div>
-
-    <!-- Badges Section -->
-    <div class="section-title">
-        <i class="bi bi-award"></i>
-        Achievement Badges
-    </div>
-    
-    <!-- Login & Visit Achievements -->
-    <h5 style="color: #F6B443; margin-bottom: 1rem;">🕐 Login & Visit Streaks</h5>
-    <div class="badge-grid">
-        <div class="badge-card unlocked">
-            <div class="badge-icon">🌙</div>
-            <div class="badge-title">Night Owl</div>
-            <div class="badge-description">Visit the website between 10pm and 5am</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">☀️</div>
-            <div class="badge-title">Early Bird</div>
-            <div class="badge-description">Visit the website between 5am and 8am</div>
-            <div class="badge-status status-locked">🔒 Locked</div>
-        </div>
-        
-        <div class="badge-card unlocked">
-            <div class="badge-icon">📅</div>
-            <div class="badge-title">Daily Visitor</div>
-            <div class="badge-description">Visit the website 7 days in a row</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-        
-        <div class="badge-card unlocked">
-            <div class="badge-icon">🎉</div>
-            <div class="badge-title">The Weekend</div>
-            <div class="badge-description">Logged in on a weekend (Friday/Saturday)</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-    </div>
-
-    <!-- Swapping Achievements -->
-    <h5 style="color: #3BB7FB; margin-bottom: 1rem;">📚 Swapping Achievements</h5>
-    <div class="badge-grid">
-        <div class="badge-card unlocked">
-            <div class="badge-icon">📖</div>
-            <div class="badge-title">Swap Rookie</div>
-            <div class="badge-description">Made your first successful swap</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-        
-        <div class="badge-card unlocked">
-            <div class="badge-icon">🍀</div>
-            <div class="badge-title">Lucky 7</div>
-            <div class="badge-description">Completed your 7th swap</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🔄</div>
-            <div class="badge-title">Swapaholic</div>
-            <div class="badge-description">Made 30 successful swaps</div>
-            <div class="badge-status status-locked">🔒 Progress: 12/30</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🏆</div>
-            <div class="badge-title">Trade Master</div>
-            <div class="badge-description">Completed 50 swaps</div>
-            <div class="badge-status status-locked">🔒 Progress: 12/50</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">👑</div>
-            <div class="badge-title">Trade Champion</div>
-            <div class="badge-description">Reached 100 successful swaps</div>
-            <div class="badge-status status-locked">🔒 Progress: 12/100</div>
-        </div>
-        
-        <div class="badge-card unlocked">
-            <div class="badge-icon">🛋️</div>
-            <div class="badge-title">Chill Trader</div>
-            <div class="badge-description">Completed a swap on weekend</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🌍</div>
-            <div class="badge-title">The Wanderer</div>
-            <div class="badge-description">Made a swap with someone in another country</div>
-            <div class="badge-status status-locked">🔒 Locked</div>
-        </div>
-    </div>
-
-    <!-- Community & Meta Achievements -->
-    <h5 style="color: #28a745; margin-bottom: 1rem;">🤝 Community & Meta</h5>
-    <div class="badge-grid">
-        <div class="badge-card unlocked">
-            <div class="badge-icon">🧪</div>
-            <div class="badge-title">Beta Tester</div>
-            <div class="badge-description">Joined the beta program</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-        
-        <div class="badge-card unlocked">
-            <div class="badge-icon">🤝</div>
-            <div class="badge-title">Community Helper</div>
-            <div class="badge-description">Reported duplicate/inaccurate listings</div>
-            <div class="badge-status status-unlocked">✅ Unlocked</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">📚</div>
-            <div class="badge-title">The Collector</div>
-            <div class="badge-description">Earned 10 badges</div>
-            <div class="badge-status status-locked">🔒 Progress: 8/10</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">⭐</div>
-            <div class="badge-title">All-Star</div>
-            <div class="badge-description">Earned all available badges</div>
-            <div class="badge-status status-locked">🔒 Progress: 8/20</div>
-        </div>
-    </div>
-
-    <!-- Monthly Champion Badges -->
-    <h5 style="color: #FFD700; margin-bottom: 1rem;">👑 Monthly Champions</h5>
-    <div class="badge-grid">
-        <div class="badge-card locked">
-            <div class="badge-icon">🥇</div>
-            <div class="badge-title">Monthly Champion</div>
-            <div class="badge-description">Finished #1 in monthly leaderboard</div>
-            <div class="badge-status status-locked">🔒 Elite Achievement</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🥈</div>
-            <div class="badge-title">Silver Medalist</div>
-            <div class="badge-description">Finished #2 in monthly leaderboard</div>
-            <div class="badge-status status-locked">🔒 Elite Achievement</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🥉</div>
-            <div class="badge-title">Bronze Winner</div>
-            <div class="badge-description">Finished #3 in monthly leaderboard</div>
-            <div class="badge-status status-locked">🔒 Elite Achievement</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🔥</div>
-            <div class="badge-title">Streak Master</div>
-            <div class="badge-description">Top 5 for 3 consecutive months</div>
-            <div class="badge-status status-locked">🔒 Legendary</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">💎</div>
-            <div class="badge-title">Diamond Tier</div>
-            <div class="badge-description">Won monthly champion 3 times</div>
-            <div class="badge-status status-locked">🔒 Legendary</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🌟</div>
-            <div class="badge-title">Rising Star</div>
-            <div class="badge-description">Jumped 10+ ranks in one month</div>
-            <div class="badge-status status-locked">🔒 Locked</div>
-        </div>
-    </div>
-
-    <!-- Special & Unique Achievements -->
-    <h5 style="color: #9C27B0; margin-bottom: 1rem;">✨ Special & Unique</h5>
-    <div class="badge-grid">
-        <div class="badge-card locked">
-            <div class="badge-icon">🎭</div>
-            <div class="badge-title">Genre Master</div>
-            <div class="badge-description">Swapped books from 10 different genres</div>
-            <div class="badge-status status-locked">🔒 Progress: 4/10</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">📜</div>
-            <div class="badge-title">Ancient Wisdom</div>
-            <div class="badge-description">Swapped a book published before 1950</div>
-            <div class="badge-status status-locked">🔒 Locked</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🚀</div>
-            <div class="badge-title">Speed Reader</div>
-            <div class="badge-description">Completed 5 swaps in 24 hours</div>
-            <div class="badge-status status-locked">🔒 Locked</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🎪</div>
-            <div class="badge-title">Social Butterfly</div>
-            <div class="badge-description">Swapped with 25 different users</div>
-            <div class="badge-status status-locked">🔒 Progress: 8/25</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🏴‍☠️</div>
-            <div class="badge-title">Treasure Hunter</div>
-            <div class="badge-description">Found and swapped a rare/out-of-print book</div>
-            <div class="badge-status status-locked">🔒 Locked</div>
-        </div>
-        
-        <div class="badge-card locked">
-            <div class="badge-icon">🎨</div>
-            <div class="badge-title">Art Enthusiast</div>
-            <div class="badge-description">Swapped 10 art or photography books</div>
-            <div class="badge-status status-locked">🔒 Progress: 2/10</div>
-        </div>
-    </div>
-
-    <!-- Active Quests Section -->
-    <div id="questsSection" style="display: none;">
-        <div class="section-title">
-            <i class="bi bi-list-task"></i>
-            Active Quests
-        </div>
-        
-        <div class="row">
-            <div class="col-md-6 mb-3">
-                <div class="quest-card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 style="color: #fff; margin: 0;">Weekly Swapper</h6>
-                        <span class="quest-reward">+75 Points</span>
-                    </div>
-                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
-                        Complete 3 swaps this week
+        <!-- Header Section -->
+        <div class="rewards-header-modern">
+            <div class="row align-items-center">
+                <div class="col-lg-8">
+                    <h1 class="page-title-modern">
+                        <i class="bi bi-trophy-fill"></i>
+                        Rewards Center
+                    </h1>
+                    <p class="page-subtitle-modern">
+                        Track your achievements, earn badges, and level up your BookSwap journey
                     </p>
-                    <div class="progress-bar-modern" style="height: 8px;">
-                        <div class="progress-fill" style="width: 66%;"></div>
-                    </div>
-                    <small style="color: #b0b3b8;">Progress: 2/3 swaps</small>
                 </div>
-            </div>
-            
-            <div class="col-md-6 mb-3">
-                <div class="quest-card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 style="color: #fff; margin: 0;">Consistent Visitor</h6>
-                        <span class="quest-reward">+50 Points</span>
-                    </div>
-                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
-                        Visit the site 5 days in a row
-                    </p>
-                    <div class="progress-bar-modern" style="height: 8px;">
-                        <div class="progress-fill" style="width: 80%;"></div>
-                    </div>
-                    <small style="color: #b0b3b8;">Progress: 4/5 days</small>
-                </div>
-            </div>
-            
-            <div class="col-md-6 mb-3">
-                <div class="quest-card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 style="color: #fff; margin: 0;">Community Guardian</h6>
-                        <span class="quest-reward">+100 Points</span>
-                    </div>
-                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
-                        Report 2 inaccurate book listings
-                    </p>
-                    <div class="progress-bar-modern" style="height: 8px;">
-                        <div class="progress-fill" style="width: 50%;"></div>
-                    </div>
-                    <small style="color: #b0b3b8;">Progress: 1/2 reports</small>
-                </div>
-            </div>
-            
-            <div class="col-md-6 mb-3">
-                <div class="quest-card">
-                    <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6 style="color: #fff; margin: 0;">Library Builder</h6>
-                        <span class="quest-reward">+25 Points</span>
-                    </div>
-                    <p style="color: #b0b3b8; font-size: 0.9rem; margin-bottom: 1rem;">
-                        Add 5 books to your library
-                    </p>
-                    <div class="progress-bar-modern" style="height: 8px;">
-                        <div class="progress-fill" style="width: 100%;"></div>
-                    </div>
-                    <small style="color: #28a745;">✅ Completed! Claim your reward</small>
+                <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
+                    <button class="btn-refresh-modern" onclick="loadRewardsData()">
+                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                    </button>
+                    <a href="/leaderboard" class="btn-leaderboard-modern">
+                        <i class="bi bi-trophy-fill"></i> Leaderboard
+                    </a>
                 </div>
             </div>
         </div>
-    </div>
+
+        <!-- Stats Cards Row -->
+        <div class="row g-4 mb-4">
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-card-icon gold">
+                        <i class="bi bi-star-fill"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-value" id="reputationPoints">0</div>
+                        <div class="stat-label">Total Points</div>
+                        <div class="stat-rank" id="reputationLevel">Newcomer</div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-card-icon blue">
+                        <i class="bi bi-award-fill"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-value">
+                            <span id="badgesUnlocked">0</span>/<span id="totalBadges">0</span>
+                        </div>
+                        <div class="stat-label">Badges Earned</div>
+                        <div class="stat-progress-mini">
+                            <div class="stat-progress-bar" id="badgeProgressBar" style="width: 0%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-card-icon green">
+                        <i class="bi bi-arrow-left-right"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-value" id="completedSwaps">0</div>
+                        <div class="stat-label">Swaps Completed</div>
+                        <div class="stat-trend positive">
+                            <i class="bi bi-arrow-up"></i> <span id="monthlySwaps">0</span> this month
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3 col-md-6">
+                <div class="stat-card-modern">
+                    <div class="stat-card-icon purple">
+                        <i class="bi bi-book-fill"></i>
+                    </div>
+                    <div class="stat-card-body">
+                        <div class="stat-value" id="booksAdded">0</div>
+                        <div class="stat-label">Books in Library</div>
+                        <div class="stat-trend">
+                            <i class="bi bi-plus-circle"></i> Keep growing!
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Next Milestone Card -->
+        <div class="milestone-card-modern mb-4" id="milestoneCard" style="display: none;">
+            <div class="milestone-icon">
+                <i class="bi bi-flag-fill"></i>
+            </div>
+            <div class="milestone-body">
+                <h5 class="milestone-title">Next Milestone: <span id="milestoneName">Explorer</span></h5>
+                <p class="milestone-desc" id="milestoneDescription">Reach 100 points to level up</p>
+                <div class="milestone-progress-container">
+                    <div class="milestone-progress-bar">
+                        <div class="milestone-progress-fill" id="milestoneProgressBar" style="width: 0%"></div>
+                    </div>
+                    <div class="milestone-stats-text">
+                        <span><span id="milestoneCurrent">0</span> / <span id="milestoneTarget">100</span> points</span>
+                        <span><span id="milestonePercentage">0</span>% complete</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badge Categories Section -->
+        <div class="badges-section-modern">
+            <div class="section-header-modern">
+                <h2 class="section-title-modern">
+                    <i class="bi bi-award-fill"></i>
+                    Achievement Badges
+                </h2>
+            </div>
+
+            <!-- Category Filter Tabs -->
+            <div class="category-tabs-modern mb-4">
+                <button class="category-tab active" data-category="all" onclick="filterBadges('all')">
+                    <i class="bi bi-grid-fill"></i> All Badges
+                </button>
+                <button class="category-tab" data-category="swapping" onclick="filterBadges('swapping')">
+                    <i class="bi bi-arrow-left-right"></i> Swapping
+                </button>
+                <button class="category-tab" data-category="login_visit" onclick="filterBadges('login_visit')">
+                    <i class="bi bi-calendar-check"></i> Streaks
+                </button>
+                <button class="category-tab" data-category="community" onclick="filterBadges('community')">
+                    <i class="bi bi-people-fill"></i> Community
+                </button>
+                <button class="category-tab" data-category="special" onclick="filterBadges('special')">
+                    <i class="bi bi-star-fill"></i> Special
+                </button>
+                <button class="category-tab" data-category="monthly" onclick="filterBadges('monthly')">
+                    <i class="bi bi-trophy-fill"></i> Elite
+                </button>
+            </div>
+
+            <!-- Badges Grid -->
+            <div class="badge-grid-modern" id="badgeGrid">
+                <!-- Badges will be loaded here dynamically -->
+            </div>
+
+            <!-- Empty State -->
+            <div id="noBadgesMessage" class="no-badges-message" style="display: none;">
+                <i class="bi bi-inbox"></i>
+                <p>No badges in this category yet</p>
+            </div>
+        </div>
 
     </div>
 </div>
 
 <script>
-$(document).ready(function() {
-    // Toggle Quests Section
-    $('#exploreQuests').click(function() {
-        $('#questsSection').slideToggle();
-    });
-    
-    // Animate progress bars on page load
-    $('.progress-fill').each(function() {
-        const width = $(this).css('width');
-        $(this).css('width', '0').animate({ width: width }, 1000);
-    });
-    
-    // Badge hover effects
-    $('.badge-card').hover(
-        function() {
-            if ($(this).hasClass('unlocked')) {
-                $(this).find('.badge-icon').css('transform', 'scale(1.1)');
-            }
-        },
-        function() {
-            $(this).find('.badge-icon').css('transform', 'scale(1)');
+// Inline rewards manager to avoid loading issues
+let rewardsData = null;
+let currentCategory = 'all';
+let allBadges = [];
+
+async function loadRewardsData() {
+    try {
+        console.log('🔄 Loading rewards data...');
+        
+        const response = await fetch('/api/rewards', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            credentials: 'same-origin'
+        });
+
+        console.log('📡 Response status:', response.status);
+
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
         }
-    );
+
+        const result = await response.json();
+        console.log('📦 Response data:', result);
+        
+        if (result.success && result.data) {
+            rewardsData = result.data;
+            allBadges = result.data.badges || [];
+            console.log('✅ Data loaded successfully');
+            renderRewards();
+            hideLoading();
+            checkNewBadges();
+        } else {
+            throw new Error(result.message || 'API returned no data');
+        }
+    } catch (error) {
+        console.error('❌ Error loading rewards data:', error);
+        hideLoading();
+        showError('Failed to load rewards data. Please refresh the page.');
+    }
+}
+
+function renderRewards() {
+    renderStats();
+    renderMilestone();
+    renderBadges(currentCategory);
+}
+
+function renderStats() {
+    if (!rewardsData) return;
+    
+    const { user, stats, monthlyStats } = rewardsData;
+    console.log('📊 Rendering stats:', user);
+    
+    // Update points and level
+    document.getElementById('reputationPoints').textContent = (user.totalPoints || 0).toLocaleString();
+    document.getElementById('reputationLevel').textContent = user.reputationLevel || 'Newcomer';
+    
+    // Update badges
+    document.getElementById('badgesUnlocked').textContent = user.unlockedBadges || 0;
+    document.getElementById('totalBadges').textContent = user.totalBadges || 0;
+    
+    // Update badge progress bar
+    const badgeProgress = user.totalBadges > 0 ? (user.unlockedBadges / user.totalBadges) * 100 : 0;
+    document.getElementById('badgeProgressBar').style.width = badgeProgress + '%';
+    
+    // Update swaps
+    document.getElementById('completedSwaps').textContent = stats.completedSwaps || 0;
+    document.getElementById('monthlySwaps').textContent = monthlyStats.swapsThisMonth || 0;
+    
+    // Update books
+    document.getElementById('booksAdded').textContent = stats.booksAdded || 0;
+    
+    console.log('✅ Stats rendered successfully');
+}
+
+function renderMilestone() {
+    const nextMilestone = rewardsData.nextMilestone;
+    
+    if (nextMilestone) {
+        document.getElementById('milestoneCard').style.display = 'flex';
+        document.getElementById('milestoneName').textContent = nextMilestone.name || 'Explorer';
+        document.getElementById('milestoneDescription').textContent = nextMilestone.description || 'Reach 100 points';
+        document.getElementById('milestoneCurrent').textContent = nextMilestone.progress || 0;
+        document.getElementById('milestoneTarget').textContent = nextMilestone.points || 100;
+        document.getElementById('milestonePercentage').textContent = nextMilestone.percentage || 0;
+        document.getElementById('milestoneProgressBar').style.width = (nextMilestone.percentage || 0) + '%';
+    } else {
+        document.getElementById('milestoneCard').style.display = 'none';
+    }
+}
+
+function renderBadges(category = 'all') {
+    const badgeGrid = document.getElementById('badgeGrid');
+    const noBadgesMessage = document.getElementById('noBadgesMessage');
+    badgeGrid.innerHTML = '';
+    
+    // Filter badges by category
+    const filteredBadges = category === 'all' 
+        ? allBadges 
+        : allBadges.filter(badge => badge.category === category);
+    
+    if (filteredBadges.length === 0) {
+        noBadgesMessage.style.display = 'flex';
+        return;
+    }
+    
+    noBadgesMessage.style.display = 'none';
+    
+    // Sort: unlocked first, then by progress
+    const sortedBadges = filteredBadges.sort((a, b) => {
+        if (a.isUnlocked && !b.isUnlocked) return -1;
+        if (!a.isUnlocked && b.isUnlocked) return 1;
+        return b.percentage - a.percentage;
+    });
+    
+    sortedBadges.forEach((badge, index) => {
+        const badgeCard = createBadgeCard(badge);
+        badgeGrid.appendChild(badgeCard);
+        
+        // Animate badge appearance
+        setTimeout(() => {
+            badgeCard.classList.add('fade-in');
+        }, index * 50);
+    });
+}
+
+function createBadgeCard(badge) {
+    const card = document.createElement('div');
+    card.className = 'badge-card-modern ' + (badge.isUnlocked ? 'unlocked' : 'locked');
+    card.dataset.category = badge.category;
+    
+    // Category colors
+    const categoryGradients = {
+        swapping: 'linear-gradient(90deg, #3BB7FB 0%, #2a9fd8 100%)',
+        login_visit: 'linear-gradient(90deg, #F6B443 0%, #e09f3e 100%)',
+        community: 'linear-gradient(90deg, #28a745 0%, #20c997 100%)',
+        special: 'linear-gradient(90deg, #9C27B0 0%, #7B1FA2 100%)',
+        monthly: 'linear-gradient(90deg, #FFD700 0%, #FFA500 100%)'
+    };
+    
+    const categoryGradient = categoryGradients[badge.category] || 'linear-gradient(90deg, #3BB7FB 0%, #F6B443 100%)';
+    
+    let progressHtml = '';
+    if (!badge.isUnlocked && badge.percentage > 0) {
+        progressHtml = `
+            <div class="badge-progress-container">
+                <div class="progress-bar-slim">
+                    <div class="progress-fill-slim" style="width: ${badge.percentage}%; background: ${categoryGradient}"></div>
+                </div>
+                <div class="progress-text-small">${badge.progress}/${badge.target} (${badge.percentage}%)</div>
+            </div>
+        `;
+    }
+    
+    card.innerHTML = `
+        <div class="badge-card-header">
+            <div class="badge-icon-large">${badge.icon}</div>
+            <div class="badge-points-tag">+${badge.points}</div>
+        </div>
+        <div class="badge-card-body">
+            <h6 class="badge-name">${badge.name}</h6>
+            <p class="badge-desc">${badge.description}</p>
+            ${progressHtml}
+        </div>
+        <div class="badge-card-footer">
+            <div class="badge-status-tag ${badge.isUnlocked ? 'unlocked' : 'locked'}">
+                ${badge.isUnlocked ? 
+                    '<i class="bi bi-check-circle-fill"></i> Unlocked' : 
+                    '<i class="bi bi-lock-fill"></i> Locked'}
+            </div>
+        </div>
+    `;
+    
+    return card;
+}
+
+function filterBadges(category) {
+    currentCategory = category;
+    renderBadges(category);
+    
+    // Update active tab
+    document.querySelectorAll('.category-tab').forEach(tab => {
+        tab.classList.remove('active');
+        if (tab.dataset.category === category) {
+            tab.classList.add('active');
+        }
+    });
+}
+
+function checkNewBadges() {
+    const lastCheck = localStorage.getItem('lastBadgeCheck');
+    const currentBadges = allBadges.filter(b => b.isUnlocked).map(b => b.id);
+    
+    if (lastCheck) {
+        const previousBadges = JSON.parse(lastCheck);
+        const newBadges = currentBadges.filter(id => !previousBadges.includes(id));
+        
+        if (newBadges.length > 0) {
+            const newBadge = allBadges.find(b => b.id === newBadges[0]);
+            if (newBadge) {
+                showBadgeNotification(newBadge);
+            }
+        }
+    }
+    
+    localStorage.setItem('lastBadgeCheck', JSON.stringify(currentBadges));
+}
+
+function showBadgeNotification(badge) {
+    const notification = document.getElementById('badgeNotification');
+    document.getElementById('notificationIcon').textContent = badge.icon;
+    document.getElementById('notificationTitle').textContent = badge.name + ' Unlocked!';
+    document.getElementById('notificationMessage').textContent = badge.description;
+    document.getElementById('notificationPoints').textContent = badge.points;
+    
+    notification.classList.add('show');
+    
+    setTimeout(() => {
+        notification.classList.remove('show');
+    }, 5000);
+}
+
+function closeNotification() {
+    document.getElementById('badgeNotification').classList.remove('show');
+}
+
+function hideLoading() {
+    document.getElementById('loadingSpinner').style.display = 'none';
+    document.getElementById('mainContent').classList.remove('d-none');
+}
+
+function showError(message) {
+    alert(message);
+    document.getElementById('mainContent').classList.remove('d-none');
+}
+
+// Load data when page loads
+document.addEventListener('DOMContentLoaded', () => {
+    console.log('📄 Page loaded, initializing rewards...');
+    loadRewardsData();
 });
 </script>
 
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>

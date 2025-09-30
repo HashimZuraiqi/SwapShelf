@@ -165,6 +165,35 @@ router.post('/register', requireGuest, async (req, res) => {
 
     const savedUser = await newUser.save();
 
+    // Award Beta Tester badge to new user
+    try {
+      const Reward = require('../models/Reward');
+      const rewards = await Reward.getOrCreateUserRewards(savedUser._id);
+      
+      // Add Beta Tester badge
+      rewards.badges.push({
+        badgeId: 'beta_tester',
+        isUnlocked: true,
+        unlockedAt: new Date()
+      });
+      
+      rewards.totalPoints += 100;
+      rewards.reputationLevel = rewards.calculateReputationLevel();
+      
+      rewards.achievementHistory.push({
+        type: 'badge_unlocked',
+        description: 'Unlocked badge: Beta Tester',
+        points: 100,
+        meta: { badgeId: 'beta_tester', badgeName: 'Beta Tester' }
+      });
+      
+      await rewards.save();
+      console.log('✅ Beta Tester badge awarded to new user:', savedUser.username);
+    } catch (badgeError) {
+      console.error('Failed to award Beta Tester badge:', badgeError.message);
+      // Don't fail registration if badge awarding fails
+    }
+
     req.session.user = {
       _id: savedUser._id,
       name: savedUser.fullname,

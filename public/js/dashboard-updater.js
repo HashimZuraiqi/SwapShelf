@@ -369,6 +369,9 @@ class DashboardUpdater {
         const duration = 1000; // 1 second
         const startTime = Date.now();
         
+        // Store original classes to preserve gradient styling
+        const originalClasses = element.className;
+        
         const updateNumber = () => {
             const elapsed = Date.now() - startTime;
             const progress = Math.min(elapsed / duration, 1);
@@ -377,10 +380,21 @@ class DashboardUpdater {
             const easeOut = 1 - Math.pow(1 - progress, 3);
             const current = Math.round(start + (end - start) * easeOut);
             
-            element.textContent = current;
+            // Use innerHTML to preserve classes and gradient styling
+            element.innerHTML = current;
+            
+            // Restore original classes to maintain gradient
+            if (originalClasses.includes('text-gradient')) {
+                element.className = originalClasses;
+            }
             
             if (progress < 1) {
                 requestAnimationFrame(updateNumber);
+            } else {
+                // Animation complete - ensure gradient is properly applied
+                if (originalClasses.includes('text-gradient')) {
+                    element.className = originalClasses;
+                }
             }
         };
         

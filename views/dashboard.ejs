@@ -164,29 +164,55 @@
                             <div class="stat-item">
                                 <div class="stat-value text-gradient" id="books-owned-count"><%= userStats.booksOwned %></div>
                                 <div class="stat-label">Books Owned</div>
-                                <div class="stat-icon"><i class="bi bi-book"></i></div>
+                                <div class="stat-icon"><i class="bi bi-book" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3 mb-3">
                             <div class="stat-item">
-                                <div class="stat-value text-success" id="swaps-completed-count"><%= userStats.swapsCompleted %></div>
+                                <div class="stat-value text-gradient" id="swaps-completed-count"><%= userStats.swapsCompleted %></div>
                                 <div class="stat-label">Swaps Completed</div>
-                                <div class="stat-icon"><i class="bi bi-arrow-left-right"></i></div>
+                                <div class="stat-icon"><i class="bi bi-arrow-left-right" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3 mb-3">
                             <div class="stat-item">
-                                <div class="stat-value text-danger" id="wishlist-items-count"><%= userStats.wishlistItems %></div>
+                                <div class="stat-value text-gradient" id="wishlist-items-count"><%= userStats.wishlistItems %></div>
                                 <div class="stat-label">Wishlist Items</div>
-                                <div class="stat-icon"><i class="bi bi-heart"></i></div>
+                                <div class="stat-icon"><i class="bi bi-heart" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3 mb-3">
                             <div class="stat-item">
-                                <div class="stat-value text-warning" id="pending-swaps-count"><%= userStats.pendingSwaps %></div>
+                                <div class="stat-value text-gradient" id="pending-swaps-count"><%= userStats.pendingSwaps %></div>
                                 <div class="stat-label">Pending Swaps</div>
-                                <div class="stat-icon"><i class="bi bi-clock"></i></div>
+                                <div class="stat-icon"><i class="bi bi-clock" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
                             </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- User Search Section -->
+    <section class="user-search mb-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12">
+                    <h2 class="section-title">
+                        <i class="bi bi-people"></i> Find Users
+                    </h2>
+                    <div class="search-container">
+                        <div class="search-input-group">
+                            <input type="text" id="userSearchInput" class="form-control search-input" 
+                                   placeholder="Search for users by name or username..." 
+                                   autocomplete="off">
+                            <button class="btn btn-primary search-btn" id="searchUsersBtn">
+                                <i class="bi bi-search"></i>
+                            </button>
+                        </div>
+                        <div id="searchResults" class="search-results" style="display: none;">
+                            <!-- Search results will be populated here -->
                         </div>
                     </div>
                 </div>
@@ -258,24 +284,41 @@
                         </div>
                         <div class="card-body">
                             <div class="insight-item mb-4">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <span>Success Rate</span>
-                                    <span class="badge badge-success"><span id="success-rate"><%= swapInsights.successRate %></span>%</span>
+                                <div class="insight-header">
+                                    <div class="insight-title">
+                                        <i class="bi bi-graph-up-arrow"></i>
+                                        <span>Success Rate</span>
+                                    </div>
+                                    <div class="insight-value">
+                                        <span class="badge badge-gradient"><span id="success-rate"><%= swapInsights.successRate %></span>%</span>
+                                    </div>
                                 </div>
                                 <div class="progress-modern">
-                                    <div class="progress-bar-modern bg-success" data-width="<%= swapInsights.successRate %>"></div>
+                                    <div class="progress-bar-modern bg-gradient" data-width="<%= swapInsights.successRate %>"></div>
                                 </div>
                             </div>
-                            <div class="insight-item mb-3">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span><i class="bi bi-clock-history"></i> Avg Response Time</span>
-                                    <span class="text-muted" id="avg-response-time"><%= swapInsights.avgResponseTime %></span>
+                            
+                            <div class="insight-item mb-4">
+                                <div class="insight-header">
+                                    <div class="insight-title">
+                                        <i class="bi bi-clock-history"></i>
+                                        <span>Avg Response Time</span>
+                                    </div>
+                                    <div class="insight-value">
+                                        <span class="insight-text" id="avg-response-time"><%= swapInsights.avgResponseTime %></span>
+                                    </div>
                                 </div>
                             </div>
+                            
                             <div class="insight-item">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <span><i class="bi bi-bookmark"></i> Popular Genre</span>
-                                    <span class="badge badge-primary" id="popular-genre"><%= swapInsights.popularGenre %></span>
+                                <div class="insight-header">
+                                    <div class="insight-title">
+                                        <i class="bi bi-bookmark"></i>
+                                        <span>Popular Genre</span>
+                                    </div>
+                                    <div class="insight-value">
+                                        <span class="badge badge-gradient" id="popular-genre"><%= swapInsights.popularGenre %></span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -287,10 +330,7 @@
                     <div class="card card-dark h-100" id="nearby-books-section">
                         <div class="card-header">
                             <h5 class="card-title">
-                                <i class="bi bi-geo-alt"></i> Nearby Books
-                                <button type="button" class="btn btn-sm btn-outline-primary ml-2 refresh-nearby" title="Refresh Nearby Books">
-                                    <i class="bi bi-arrow-clockwise"></i>
-                                </button>
+                                <i class="bi bi-heart"></i> Recommended Books
                             </h5>
                         </div>
                         <div class="card-body">
@@ -298,17 +338,24 @@
                                 <% if (nearbyBooks && nearbyBooks.length > 0) { %>
                                     <% nearbyBooks.slice(0, 3).forEach(book => { %>
                                         <div class="nearby-book-item mb-3">
-                                            <div class="row align-items-center">
-                                                <div class="col-3">
+                                            <div class="nearby-book-content">
+                                                <div class="book-cover-section">
                                                     <img src="<%= book.image || '/images/placeholder-book.jpg' %>" 
-                                                         alt="<%= book.title %>" class="book-cover-small">
+                                                         alt="<%= book.title %>" class="book-cover-small"
+                                                         onerror="this.src='/images/placeholder-book.jpg'">
                                                 </div>
-                                                <div class="col-9">
+                                                <div class="book-details-section">
                                                     <h6 class="book-title"><%= book.title %></h6>
                                                     <p class="book-author">by <%= book.author %></p>
-                                                    <div class="d-flex justify-content-between align-items-center">
+                                                    <p class="book-owner">
+                                                        <i class="bi bi-person"></i> 
+                                                        <span class="clickable" onclick="openUserProfile('<%= book.ownerId %>')">
+                                                            <%= book.ownerName || book.owner?.name || 'Unknown Owner' %>
+                                                        </span>
+                                                    </p>
+                                                    <div class="book-actions">
                                                         <span class="location-text">
-                                                            <i class="bi bi-geo-alt"></i> <%= book.distance %>
+                                                            <i class="bi bi-heart"></i> <%= book.distance || 'Recommended' %>
                                                         </span>
                                                         <a href="/swap-request/<%= book.id %>" class="btn btn-sm btn-outline-light">
                                                             Request
@@ -318,11 +365,13 @@
                                             </div>
                                         </div>
                                     <% }); %>
-                                <% } else { %>
-                                    <div class="empty-state">
-                                        <p class="text-muted">No nearby books available at the moment.</p>
-                                    </div>
-                                <% } %>
+                            <% } else { %>
+                                <div class="empty-state text-center py-4">
+                                    <i class="bi bi-heart empty-state-icon"></i>
+                                    <h6 class="mt-3">No recommended books</h6>
+                                    <p class="text-muted">No books available from other users at the moment</p>
+                                </div>
+                            <% } %>
                             </div>
                         </div>
                     </div>
@@ -342,17 +391,17 @@
                         <div class="card-body">
                             <div id="trending-genres-list">
                                 <% if (trendingGenres && trendingGenres.length > 0) { %>
-                                    <% trendingGenres.forEach((genre, index) => { %>
+                                    <% trendingGenres.slice(0, 3).forEach((genre, index) => { %>
                                         <div class="trending-item mb-3">
                                             <div class="d-flex justify-content-between align-items-center mb-2">
                                                 <div class="d-flex align-items-center">
                                                     <span class="trending-rank">#<%= index + 1 %></span>
                                                     <span class="genre-name"><%= genre.name %></span>
                                                 </div>
-                                                <span class="badge badge-warning"><%= genre.swaps %></span>
+                                                <span class="badge badge-gradient"><%= genre.swaps %></span>
                                             </div>
                                             <div class="progress-modern">
-                                                <div class="progress-bar-modern bg-warning" data-width="<%= genre.percentage %>"></div>
+                                                <div class="progress-bar-modern bg-gradient" data-width="<%= genre.percentage %>"></div>
                                             </div>
                                         </div>
                                     <% }); %>
@@ -368,43 +417,56 @@
                     </div>
                 </div>
 
-                <!-- Trending Books -->
+                <!-- Top 3 Leaderboard -->
                 <div class="col-lg-6 mb-4">
                     <div class="card card-dark h-100">
                         <div class="card-header">
                             <h5 class="card-title">
-                                <i class="bi bi-star"></i> Trending Books
+                                <i class="bi bi-trophy"></i> Top 3 Leaderboard
                             </h5>
                         </div>
                         <div class="card-body">
-                            <div id="trending-books-list">
-                                <% if (trendingBooks && trendingBooks.length > 0) { %>
-                                    <% trendingBooks.forEach((book, index) => { %>
-                                        <div class="trending-book-item mb-3">
-                                            <div class="row align-items-center">
-                                                <div class="col-2 text-center">
-                                                    <span class="trending-rank-large">#<%= index + 1 %></span>
+                            <div id="leaderboard-list">
+                                <% if (leaderboard && leaderboard.length > 0) { %>
+                                    <% leaderboard.slice(0, 3).forEach((user, index) => { %>
+                                        <div class="leaderboard-item mb-3 <%= user.isCurrentUser ? 'current-user' : '' %>">
+                                            <div class="leaderboard-content">
+                                                <div class="rank-section">
+                                                    <span class="rank-badge rank-<%= user.rank %>">#<%= user.rank %></span>
                                                 </div>
-                                                <div class="col-3">
-                                                    <img src="<%= book.image || '/images/placeholder-book.jpg' %>" 
-                                                         alt="<%= book.title %>" class="book-cover-small">
+                                                <div class="user-avatar-section">
+                                                    <img src="<%= user.avatar || '/images/default-avatar.png' %>" 
+                                                         alt="<%= user.displayName %>" class="user-avatar clickable"
+                                                         onerror="this.src='/images/default-avatar.png'"
+                                                         onclick="openUserProfile('<%= user._id %>')">
                                                 </div>
-                                                <div class="col-7">
-                                                    <h6 class="book-title"><%= book.title %></h6>
-                                                    <p class="book-author">by <%= book.author %></p>
-                                                    <div class="swap-count">
-                                                        <i class="bi bi-arrow-left-right text-success"></i>
-                                                        <span class="text-muted small"><%= book.swapCount %> swaps</span>
+                                                <div class="user-details-section">
+                                                    <h6 class="user-name clickable" onclick="openUserProfile('<%= user._id %>')"><%= user.displayName %></h6>
+                                                    <p class="user-level">Level <%= user.level %></p>
+                                                    <div class="user-stats">
+                                                        <div class="stat-item">
+                                                            <i class="bi bi-star-fill"></i>
+                                                            <span><%= user.totalPoints %> pts</span>
+                                                        </div>
+                                                        <div class="stat-item">
+                                                            <i class="bi bi-award"></i>
+                                                            <span><%= user.badgeCount %> badges</span>
+                                                        </div>
                                                     </div>
+                                                </div>
+                                                <div class="user-actions">
+                                                    <span class="join-date">
+                                                        <i class="bi bi-calendar"></i> <%= user.joinDate %>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
                                     <% }); %>
                                 <% } else { %>
                                     <div class="empty-state text-center py-4">
-                                        <i class="bi bi-star empty-state-icon"></i>
-                                        <h6 class="mt-3">No trending books</h6>
-                                        <p class="text-muted">Check back soon for popular titles</p>
+                                        <i class="bi bi-trophy empty-state-icon"></i>
+                                        <h6 class="mt-3">No leaderboard data</h6>
+                                        <p class="text-muted">Check back soon for top users</p>
                                     </div>
                                 <% } %>
                             </div>
@@ -416,10 +478,347 @@
     </section>
 </main>
 
+<!-- User Profile Modal -->
+<div class="modal fade" id="userProfileModal" tabindex="-1" aria-labelledby="userProfileModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
+        <div class="modal-content profile-modal">
+            <div class="modal-header profile-header">
+                <h5 class="modal-title" id="userProfileModalLabel">
+                    <i class="bi bi-person-circle"></i> User Profile
+                </h5>
+                <button type="button" class="btn-close" onclick="closeProfileModal()" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body profile-body">
+                <!-- Loading State -->
+                <div id="profileLoading" class="text-center py-5">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-3 text-muted">Loading profile...</p>
+                </div>
+                
+                <!-- Profile Content -->
+                <div id="profileContent" style="display: none;">
+                    <!-- Profile Header -->
+                    <div class="profile-header-section">
+                        <div class="profile-avatar-section">
+                            <img id="profileAvatar" src="" alt="User Avatar" class="profile-avatar">
+                            <div class="profile-level-badge" id="profileLevel">Level 1</div>
+                        </div>
+                        <div class="profile-info-section">
+                            <h4 id="profileDisplayName" class="profile-name">User Name</h4>
+                            <p id="profileUsername" class="profile-username">@username</p>
+                            <div class="profile-stats-row">
+                                <div class="stat-item">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span id="profilePoints">0</span> pts
+                                </div>
+                                <div class="stat-item">
+                                    <i class="bi bi-award"></i>
+                                    <span id="profileBadges">0</span> badges
+                                </div>
+                                <div class="stat-item">
+                                    <i class="bi bi-calendar"></i>
+                                    <span id="profileJoinDate">Unknown</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Badges Section -->
+                    <div class="profile-section">
+                        <h6 class="section-title">
+                            <i class="bi bi-award"></i> Badges
+                        </h6>
+                        <div id="profileBadgesList" class="badges-container">
+                            <!-- Badges will be populated here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Stats Section -->
+                    <div class="profile-section">
+                        <h6 class="section-title">
+                            <i class="bi bi-graph-up"></i> Statistics
+                        </h6>
+                        <div class="stats-grid">
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-book"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="profileBooksOwned">0</div>
+                                    <div class="stat-label">Books Owned</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-arrow-left-right"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="profileSwapsCompleted">0</div>
+                                    <div class="stat-label">Swaps Completed</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-percent"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="profileSuccessRate">0%</div>
+                                    <div class="stat-label">Success Rate</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon">
+                                    <i class="bi bi-eye"></i>
+                                </div>
+                                <div class="stat-content">
+                                    <div class="stat-value" id="profileBooksViewed">0</div>
+                                    <div class="stat-label">Books Viewed</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Recent Books Section -->
+                    <div class="profile-section">
+                        <h6 class="section-title">
+                            <i class="bi bi-collection"></i> Recent Books
+                        </h6>
+                        <div id="profileRecentBooks" class="recent-books-container">
+                            <!-- Recent books will be populated here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer profile-footer">
+                <button type="button" class="btn btn-outline-light" onclick="closeProfileModal()">Close</button>
+                <button type="button" class="btn btn-primary" id="profileMessageBtn">
+                    <i class="bi bi-chat-dots"></i> Send Message
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <!-- Scripts -->
     <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+    
+    <!-- User Profile Modal Script -->
+    <script>
+        function openUserProfile(userId) {
+            // Check if userId is valid
+            if (!userId || userId === 'unknown' || userId === 'undefined') {
+                alert('User profile not available');
+                return;
+            }
+            
+            // Show loading state
+            document.getElementById('profileLoading').style.display = 'block';
+            document.getElementById('profileContent').style.display = 'none';
+            
+            // Show modal
+            $('#userProfileModal').modal('show');
+            
+            // Fetch user profile data
+            fetch(`/api/user/profile/${userId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Hide loading, show content
+                    document.getElementById('profileLoading').style.display = 'none';
+                    document.getElementById('profileContent').style.display = 'block';
+                    
+                    // Populate profile data
+                    populateProfile(data);
+                })
+                .catch(error => {
+                    console.error('Error fetching user profile:', error);
+                    document.getElementById('profileLoading').innerHTML = 
+                        '<div class="text-center py-5"><i class="bi bi-exclamation-triangle text-warning"></i><p class="mt-3 text-muted">Error loading profile</p></div>';
+                });
+        }
+        
+        function closeProfileModal() {
+            $('#userProfileModal').modal('hide');
+        }
+        
+        function populateProfile(data) {
+            // Basic info
+            document.getElementById('profileAvatar').src = data.avatar;
+            document.getElementById('profileDisplayName').textContent = data.displayName;
+            document.getElementById('profileUsername').textContent = '@' + data.username;
+            document.getElementById('profileLevel').textContent = 'Level ' + data.level;
+            document.getElementById('profilePoints').textContent = data.totalPoints;
+            document.getElementById('profileBadges').textContent = data.badgeCount;
+            document.getElementById('profileJoinDate').textContent = data.joinDate;
+            
+            // Stats
+            document.getElementById('profileBooksOwned').textContent = data.stats.booksOwned;
+            document.getElementById('profileSwapsCompleted').textContent = data.stats.swapsCompleted;
+            document.getElementById('profileSuccessRate').textContent = data.stats.successRate + '%';
+            document.getElementById('profileBooksViewed').textContent = data.stats.booksViewed;
+            
+            // Badges
+            populateBadges(data.badges);
+            
+            // Recent books
+            populateRecentBooks(data.recentBooks);
+        }
+        
+        function populateBadges(badges) {
+            const badgesContainer = document.getElementById('profileBadgesList');
+            
+            if (badges && badges.length > 0) {
+                badgesContainer.innerHTML = badges.map(badge => `
+                    <div class="badge-item">
+                        <i class="bi bi-award"></i>
+                        <span>${badge}</span>
+                    </div>
+                `).join('');
+            } else {
+                badgesContainer.innerHTML = '<div class="text-center py-4"><i class="bi bi-award text-muted" style="font-size: 3rem; opacity: 0.5;"></i><p class="text-muted mt-3 mb-0" style="font-size: 1.1rem; font-weight: 500;">No badges earned yet</p><p class="text-muted mt-1" style="font-size: 0.9rem;">Keep swapping books to earn badges!</p></div>';
+            }
+        }
+        
+        function populateRecentBooks(books) {
+            const booksContainer = document.getElementById('profileRecentBooks');
+            
+            if (books && books.length > 0) {
+                booksContainer.innerHTML = books.map(book => `
+                    <div class="recent-book-item">
+                        <img src="${book.image || '/images/placeholder-book.jpg'}" 
+                             alt="${book.title}" class="book-cover-tiny"
+                             onerror="this.src='/images/placeholder-book.jpg'">
+                        <div class="book-info">
+                            <h6 class="book-title">${book.title}</h6>
+                            <p class="book-author">by ${book.author}</p>
+                            <span class="book-genre">${book.genre || 'Unknown'}</span>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                booksContainer.innerHTML = '<div class="text-center py-4"><i class="bi bi-book text-muted" style="font-size: 3rem; opacity: 0.5;"></i><p class="text-muted mt-3 mb-0" style="font-size: 1.1rem; font-weight: 500;">No books added yet</p><p class="text-muted mt-1" style="font-size: 0.9rem;">Start adding books to your library!</p></div>';
+            }
+        }
+        
+        // User Search Functionality
+        function initializeUserSearch() {
+            const searchInput = document.getElementById('userSearchInput');
+            const searchBtn = document.getElementById('searchUsersBtn');
+            const searchResults = document.getElementById('searchResults');
+            let searchTimeout;
+            
+            // Search on button click
+            searchBtn.addEventListener('click', performSearch);
+            
+            // Search on Enter key
+            searchInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    performSearch();
+                }
+            });
+            
+            // Search on input (with debounce)
+            searchInput.addEventListener('input', function() {
+                clearTimeout(searchTimeout);
+                const query = this.value.trim();
+                
+                if (query.length >= 2) {
+                    searchTimeout = setTimeout(() => {
+                        performSearch();
+                    }, 500); // 500ms delay
+                } else if (query.length === 0) {
+                    hideSearchResults();
+                }
+            });
+            
+            function performSearch() {
+                const query = searchInput.value.trim();
+                
+                if (query.length < 2) {
+                    hideSearchResults();
+                    return;
+                }
+                
+                showSearchLoading();
+                
+                fetch(`/api/users/search?q=${encodeURIComponent(query)}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        displaySearchResults(data.users);
+                    })
+                    .catch(error => {
+                        console.error('Error searching users:', error);
+                        showSearchError();
+                    });
+            }
+            
+            function showSearchLoading() {
+                searchResults.style.display = 'block';
+                searchResults.innerHTML = `
+                    <div class="search-loading">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">Searching...</span>
+                        </div>
+                        <p class="mt-2">Searching users...</p>
+                    </div>
+                `;
+            }
+            
+            function displaySearchResults(users) {
+                searchResults.style.display = 'block';
+                
+                if (users.length === 0) {
+                    searchResults.innerHTML = `
+                        <div class="search-no-results">
+                            <i class="bi bi-person-x"></i>
+                            <p>No users found matching "${searchInput.value}"</p>
+                        </div>
+                    `;
+                    return;
+                }
+                
+                searchResults.innerHTML = users.map(user => `
+                    <div class="search-result-item" onclick="openUserProfile('${user._id}')">
+                        <img src="${user.avatar}" alt="${user.name}" class="search-result-avatar"
+                             onerror="this.src='/images/default-avatar.png'">
+                        <div class="search-result-info">
+                            <div class="search-result-name">${user.name}</div>
+                            <div class="search-result-username">@${user.username}</div>
+                            <div class="search-result-stats">
+                                <span><i class="bi bi-star"></i> ${user.points} pts</span>
+                                <span><i class="bi bi-award"></i> ${user.badges} badges</span>
+                                <span><i class="bi bi-book"></i> ${user.booksOwned} books</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            }
+            
+            function showSearchError() {
+                searchResults.style.display = 'block';
+                searchResults.innerHTML = `
+                    <div class="search-no-results">
+                        <i class="bi bi-exclamation-triangle"></i>
+                        <p>Error searching users. Please try again.</p>
+                    </div>
+                `;
+            }
+            
+            function hideSearchResults() {
+                searchResults.style.display = 'none';
+            }
+        }
+        
+        // Initialize user search when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeUserSearch();
+        });
+    </script>
     <script src="/js/navigation.js"></script>
     <script src="/js/dashboard-updater.js"></script>
     
@@ -435,3 +834,4 @@
     </script>
 </body>
 </html>
+

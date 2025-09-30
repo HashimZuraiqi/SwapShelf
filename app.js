@@ -99,6 +99,7 @@ const bookRoutes = require('./routes/books');
 const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
 const chatRoutes = require('./routes/chat');
+const rewardsRoutes = require('./routes/rewards');
 
 // Mount API Routes
 app.use('/auth', require('./routes/auth'));  // mounts /auth/*
@@ -107,6 +108,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/rewards', rewardsRoutes);
 app.get('/login.html', (req, res) => res.redirect(301, '/auth/login'));
 app.get('/register.html', (req, res) => res.redirect(301, '/auth/register'));
 // Legacy route for book addition (redirect to API)
@@ -250,6 +252,37 @@ async function logActivity({ userId, action, message, entityType = null, entityI
     const normalized = (action || '').toUpperCase();
     const finalAction = aliasMap[normalized] || normalized;
     await Activity.create({ user: userId, action: finalAction, message, entityType, entityId, meta });
+    
+    // Integrate with rewards system
+    try {
+      const RewardsController = require('./controllers/rewardsController');
+      
+      // Map activity types to rewards system
+      let rewardsActivityType = null;
+      switch (finalAction) {
+        case 'ADD_BOOK':
+          rewardsActivityType = 'book_added';
+          break;
+        case 'COMPLETE_SWAP':
+          rewardsActivityType = 'swap_completed';
+          break;
+        case 'UPDATE_PROFILE':
+          rewardsActivityType = 'visit';
+          break;
+        default:
+          // Check if it's a report activity
+          if (message && message.toLowerCase().includes('report')) {
+            rewardsActivityType = 'report_made';
+          }
+      }
+      
+      if (rewardsActivityType) {
+        await RewardsController.recordActivity(userId, rewardsActivityType, meta);
+      }
+    } catch (rewardsError) {
+      console.error('Rewards integration failed:', rewardsError.message);
+      // Don't fail the main activity logging if rewards fail
+    }
   } catch (err) {
     console.error('Activity log failed:', err.message);
   }
@@ -381,65 +414,24 @@ app.get('/dashboard', async (req, res) => {
             return res.redirect('/login?error=user_not_found');
         }
         
-        // Fetch REAL dashboard data from database
-        let dashboardData = {
-            userStats: { booksOwned: 0, swapsCompleted: 0, wishlistItems: 0, pendingSwaps: 0 },
-            swapInsights: { successRate: 0, avgResponseTime: "No data", popularGenre: "Not specified" },
-            nearbyBooks: [],
-            trendingGenres: [],
-            trendingBooks: [],
-            recentActivity: []
-        };
-        
+        // Fetch REAL dashboard data from database using the updated controller
+        let dashboardData;
         try {
-            // Get user's books
-            const userBooks = await Book.find({ owner: userId });
-            
-            // Get user's swaps
-            const userSwaps = await Swap.find({
-                $or: [{ requester: userId }, { owner: userId }]
-            });
-            
-            // Get user data for wishlist
-            const userData = await User.findById(userId);
-            
-            // Calculate real statistics
-            dashboardData.userStats = {
-                booksOwned: userBooks.length,
-                swapsCompleted: userSwaps.filter(swap => swap.status === 'Completed').length,
-                wishlistItems: userData ? userData.wishlist.length : 0,
-                pendingSwaps: userSwaps.filter(swap => swap.status === 'Pending').length
-            };
-            
-            // Get nearby books (books from other users)
-            const nearbyBooks = await Book.find({ 
-                owner: { $ne: userId },
-                availability: 'available'
-            }).limit(6).populate('owner', 'name location fullname');
-            
-            dashboardData.nearbyBooks = nearbyBooks.map(book => ({
-                id: book._id,
-                title: book.title,
-                author: book.author,
-                image: book.image || '/images/book-placeholder.jpg',
-                ownerName: (book.owner && (book.owner.name || book.owner.fullname)) || 'Unknown',
-                distance: '2.5 km' // TODO: Calculate real distance
-            }));
-            
-            // Get recent activity
-            const activities = await Activity.find({ user: userId })
-                .sort({ createdAt: -1 })
-                .limit(5)               // was 10
-                .populate('entityId', 'title author')
-                .lean();
-                
-            dashboardData.recentActivity = activities.map(activity => ({
-                ...formatActivity(activity)
-            }));
-            
+            dashboardData = await getDashboardData(userId);
         } catch (dbError) {
             console.error('Error fetching dashboard data:', dbError);
+            // Fallback data if there's an error
+            dashboardData = {
+                userStats: { booksOwned: 0, swapsCompleted: 0, wishlistItems: 0, pendingSwaps: 0 },
+                swapInsights: { successRate: 0, avgResponseTime: "No data", popularGenre: "Not specified" },
+                nearbyBooks: [],
+                trendingGenres: [],
+                leaderboard: [],
+                recentActivity: []
+            };
         }
+        
+        // Dashboard data is now provided by the getDashboardData function
         
         res.render('dashboard', { 
             userLoggedIn, 
@@ -450,7 +442,7 @@ app.get('/dashboard', async (req, res) => {
             swapInsights: dashboardData.swapInsights,
             nearbyBooks: dashboardData.nearbyBooks,
             trendingGenres: dashboardData.trendingGenres,
-            trendingBooks: dashboardData.trendingBooks,
+            leaderboard: dashboardData.leaderboard,
             recentActivity: dashboardData.recentActivity
         });
         
@@ -533,10 +525,9 @@ app.get('/api/dashboard/nearby', async (req, res) => {
     
     try {
         const userId = req.session.user._id || req.session.user.id;
-        const limit = parseInt(req.query.limit) || 3;
-        const { getNearbyBooks } = require('./helpers/dashboardHelper');
-        const nearbyBooks = await getNearbyBooks(userId, limit);
-        res.json(nearbyBooks);
+        const { getDashboardData } = require('./controllers/dashboardController');
+        const dashboardData = await getDashboardData(userId);
+        res.json(dashboardData.nearbyBooks);
     } catch (error) {
         console.error('API error fetching nearby books:', error);
         res.status(500).json({ error: 'Failed to fetch nearby books' });
@@ -546,19 +537,144 @@ app.get('/api/dashboard/nearby', async (req, res) => {
 // API endpoint to get trending data
 app.get('/api/dashboard/trending', async (req, res) => {
     try {
-        const { getTrendingGenres, getTrendingBooks } = require('./helpers/dashboardHelper');
-        const [trendingGenres, trendingBooks] = await Promise.all([
-            getTrendingGenres(),
-            getTrendingBooks()
-        ]);
+        const userId = req.session.user._id || req.session.user.id;
+        const { getDashboardData } = require('./controllers/dashboardController');
+        const dashboardData = await getDashboardData(userId);
         
         res.json({
-            genres: trendingGenres,
-            books: trendingBooks
+            genres: dashboardData.trendingGenres,
+            leaderboard: dashboardData.leaderboard
         });
     } catch (error) {
         console.error('API error fetching trending data:', error);
         res.status(500).json({ error: 'Failed to fetch trending data' });
+    }
+});
+
+// API endpoint to search users
+app.get('/api/users/search', async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    try {
+        const { q } = req.query;
+        const User = require('./models/User');
+        
+        if (!q || q.trim().length < 2) {
+            return res.json({ users: [] });
+        }
+        
+        // Search users by name, username, or email
+        const users = await User.find({
+            $and: [
+                { _id: { $ne: req.session.user._id } }, // Exclude current user
+                {
+                    $or: [
+                        { name: { $regex: q, $options: 'i' } },
+                        { username: { $regex: q, $options: 'i' } },
+                        { email: { $regex: q, $options: 'i' } }
+                    ]
+                }
+            ]
+        })
+        .select('name username email photo rewards stats createdAt')
+        .limit(10)
+        .lean();
+        
+        // Format user data for search results
+        const searchResults = users.map(user => ({
+            _id: user._id,
+            name: user.name || user.email?.split('@')[0] || 'User',
+            username: user.username || user.email?.split('@')[0] || 'Unknown',
+            email: user.email,
+            avatar: user.photo || '/images/default-avatar.png',
+            points: user.rewards?.points || 0,
+            badges: user.rewards?.badges?.length || 0,
+            booksOwned: user.stats?.booksOwned || 0,
+            joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'
+        }));
+        
+        res.json({ users: searchResults });
+    } catch (error) {
+        console.error('Error searching users:', error);
+        res.status(500).json({ error: 'Failed to search users' });
+    }
+});
+
+// API endpoint to get user profile data
+app.get('/api/user/profile/:userId', async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.status(401).json({ error: 'Unauthorized' });
+    }
+    
+    try {
+        const { userId } = req.params;
+        const User = require('./models/User');
+        const Book = require('./models/Book');
+        const Swap = require('./models/Swap');
+        
+        // Get user profile
+        const user = await User.findById(userId)
+            .select('name username email photo rewards stats createdAt preferences')
+            .lean();
+            
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        
+        // Get user's books
+        const userBooks = await Book.find({ owner: userId })
+            .select('title author genre condition image stats createdAt')
+            .sort({ createdAt: -1 })
+            .limit(10)
+            .lean();
+            
+        console.log(`Found ${userBooks.length} books for user ${userId}:`, userBooks.map(b => ({ title: b.title, author: b.author, createdAt: b.createdAt })));
+            
+        // Get user's swap stats
+        const userSwaps = await Swap.find({
+            $or: [{ requester: userId }, { owner: userId }]
+        });
+        
+        const completedSwaps = userSwaps.filter(swap => swap.status === 'completed').length;
+        const totalSwaps = userSwaps.length;
+        const successRate = totalSwaps > 0 ? Math.round((completedSwaps / totalSwaps) * 100) : 0;
+        
+        // Calculate additional stats
+        const totalPoints = user.rewards?.points || 0;
+        const badgeCount = user.rewards?.badges?.length || 0;
+        const level = Math.floor(totalPoints / 100) + 1;
+        const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+        
+        // Prepare profile data
+        const profileData = {
+            _id: user._id,
+            displayName: user.name || user.username || user.email?.split('@')[0] || 'User',
+            username: user.username || user.email?.split('@')[0] || 'Unknown',
+            email: user.email,
+            avatar: user.photo || '/images/default-avatar.png',
+            joinDate: joinDate,
+            level: level,
+            totalPoints: totalPoints,
+            badgeCount: badgeCount,
+            badges: user.rewards?.badges || [],
+            stats: {
+                booksOwned: userBooks.length,
+                swapsCompleted: completedSwaps,
+                totalSwaps: totalSwaps,
+                successRate: successRate,
+                booksViewed: user.stats?.booksViewed || 0,
+                booksInterested: user.stats?.booksInterested || 0
+            },
+            recentBooks: userBooks.slice(0, 5),
+            preferences: user.preferences || {}
+        };
+        
+        res.json(profileData);
+    } catch (error) {
+        console.error('API error fetching user profile:', error);
+        res.status(500).json({ error: 'Failed to fetch user profile' });
     }
 });
 
@@ -1302,15 +1418,19 @@ app.get('/rewards', (req, res) => {
   const userName = req.session.user.username || req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
   const userPhoto = req.session.user.photo || '/images/default-avatar.png';
   
-  // TODO: Add rewards-specific data fetching here
-  // Example: user achievements, points, badges, etc.
+  // Record visit activity for rewards
+  logActivity({
+    userId: req.session.user._id || req.session.user.id,
+    action: 'UPDATE_PROFILE',
+    message: 'Visited rewards page',
+    meta: { page: 'rewards' }
+  });
   
   res.render('rewards', {
     userLoggedIn,
     userName,
     userPhoto,
     activePage: 'rewards'
-    // Add additional rewards data as needed
   });
 });
 

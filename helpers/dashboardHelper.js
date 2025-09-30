@@ -26,23 +26,26 @@ async function getUserStats(userId) {
             }),
             Swap.countDocuments({ 
                 $or: [{ requester: userId }, { owner: userId }], 
-                status: 'Completed' 
+                status: { $in: ['Completed', 'completed'] } 
             }),
             Swap.countDocuments({ 
                 $or: [{ requester: userId }, { owner: userId }], 
-                status: { $in: ['Pending', 'Accepted', 'In Progress'] } 
+                status: { $in: ['Pending', 'pending', 'Accepted', 'accepted', 'In Progress', 'in-progress'] } 
             }),
             User.findById(userId).select('wishlist')
         ]);
 
         const wishlistItems = currentUser && currentUser.wishlist ? currentUser.wishlist.length : 0;
 
-        return {
+        const stats = {
             booksOwned,
             swapsCompleted: completedSwaps,
             wishlistItems,
             pendingSwaps
         };
+        
+        console.log('Dashboard helper returning stats:', stats);
+        return stats;
     } catch (error) {
         console.error('Error fetching user stats:', error);
         return {
