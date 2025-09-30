@@ -13,6 +13,50 @@ const Swap = require('./models/Swap'); // Mongoose Swap model
 const Activity = require('./models/Activity');
 const { getDashboardData } = require('./controllers/dashboardController'); // Dashboard data controller
 
+/**
+ * Calculate user activity score based on real platform usage
+ */
+function calculateUserActivityScore(userData) {
+    const {
+        booksOwned,
+        completedSwaps,
+        pendingSwaps,
+        joinDate,
+        existingPoints,
+        badges
+    } = userData;
+    
+    let score = 0;
+    
+    // Base points from existing rewards system
+    score += existingPoints || 0;
+    
+    // Points for books owned (10 points per book)
+    score += booksOwned * 10;
+    
+    // Points for completed swaps (50 points per completed swap)
+    score += completedSwaps * 50;
+    
+    // Points for active swaps (20 points per pending swap)
+    score += pendingSwaps * 20;
+    
+    // Points for badges (100 points per badge)
+    score += (badges || 0) * 100;
+    
+    // Bonus points for platform longevity (1 point per day since joining)
+    if (joinDate) {
+        const daysSinceJoin = Math.floor((new Date() - new Date(joinDate)) / (1000 * 60 * 60 * 24));
+        score += Math.min(daysSinceJoin, 365); // Cap at 365 days
+    }
+    
+    // Bonus for high activity users
+    if (completedSwaps >= 10) score += 200; // Active swapper bonus
+    if (booksOwned >= 20) score += 300; // Book collector bonus
+    if (completedSwaps >= 5 && booksOwned >= 10) score += 500; // Well-rounded user bonus
+    
+    return Math.max(score, 0); // Ensure non-negative score
+}
+
 const app = express();
 
 const storage = multer.diskStorage({
@@ -636,20 +680,38 @@ app.get('/api/user/profile/:userId', async (req, res) => {
             
         console.log(`Found ${userBooks.length} books for user ${userId}:`, userBooks.map(b => ({ title: b.title, author: b.author, createdAt: b.createdAt })));
             
-        // Get user's swap stats
-        const userSwaps = await Swap.find({
-            $or: [{ requester: userId }, { owner: userId }]
-        });
-        
-        const completedSwaps = userSwaps.filter(swap => swap.status === 'completed').length;
-        const totalSwaps = userSwaps.length;
-        const successRate = totalSwaps > 0 ? Math.round((completedSwaps / totalSwaps) * 100) : 0;
-        
-        // Calculate additional stats
-        const totalPoints = user.rewards?.points || 0;
-        const badgeCount = user.rewards?.badges?.length || 0;
-        const level = Math.floor(totalPoints / 100) + 1;
-        const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
+               // Get user's swap stats
+               const userSwaps = await Swap.find({
+                   $or: [{ requester: userId }, { owner: userId }]
+               });
+               
+               const completedSwaps = userSwaps.filter(swap => 
+                   swap.status === 'completed' || swap.status === 'Completed'
+               ).length;
+               
+               const pendingSwaps = userSwaps.filter(swap => 
+                   ['pending', 'Pending', 'accepted', 'Accepted', 'in-progress', 'In Progress'].includes(swap.status)
+               ).length;
+               
+               const totalSwaps = userSwaps.length;
+               const successRate = totalSwaps > 0 ? Math.round((completedSwaps / totalSwaps) * 100) : 0;
+               
+               // Calculate real user statistics
+               const booksOwned = userBooks.length;
+               
+               // Calculate activity score using the same system as leaderboard
+               const activityScore = calculateUserActivityScore({
+                   booksOwned,
+                   completedSwaps,
+                   pendingSwaps,
+                   joinDate: user.createdAt,
+                   existingPoints: user.rewards?.points || 0,
+                   badges: user.rewards?.badges?.length || 0
+               });
+               
+               const badgeCount = user.rewards?.badges?.length || 0;
+               const level = Math.floor(activityScore / 100) + 1;
+               const joinDate = user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown';
         
         // Prepare profile data
         const profileData = {
@@ -659,8 +721,8 @@ app.get('/api/user/profile/:userId', async (req, res) => {
             email: user.email,
             avatar: user.photo || '/images/default-avatar.png',
             joinDate: joinDate,
-            level: level,
-            totalPoints: totalPoints,
+               level: level,
+               totalPoints: activityScore,
             badgeCount: badgeCount,
             badges: user.rewards?.badges || [],
             stats: {
@@ -1438,23 +1500,136 @@ app.get('/rewards', (req, res) => {
   });
 });
 
-app.get('/leaderboard', (req, res) => {
+app.get('/leaderboard', async (req, res) => {
   if (!req.session || !req.session.user) return res.redirect('/login');
   
-  const userLoggedIn = req.session && req.session.user;
-  const userName = req.session.user.username || req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
-  const userPhoto = req.session.user.photo || '/images/default-avatar.png';
-  
-  // TODO: Add leaderboard-specific data fetching here
-  // Example: monthly rankings, user position, stats, etc.
-  
-  res.render('leaderboard', {
-    userLoggedIn,
-    userName,
-    userPhoto,
-    activePage: 'leaderboard'
-    // Add additional leaderboard data as needed
-  });
+  try {
+    const userLoggedIn = req.session && req.session.user;
+    const userName = req.session.user.username || req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
+    const userPhoto = req.session.user.photo || '/images/default-avatar.png';
+    const userId = req.session.user._id || req.session.user.id;
+    
+    // Get real leaderboard data using the same system as dashboard
+    const { getDashboardData } = require('./controllers/dashboardController');
+    const dashboardData = await getDashboardData(userId);
+    
+    // Get extended leaderboard data (top 10 instead of just top 3)
+    const allUsers = await User.find({})
+        .select('name email photo rewards stats createdAt')
+        .lean();
+    
+    // Calculate real statistics for all users
+    const usersWithStats = await Promise.all(allUsers.map(async (user) => {
+        try {
+            // Get user's books count
+            const booksOwned = await Book.countDocuments({ 
+                owner: user._id,
+                availability: { $ne: 'Swapped' }
+            });
+            
+            // Get user's swap statistics
+            const userSwaps = await Swap.find({
+                $or: [{ requester: user._id }, { owner: user._id }]
+            });
+            
+            const completedSwaps = userSwaps.filter(swap => 
+                swap.status === 'completed' || swap.status === 'Completed'
+            ).length;
+            
+            const pendingSwaps = userSwaps.filter(swap => 
+                ['pending', 'Pending', 'accepted', 'Accepted', 'in-progress', 'In Progress'].includes(swap.status)
+            ).length;
+            
+            // Calculate activity score
+            const activityScore = calculateUserActivityScore({
+                booksOwned,
+                completedSwaps,
+                pendingSwaps,
+                joinDate: user.createdAt,
+                existingPoints: user.rewards?.points || 0,
+                badges: user.rewards?.badges?.length || 0
+            });
+            
+            const level = Math.floor(activityScore / 100) + 1;
+            const isCurrentUser = user._id.toString() === userId.toString();
+            
+            return {
+                _id: user._id,
+                displayName: user.name || user.email?.split('@')[0] || 'User',
+                username: user.email?.split('@')[0] || 'Unknown',
+                email: user.email,
+                totalPoints: activityScore,
+                badgeCount: user.rewards?.badges?.length || 0,
+                level: level,
+                avatar: user.photo || '/images/default-avatar.png',
+                joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown',
+                isCurrentUser: isCurrentUser,
+                booksOwned: booksOwned,
+                completedSwaps: completedSwaps,
+                pendingSwaps: pendingSwaps,
+                totalSwaps: userSwaps.length,
+                successRate: userSwaps.length > 0 ? Math.round((completedSwaps / userSwaps.length) * 100) : 0
+            };
+        } catch (error) {
+            console.error(`Error calculating stats for user ${user._id}:`, error);
+            return {
+                _id: user._id,
+                displayName: user.name || user.email?.split('@')[0] || 'User',
+                username: user.email?.split('@')[0] || 'Unknown',
+                email: user.email,
+                totalPoints: user.rewards?.points || 0,
+                badgeCount: user.rewards?.badges?.length || 0,
+                level: 1,
+                avatar: user.photo || '/images/default-avatar.png',
+                joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown',
+                isCurrentUser: user._id.toString() === userId.toString(),
+                booksOwned: 0,
+                completedSwaps: 0,
+                pendingSwaps: 0,
+                totalSwaps: 0,
+                successRate: 0
+            };
+        }
+    }));
+    
+    // Sort users by activity score (descending) and add ranks
+    usersWithStats.sort((a, b) => b.totalPoints - a.totalPoints);
+    const fullLeaderboard = usersWithStats.map((user, index) => ({
+        ...user,
+        rank: index + 1
+    }));
+    
+    // Find current user's position
+    const currentUserRank = fullLeaderboard.findIndex(user => user.isCurrentUser) + 1;
+    const currentUser = fullLeaderboard.find(user => user.isCurrentUser);
+    
+    res.render('leaderboard', {
+        userLoggedIn,
+        userName,
+        userPhoto,
+        activePage: 'leaderboard',
+        leaderboard: fullLeaderboard,
+        currentUserRank: currentUserRank || 'Unranked',
+        currentUser: currentUser || null,
+        totalUsers: fullLeaderboard.length
+    });
+    
+  } catch (error) {
+    console.error('Leaderboard error:', error);
+    
+    // Fallback to basic leaderboard if there's an error
+    res.render('leaderboard', {
+        userLoggedIn: req.session && req.session.user,
+        userName: req.session.user.username || req.session.user.name || 'User',
+        userPhoto: req.session.user.photo || '/images/default-avatar.png',
+        activePage: 'leaderboard',
+        leaderboard: [],
+        currentUserRank: 'Unranked',
+        currentUser: null,
+        totalUsers: 0,
+        error: 'Unable to load leaderboard data'
+    });
+  }
 });
 
 // Test login error
@@ -1779,7 +1954,7 @@ app.get('/history', async (req, res) => {
   } catch (err) {
     console.error('History page error:', err);
     res.status(500).send('Failed to load history');
-  }
+  } 
 });
 
 

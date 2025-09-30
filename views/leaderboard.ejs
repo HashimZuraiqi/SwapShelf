@@ -98,88 +98,101 @@
     <!-- Top 3 Champions Podium -->
     <div class="champions-podium">
         <div class="podium-container">
-
-                       <!-- 2nd Place -->
-             <div class="podium-position second-place">
-    <div class="champion-card second">
-        <div class="rank-badge silver">2</div>
-        <div class="champion-avatar">
-            <img src="/images/default-avatar.png" alt="ReadingQueen" class="avatar-image">
-            <div class="crown-icon">🥈</div>
-        </div>
-        <h3 class="champion-name">ReadingQueen</h3>
-        <div class="champion-stats">
-            <div class="stat-item">
-                <span class="stat-value">2,420</span>
-                <span class="stat-label">Points</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value">12</span>
-                <span class="stat-label">Badges</span>
-            </div>
-            <div class="stat-item">
-                <span class="stat-value">47</span>
-                <span class="stat-label">Swaps</span>
-            </div>
-        </div>
-    </div>
-    </div>       
-            <!-- 1st Place -->
-            <div class="podium-position first-place">
-                <div class="champion-card winner">
-                    <div class="rank-badge gold">1</div>
-                    <div class="champion-avatar">
-                        <img src="/images/default-avatar.png" alt="BookMaster2024" class="avatar-image">
-                        <div class="crown-icon">👑</div>
-                    </div>
-                    <h3 class="champion-name">BookMaster2024</h3>
-                    <div class="champion-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">2,850</span>
-                            <span class="stat-label">Points</span>
+            <% if (leaderboard && leaderboard.length > 0) { %>
+                <!-- 2nd Place -->
+                <% if (leaderboard[1]) { %>
+                <div class="podium-position second-place">
+                    <div class="champion-card second">
+                        <div class="rank-badge silver">2</div>
+                        <div class="champion-avatar">
+                            <img src="<%= leaderboard[1].avatar %>" alt="<%= leaderboard[1].displayName %>" class="avatar-image">
+                            <div class="crown-icon">🥈</div>
                         </div>
-                        <div class="stat-item">
-                            <span class="stat-value">14</span>
-                            <span class="stat-label">Badges</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">52</span>
-                            <span class="stat-label">Swaps</span>
-                        </div>
-                    </div>
-                    <div class="winner-glow"></div>
-                </div>
-            </div>
-            
-
-      
-
-
-            <!-- 3rd Place -->
-            <div class="podium-position third-place">
-                <div class="champion-card third">
-                    <div class="rank-badge bronze">3</div>
-                    <div class="champion-avatar">
-                        <img src="/images/default-avatar.png" alt="SwapExpert" class="avatar-image">
-                        <div class="crown-icon">🥉</div>
-                    </div>
-                    <h3 class="champion-name">SwapExpert</h3>
-                    <div class="champion-stats">
-                        <div class="stat-item">
-                            <span class="stat-value">2,180</span>
-                            <span class="stat-label">Points</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">11</span>
-                            <span class="stat-label">Badges</span>
-                        </div>
-                        <div class="stat-item">
-                            <span class="stat-value">43</span>
-                            <span class="stat-label">Swaps</span>
+                        <h3 class="champion-name"><%= leaderboard[1].displayName %></h3>
+                        <div class="champion-stats">
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[1].totalPoints.toLocaleString() %></span>
+                                <span class="stat-label">Points</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[1].badgeCount %></span>
+                                <span class="stat-label">Badges</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[1].completedSwaps %></span>
+                                <span class="stat-label">Swaps</span>
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
+                <% } %>
+                
+                <!-- 1st Place -->
+                <% if (leaderboard[0]) { %>
+                <div class="podium-position first-place">
+                    <div class="champion-card winner">
+                        <div class="rank-badge gold">1</div>
+                        <div class="champion-avatar">
+                            <img src="<%= leaderboard[0].avatar %>" alt="<%= leaderboard[0].displayName %>" class="avatar-image">
+                            <div class="crown-icon">👑</div>
+                        </div>
+                        <h3 class="champion-name"><%= leaderboard[0].displayName %></h3>
+                        <div class="champion-stats">
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[0].totalPoints.toLocaleString() %></span>
+                                <span class="stat-label">Points</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[0].badgeCount %></span>
+                                <span class="stat-label">Badges</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[0].completedSwaps %></span>
+                                <span class="stat-label">Swaps</span>
+                            </div>
+                        </div>
+                        <div class="winner-glow"></div>
+                    </div>
+                </div>
+                <% } %>
+                
+                <!-- 3rd Place -->
+                <% if (leaderboard[2]) { %>
+                <div class="podium-position third-place">
+                    <div class="champion-card third">
+                        <div class="rank-badge bronze">3</div>
+                        <div class="champion-avatar">
+                            <img src="<%= leaderboard[2].avatar %>" alt="<%= leaderboard[2].displayName %>" class="avatar-image">
+                            <div class="crown-icon">🥉</div>
+                        </div>
+                        <h3 class="champion-name"><%= leaderboard[2].displayName %></h3>
+                        <div class="champion-stats">
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[2].totalPoints.toLocaleString() %></span>
+                                <span class="stat-label">Points</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[2].badgeCount %></span>
+                                <span class="stat-label">Badges</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-value"><%= leaderboard[2].completedSwaps %></span>
+                                <span class="stat-label">Swaps</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <% } %>
+            <% } else { %>
+                <!-- Empty state when no leaderboard data -->
+                <div class="empty-leaderboard">
+                    <div class="empty-icon">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <h3>No Leaderboard Data</h3>
+                    <p>Start adding books and completing swaps to appear on the leaderboard!</p>
+                </div>
+            <% } %>
         </div>
     </div>
 
@@ -198,173 +211,54 @@
         </div>
 
         <div class="rankings-list">
-            <!-- Rank 4 -->
-            <div class="ranking-item">
-                <div class="rank-position">
-                    <span class="rank-number">4</span>
-                    <div class="rank-change positive">
-                        <i class="bi bi-arrow-up"></i>
-                        <span>+2</span>
-                    </div>
-                </div>
-                <div class="user-info">
-                    <img src="/images/default-avatar.png" alt="BookLover99" class="user-avatar">
-                    <div class="user-details">
-                        <h4 class="username">BookLover99</h4>
-                        <div class="user-stats">
-                            <span class="badge-count">10 badges</span>
-                            <span class="divider">•</span>
-                            <span class="swap-count">45 swaps</span>
-                            <span class="divider">•</span>
-                            <span class="join-date">Joined Mar 2024</span>
+            <% if (leaderboard && leaderboard.length > 0) { %>
+                <% leaderboard.forEach((user, index) => { %>
+                    <div class="ranking-item <%= user.isCurrentUser ? 'current-user' : '' %>">
+                        <div class="rank-position">
+                            <span class="rank-number"><%= user.rank %></span>
+                            <% if (user.isCurrentUser) { %>
+                                <div class="current-user-badge">
+                                    <i class="bi bi-person-check"></i>
+                                    <span>You</span>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="user-info">
+                            <img src="<%= user.avatar %>" alt="<%= user.displayName %>" class="user-avatar">
+                            <div class="user-details">
+                                <h4 class="username"><%= user.displayName %></h4>
+                                <div class="user-stats">
+                                    <span class="badge-count"><%= user.badgeCount %> badges</span>
+                                    <span class="divider">•</span>
+                                    <span class="swap-count"><%= user.completedSwaps %> swaps</span>
+                                    <span class="divider">•</span>
+                                    <span class="join-date">Joined <%= user.joinDate %></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="score-section">
+                            <span class="points"><%= user.totalPoints.toLocaleString() %></span>
+                            <span class="points-label">points</span>
+                        </div>
+                        <div class="user-actions">
+                            <button class="btn btn-outline-primary btn-sm" onclick="openUserProfile('<%= user._id %>')">
+                                <i class="bi bi-person"></i> View Profile
+                            </button>
                         </div>
                     </div>
-                </div>
-                <div class="score-section">
-                    <span class="points">1,890</span>
-                    <span class="points-label">points</span>
-                </div>
-            </div>
-
-            <!-- Rank 5 -->
-            <div class="ranking-item">
-                <div class="rank-position">
-                    <span class="rank-number">5</span>
-                    <div class="rank-change negative">
-                        <i class="bi bi-arrow-down"></i>
-                        <span>-1</span>
+                <% }); %>
+            <% } else { %>
+                <div class="empty-rankings">
+                    <div class="empty-icon">
+                        <i class="bi bi-list-ol"></i>
                     </div>
+                    <h3>No Rankings Available</h3>
+                    <p>Be the first to start competing on the leaderboard!</p>
                 </div>
-                <div class="user-info">
-                    <img src="/images/default-avatar.png" alt="NovelNinja" class="user-avatar">
-                    <div class="user-details">
-                        <h4 class="username">NovelNinja</h4>
-                        <div class="user-stats">
-                            <span class="badge-count">9 badges</span>
-                            <span class="divider">•</span>
-                            <span class="swap-count">38 swaps</span>
-                            <span class="divider">•</span>
-                            <span class="join-date">Joined Feb 2024</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="score-section">
-                    <span class="points">1,650</span>
-                    <span class="points-label">points</span>
-                </div>
-            </div>
-
-            <!-- Current User (highlighted) -->
-            <div class="ranking-item current-user">
-                <div class="rank-position">
-                    <span class="rank-number">7</span>
-                    <div class="rank-change positive">
-                        <i class="bi bi-arrow-up"></i>
-                        <span>+3</span>
-                    </div>
-                </div>
-                <div class="user-info">
-                    <img src="<%= userPhoto || '/images/default-avatar.png' %>" alt="<%= userName %>" class="user-avatar">
-                    <div class="user-details">
-                        <h4 class="username"><%= userName %> <span class="you-badge">YOU</span></h4>
-                        <div class="user-stats">
-                            <span class="badge-count">8 badges</span>
-                            <span class="divider">•</span>
-                            <span class="swap-count">12 swaps</span>
-                            <span class="divider">•</span>
-                            <span class="join-date">Joined Jan 2024</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="score-section">
-                    <span class="points">1,250</span>
-                    <span class="points-label">points</span>
-                </div>
-            </div>
-
-            <!-- More rankings -->
-            <div class="ranking-item">
-                <div class="rank-position">
-                    <span class="rank-number">8</span>
-                    <div class="rank-change stable">
-                        <i class="bi bi-dash"></i>
-                        <span>0</span>
-                    </div>
-                </div>
-                <div class="user-info">
-                    <img src="/images/default-avatar.png" alt="StorySeeker" class="user-avatar">
-                    <div class="user-details">
-                        <h4 class="username">StorySeeker</h4>
-                        <div class="user-stats">
-                            <span class="badge-count">7 badges</span>
-                            <span class="divider">•</span>
-                            <span class="swap-count">28 swaps</span>
-                            <span class="divider">•</span>
-                            <span class="join-date">Joined Apr 2024</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="score-section">
-                    <span class="points">1,180</span>
-                    <span class="points-label">points</span>
-                </div>
-            </div>
-
-            <div class="ranking-item">
-                <div class="rank-position">
-                    <span class="rank-number">9</span>
-                    <div class="rank-change negative">
-                        <i class="bi bi-arrow-down"></i>
-                        <span>-2</span>
-                    </div>
-                </div>
-                <div class="user-info">
-                    <img src="/images/default-avatar.png" alt="BookBuddy" class="user-avatar">
-                    <div class="user-details">
-                        <h4 class="username">BookBuddy</h4>
-                        <div class="user-stats">
-                            <span class="badge-count">6 badges</span>
-                            <span class="divider">•</span>
-                            <span class="swap-count">22 swaps</span>
-                            <span class="divider">•</span>
-                            <span class="join-date">Joined Mar 2024</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="score-section">
-                    <span class="points">980</span>
-                    <span class="points-label">points</span>
-                </div>
-            </div>
-
-            <div class="ranking-item">
-                <div class="rank-position">
-                    <span class="rank-number">10</span>
-                    <div class="rank-change positive">
-                        <i class="bi bi-arrow-up"></i>
-                        <span>+1</span>
-                    </div>
-                </div>
-                <div class="user-info">
-                    <img src="/images/default-avatar.png" alt="ChapterChamp" class="user-avatar">
-                    <div class="user-details">
-                        <h4 class="username">ChapterChamp</h4>
-                        <div class="user-stats">
-                            <span class="badge-count">5 badges</span>
-                            <span class="divider">•</span>
-                            <span class="swap-count">18 swaps</span>
-                            <span class="divider">•</span>
-                            <span class="join-date">Joined May 2024</span>
-                        </div>
-                    </div>
-                </div>
-                <div class="score-section">
-                    <span class="points">850</span>
-                    <span class="points-label">points</span>
-                </div>
-            </div>
+            <% } %>
         </div>
 
+        <% if (leaderboard && leaderboard.length > 10) { %>
         <!-- Load More Button -->
         <div class="load-more-section">
             <button class="load-more-btn" id="loadMoreRankings">
@@ -372,6 +266,7 @@
                 Load More Rankings
             </button>
         </div>
+        <% } %>
     </div>
 
     <!-- Monthly Stats -->

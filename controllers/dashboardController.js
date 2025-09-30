@@ -9,6 +9,50 @@ const Swap = require('../models/Swap');
 const GoogleBooksHelper = require('../helpers/googleBooksHelper');
 
 /**
+ * Calculate user activity score based on real platform usage
+ */
+function calculateActivityScore(userData) {
+    const {
+        booksOwned,
+        completedSwaps,
+        pendingSwaps,
+        joinDate,
+        existingPoints,
+        badges
+    } = userData;
+    
+    let score = 0;
+    
+    // Base points from existing rewards system
+    score += existingPoints || 0;
+    
+    // Points for books owned (10 points per book)
+    score += booksOwned * 10;
+    
+    // Points for completed swaps (50 points per completed swap)
+    score += completedSwaps * 50;
+    
+    // Points for active swaps (20 points per pending swap)
+    score += pendingSwaps * 20;
+    
+    // Points for badges (100 points per badge)
+    score += (badges || 0) * 100;
+    
+    // Bonus points for platform longevity (1 point per day since joining)
+    if (joinDate) {
+        const daysSinceJoin = Math.floor((new Date() - new Date(joinDate)) / (1000 * 60 * 60 * 24));
+        score += Math.min(daysSinceJoin, 365); // Cap at 365 days
+    }
+    
+    // Bonus for high activity users
+    if (completedSwaps >= 10) score += 200; // Active swapper bonus
+    if (booksOwned >= 20) score += 300; // Book collector bonus
+    if (completedSwaps >= 5 && booksOwned >= 10) score += 500; // Well-rounded user bonus
+    
+    return Math.max(score, 0); // Ensure non-negative score
+}
+
+/**
  * Calculate distance between two coordinates using Haversine formula
  */
 const calculateDistance = (lat1, lon1, lat2, lon2) => {
@@ -300,112 +344,108 @@ const getDashboardData = async (userId) => {
             books: genre.books.slice(0, 3)
         }));
         
-        // Top 3 Leaderboard Users (by points/activity)
-        let leaderboardUsers = await User.find({})
-            .sort({ 
-                'rewards.points': -1, 
-                'rewards.badges': -1,
-                'createdAt': 1 
-            })
-            .limit(5) // Get more users to have better selection
+        // Real Leaderboard System - Calculate actual user statistics
+        console.log('Building real leaderboard with actual user data...');
+        
+        // Get all users with their basic info
+        const allUsers = await User.find({})
             .select('name email photo rewards stats createdAt')
             .lean();
         
-        // Process leaderboard users and add missing information
-        if (leaderboardUsers.length > 0) {
-            console.log(`Using ${leaderboardUsers.length} real leaderboard users from database`);
-            console.log('Leaderboard users found:', leaderboardUsers.map(u => ({ 
-                name: u.name || u.email?.split('@')[0] || 'User', 
-                points: u.rewards?.points || 0 
-            })));
-            
-            // Add missing information for leaderboard users
-            leaderboardUsers = leaderboardUsers.map((user, index) => {
-                const userObj = user;
+        console.log(`Found ${allUsers.length} users in database`);
+        
+        // Calculate real statistics for each user
+        const usersWithStats = await Promise.all(allUsers.map(async (user) => {
+            try {
+                // Get user's books count
+                const booksOwned = await Book.countDocuments({ 
+                    owner: user._id,
+                    availability: { $ne: 'Swapped' }
+                });
                 
-                // Calculate additional stats
-                let totalPoints = userObj.rewards?.points || 0;
-                const badgeCount = userObj.rewards?.badges?.length || 0;
+                // Get user's swap statistics
+                const userSwaps = await Swap.find({
+                    $or: [{ requester: user._id }, { owner: user._id }]
+                });
                 
-                // Give the current user (you) the highest points to be in first place
-                const isCurrentUser = userObj._id.toString() === userId.toString();
-                if (isCurrentUser) {
-                    totalPoints = 1500; // You get the highest points
-                } else if (totalPoints === 0) {
-                    // Other users get some points based on their position
-                    const otherUserPoints = [1200, 900, 600, 300, 150];
-                    totalPoints = otherUserPoints[index] || 100;
-                }
+                const completedSwaps = userSwaps.filter(swap => 
+                    swap.status === 'completed' || swap.status === 'Completed'
+                ).length;
                 
-                const level = Math.floor(totalPoints / 100) + 1; // 100 points per level
+                const pendingSwaps = userSwaps.filter(swap => 
+                    ['pending', 'Pending', 'accepted', 'Accepted', 'in-progress', 'In Progress'].includes(swap.status)
+                ).length;
+                
+                // Calculate activity score based on real metrics
+                const activityScore = calculateActivityScore({
+                    booksOwned,
+                    completedSwaps,
+                    pendingSwaps,
+                    joinDate: user.createdAt,
+                    existingPoints: user.rewards?.points || 0,
+                    badges: user.rewards?.badges?.length || 0
+                });
+                
+                const level = Math.floor(activityScore / 100) + 1;
+                const isCurrentUser = user._id.toString() === userId.toString();
                 
                 return {
-                    ...userObj,
-                    displayName: userObj.name || userObj.email?.split('@')[0] || 'User',
-                    totalPoints: totalPoints,
-                    badgeCount: badgeCount,
+                    _id: user._id,
+                    displayName: user.name || user.email?.split('@')[0] || 'User',
+                    username: user.email?.split('@')[0] || 'Unknown',
+                    email: user.email,
+                    totalPoints: activityScore,
+                    badgeCount: user.rewards?.badges?.length || 0,
                     level: level,
-                    avatar: userObj.photo || '/images/default-avatar.png',
-                    joinDate: userObj.createdAt ? new Date(userObj.createdAt).toLocaleDateString() : 'Unknown',
-                    isCurrentUser: isCurrentUser
+                    avatar: user.photo || '/images/default-avatar.png',
+                    joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown',
+                    isCurrentUser: isCurrentUser,
+                    // Real statistics
+                    booksOwned: booksOwned,
+                    completedSwaps: completedSwaps,
+                    pendingSwaps: pendingSwaps,
+                    totalSwaps: userSwaps.length,
+                    successRate: userSwaps.length > 0 ? Math.round((completedSwaps / userSwaps.length) * 100) : 0
                 };
-            });
-            
-            // Sort by points after assigning demo points
-            leaderboardUsers.sort((a, b) => b.totalPoints - a.totalPoints);
-            
-            // Add rank after sorting
-            leaderboardUsers = leaderboardUsers.map((user, index) => ({
-                ...user,
-                rank: index + 1
-            }));
-            
-            // Take only top 3
-            leaderboardUsers = leaderboardUsers.slice(0, 3);
-            
-            console.log('Final leaderboard after sorting:', leaderboardUsers.map(u => ({ 
-                name: u.displayName, 
-                points: u.totalPoints, 
-                rank: u.rank 
-            })));
-        } else {
-            console.log('No users found, using sample leaderboard for demonstration...');
-            leaderboardUsers = [
-                {
-                    _id: 'leader1',
-                    displayName: 'Emma Watson',
-                    email: 'emma@example.com',
-                    totalPoints: 1250,
-                    badgeCount: 8,
-                    level: 13,
-                    avatar: '/images/default-avatar.png',
-                    joinDate: '2024-01-15',
-                    rank: 1
-                },
-                {
-                    _id: 'leader2',
-                    displayName: 'John Smith',
-                    email: 'john@example.com',
-                    totalPoints: 980,
-                    badgeCount: 6,
-                    level: 10,
-                    avatar: '/images/default-avatar.png',
-                    joinDate: '2024-02-03',
-                    rank: 2
-                },
-                {
-                    _id: 'leader3',
-                    displayName: 'Diana Prince',
-                    email: 'diana@example.com',
-                    totalPoints: 750,
-                    badgeCount: 4,
-                    level: 8,
-                    avatar: '/images/default-avatar.png',
-                    joinDate: '2024-02-20',
-                    rank: 3
-                }
-            ];
-        }
+            } catch (error) {
+                console.error(`Error calculating stats for user ${user._id}:`, error);
+                // Return basic user info with minimal stats
+                return {
+                    _id: user._id,
+                    displayName: user.name || user.email?.split('@')[0] || 'User',
+                    username: user.email?.split('@')[0] || 'Unknown',
+                    email: user.email,
+                    totalPoints: user.rewards?.points || 0,
+                    badgeCount: user.rewards?.badges?.length || 0,
+                    level: 1,
+                    avatar: user.photo || '/images/default-avatar.png',
+                    joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown',
+                    isCurrentUser: user._id.toString() === userId.toString(),
+                    booksOwned: 0,
+                    completedSwaps: 0,
+                    pendingSwaps: 0,
+                    totalSwaps: 0,
+                    successRate: 0
+                };
+            }
+        }));
+        
+        // Sort users by activity score (descending)
+        usersWithStats.sort((a, b) => b.totalPoints - a.totalPoints);
+        
+        // Add ranks and take top 3
+        const leaderboardUsers = usersWithStats.map((user, index) => ({
+            ...user,
+            rank: index + 1
+        })).slice(0, 3);
+        
+        console.log('Real leaderboard created:', leaderboardUsers.map(u => ({ 
+            name: u.displayName, 
+            points: u.totalPoints, 
+            books: u.booksOwned,
+            swaps: u.completedSwaps,
+            rank: u.rank 
+        })));
         
         // No need for image enhancement for leaderboard users
         const leaderboard = leaderboardUsers;
