@@ -1435,7 +1435,7 @@ function submitSwapRequest() {
     });
 }
 
-// Simple chat function that actually works
+// Global chat integration function
 function openSimpleChat() {
     if (!selectedUserBook || !targetBook) {
         showErrorMessage('Please select books for the swap first');
@@ -1453,25 +1453,38 @@ function openSimpleChat() {
         // Hide the swap modal
         $('#swapRequestModal').modal('hide');
         
-        // Create the simple chat
+        // Get current user info from global chat widget
+        const currentUser = window.globalChatWidget?.currentUser;
+        const currentUsername = currentUser?.username || currentUser?.fullname || currentUser?.name || 'You';
+        
+        // Create the chat data for global chat widget
         const chatData = {
-            user1: 'You',
-            user2: requestedBook.owner?.username || requestedBook.owner?.fullname || 'Book Owner',
+            user1: currentUsername,
+            user2: requestedBook.owner?.username || requestedBook.owner?.fullname || requestedBook.owner?.name || 'Book Owner',
             offeredBook: offeredBook.title,
-            requestedBook: requestedBook.title
+            requestedBook: requestedBook.title,
+            context: `${offeredBook.title} ↔ ${requestedBook.title}`
         };
         
-        // Open simple chat in new window
-        const chatWindow = window.open('http://localhost:3001', 'chat', 'width=900,height=700');
+        console.log('📋 Swap matcher: Chat data prepared:', chatData);
         
-        // Send chat data to the new window
-        setTimeout(() => {
-            if (chatWindow) {
-                chatWindow.postMessage(chatData, 'http://localhost:3001');
-            }
-        }, 1000);
-        
-        showSuccessMessage('Opening chat window...');
+        // Use the global chat widget to create and open the conversation
+        if (window.globalChatWidget) {
+            console.log('🔥 Creating chat with data:', chatData);
+            window.globalChatWidget.createNewChat(chatData)
+                .done((response) => {
+                    console.log('✅ Chat created successfully:', response);
+                    showSuccessMessage('Chat conversation started! Check the chat widget at bottom right.');
+                })
+                .fail((xhr, status, error) => {
+                    console.error('❌ Failed to create chat:', xhr, status, error);
+                    const errorMessage = xhr.responseJSON?.error || xhr.responseText || error || 'Unknown error';
+                    showErrorMessage('Failed to start chat conversation: ' + errorMessage);
+                });
+        } else {
+            console.error('❌ Global chat widget not available');
+            showErrorMessage('Chat system not available. Please refresh the page.');
+        }
         
     }).catch(() => {
         showErrorMessage('Failed to load book information for chat');
@@ -2077,7 +2090,478 @@ $(document).ready(function() {
         }
     `).appendTo('head');
 });
+
+// LinkedIn-style Chat System
+let currentChatId = null;
+let currentChatData = null;
+
+function showLinkedInChat(chatData) {
+    currentChatData = chatData;
+    
+    // Create chat HTML if it doesn't exist
+    if ($('#linkedin-chat').length === 0) {
+        const chatHTML = `
+            <div id="linkedin-chat" class="linkedin-chat">
+                <div class="chat-header">
+                    <div class="chat-info">
+                        <div class="chat-avatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="chat-details">
+                            <h6 class="chat-name">${chatData.user2}</h6>
+                            <small class="chat-subtitle">Book Swap Chat</small>
+                        </div>
+                    </div>
+                    <div class="chat-controls">
+                        <button class="btn-minimize" onclick="minimizeChat()">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        <button class="btn-close" onclick="closeChat()">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="chat-body">
+                    <div class="swap-context">
+                        <div class="swap-info">
+                            <small><strong>Your book:</strong> "${chatData.offeredBook}"</small>
+                            <i class="fas fa-exchange-alt"></i>
+                            <small><strong>Their book:</strong> "${chatData.requestedBook}"</small>
+                        </div>
+                    </div>
+                    
+                    <div class="chat-messages" id="chat-messages">
+                        <div class="system-message">
+                            💬 Chat started! Discuss your book swap here.
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-footer">
+                    <div class="message-input-container">
+                        <input type="text" id="chat-input" placeholder="Type a message..." maxlength="500">
+                        <button id="send-btn" onclick="sendChatMessage()" disabled>
+                            <i class="fas fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+        
+        $('body').append(chatHTML);
+    } else {
+        // Update existing chat with new data
+        $('.chat-name').text(chatData.user2);
+        $('.swap-info').html(`
+            <small><strong>Your book:</strong> "${chatData.offeredBook}"</small>
+            <i class="fas fa-exchange-alt"></i>
+            <small><strong>Their book:</strong> "${chatData.requestedBook}"</small>
+        `);
+        $('#chat-messages').html(`
+            <div class="system-message">
+                💬 Chat started! Discuss your book swap here.
+            </div>
+        `);
+    }
+    
+    // Show the chat
+    $('#linkedin-chat').addClass('show');
+    
+    // Create the chat on the server
+    createLinkedInChat(chatData);
+    
+    // Focus on input
+    setTimeout(() => {
+        $('#chat-input').focus();
+    }, 300);
+}
+
+function createLinkedInChat(chatData) {
+    $.post('/api/simple-chat/create', {
+        user1: chatData.user1,
+        user2: chatData.user2,
+        offeredBook: chatData.offeredBook,
+        requestedBook: chatData.requestedBook
+    })
+    .done(function(response) {
+        currentChatId = response.chatId;
+        console.log('Chat created:', currentChatId);
+        
+        // Enable input
+        $('#chat-input').prop('disabled', false);
+        $('#send-btn').prop('disabled', false);
+        
+        // Load existing messages
+        loadChatMessages();
+    })
+    .fail(function(xhr) {
+        console.error('Failed to create chat:', xhr);
+        addSystemMessage('❌ Failed to create chat. Please try again.');
+    });
+}
+
+function loadChatMessages() {
+    if (!currentChatId) return;
+    
+    $.get(`/api/simple-chat/${currentChatId}/messages`)
+    .done(function(response) {
+        const messages = response.messages || [];
+        $('#chat-messages').html('<div class="system-message">💬 Chat started! Discuss your book swap here.</div>');
+        
+        messages.forEach(msg => {
+            addChatMessage(msg.sender, msg.content, msg.sender === currentChatData.user1);
+        });
+        
+        scrollToBottom();
+    })
+    .fail(function(xhr) {
+        console.error('Failed to load messages:', xhr);
+    });
+}
+
+function sendChatMessage() {
+    const input = $('#chat-input');
+    const message = input.val().trim();
+    
+    if (!message || !currentChatId) return;
+    
+    // Disable send button temporarily
+    const sendBtn = $('#send-btn');
+    sendBtn.prop('disabled', true).html('<i class="fas fa-spinner fa-spin"></i>');
+    
+    $.post(`/api/simple-chat/${currentChatId}/message`, {
+        sender: currentChatData.user1,
+        content: message
+    })
+    .done(function() {
+        addChatMessage(currentChatData.user1, message, true);
+        input.val('');
+        scrollToBottom();
+        
+        // Simulate other user response (for demo)
+        setTimeout(() => {
+            const responses = [
+                "Thanks for reaching out! I'm interested in this swap.",
+                "That sounds great! When would be good for you?",
+                "Perfect! I've been wanting to read that book.",
+                "Awesome! Should we arrange the exchange?",
+                "I'm excited about this swap!"
+            ];
+            const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+            addChatMessage(currentChatData.user2, randomResponse, false);
+            scrollToBottom();
+        }, 1500);
+    })
+    .fail(function(xhr) {
+        console.error('Failed to send message:', xhr);
+        addSystemMessage('❌ Failed to send message. Please try again.');
+    })
+    .always(function() {
+        sendBtn.prop('disabled', false).html('<i class="fas fa-paper-plane"></i>');
+    });
+}
+
+function addChatMessage(sender, content, isSent) {
+    const messageHTML = `
+        <div class="chat-message ${isSent ? 'sent' : 'received'}">
+            <div class="message-content">${content}</div>
+            <div class="message-time">${new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})}</div>
+        </div>
+    `;
+    
+    $('#chat-messages').append(messageHTML);
+}
+
+function addSystemMessage(content) {
+    const messageHTML = `<div class="system-message">${content}</div>`;
+    $('#chat-messages').append(messageHTML);
+}
+
+function scrollToBottom() {
+    const messagesContainer = $('#chat-messages');
+    messagesContainer.scrollTop(messagesContainer[0].scrollHeight);
+}
+
+function minimizeChat() {
+    $('#linkedin-chat').toggleClass('minimized');
+}
+
+function closeChat() {
+    $('#linkedin-chat').removeClass('show');
+    currentChatId = null;
+    currentChatData = null;
+}
+
+// Handle Enter key in chat input
+$(document).on('keypress', '#chat-input', function(e) {
+    if (e.which === 13 && !e.shiftKey) {
+        e.preventDefault();
+        sendChatMessage();
+    }
+});
+
+// Enable/disable send button based on input
+$(document).on('input', '#chat-input', function() {
+    const hasText = $(this).val().trim().length > 0;
+    $('#send-btn').prop('disabled', !hasText || !currentChatId);
+});
+
 </script>
+
+<!-- LinkedIn-style Chat CSS -->
+<style>
+.linkedin-chat {
+    position: fixed;
+    bottom: 0;
+    right: 20px;
+    width: 360px;
+    height: 500px;
+    background: #fff;
+    border: 1px solid #d4d4d4;
+    border-bottom: none;
+    border-radius: 8px 8px 0 0;
+    box-shadow: 0 -2px 20px rgba(0,0,0,0.15);
+    z-index: 9999;
+    transform: translateY(100%);
+    transition: transform 0.3s ease-in-out;
+    display: flex;
+    flex-direction: column;
+}
+
+.linkedin-chat.show {
+    transform: translateY(0);
+}
+
+.linkedin-chat.minimized {
+    height: 60px;
+}
+
+.linkedin-chat.minimized .chat-body,
+.linkedin-chat.minimized .chat-footer {
+    display: none;
+}
+
+.chat-header {
+    background: #0a66c2;
+    color: white;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-radius: 8px 8px 0 0;
+    cursor: pointer;
+}
+
+.chat-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.chat-avatar {
+    width: 36px;
+    height: 36px;
+    background: rgba(255,255,255,0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+}
+
+.chat-details h6 {
+    margin: 0;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.chat-subtitle {
+    font-size: 12px;
+    opacity: 0.9;
+}
+
+.chat-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.btn-minimize, .btn-close {
+    background: none;
+    border: none;
+    color: white;
+    width: 28px;
+    height: 28px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.btn-minimize:hover, .btn-close:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+.chat-body {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.swap-context {
+    background: #f8f9fa;
+    padding: 12px 16px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.swap-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    color: #666;
+}
+
+.swap-info i {
+    color: #0a66c2;
+}
+
+.chat-messages {
+    flex: 1;
+    padding: 16px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.chat-message {
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.chat-message.sent {
+    align-self: flex-end;
+}
+
+.chat-message.received {
+    align-self: flex-start;
+}
+
+.message-content {
+    background: #f1f3f4;
+    padding: 8px 12px;
+    border-radius: 16px;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.chat-message.sent .message-content {
+    background: #0a66c2;
+    color: white;
+}
+
+.message-time {
+    font-size: 11px;
+    color: #999;
+    margin-top: 4px;
+    text-align: center;
+}
+
+.system-message {
+    text-align: center;
+    font-size: 12px;
+    color: #666;
+    font-style: italic;
+    background: rgba(10, 102, 194, 0.1);
+    padding: 8px 12px;
+    border-radius: 12px;
+    margin: 8px 0;
+}
+
+.chat-footer {
+    border-top: 1px solid #e9ecef;
+    padding: 12px 16px;
+}
+
+.message-input-container {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+#chat-input {
+    flex: 1;
+    border: 1px solid #d4d4d4;
+    border-radius: 20px;
+    padding: 8px 16px;
+    font-size: 14px;
+    outline: none;
+    resize: none;
+}
+
+#chat-input:focus {
+    border-color: #0a66c2;
+    box-shadow: 0 0 0 2px rgba(10, 102, 194, 0.1);
+}
+
+#send-btn {
+    width: 36px;
+    height: 36px;
+    border: none;
+    background: #0a66c2;
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+#send-btn:hover:not(:disabled) {
+    background: #004182;
+    transform: scale(1.05);
+}
+
+#send-btn:disabled {
+    background: #ccc;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.chat-messages::-webkit-scrollbar {
+    width: 4px;
+}
+
+.chat-messages::-webkit-scrollbar-track {
+    background: #f1f1f1;
+}
+
+.chat-messages::-webkit-scrollbar-thumb {
+    background: #c1c1c1;
+    border-radius: 2px;
+}
+
+.chat-messages::-webkit-scrollbar-thumb:hover {
+    background: #a8a8a8;
+}
+
+@media (max-width: 768px) {
+    .linkedin-chat {
+        width: calc(100vw - 40px);
+        right: 20px;
+        left: 20px;
+    }
+}
+</style>
+
+<!-- Include Global Chat Widget -->
+<%- include('partials/global-chat') %>
 
 </body>
 </html>

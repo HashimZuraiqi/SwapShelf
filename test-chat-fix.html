@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Global Chat Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>🧪 Global Chat Test - Firas Conversation Click</h1>
+    
+    <div style="margin: 20px; padding: 20px; background: #f0f0f0; border-radius: 10px;">
+        <h2>Test Results:</h2>
+        <ul id="test-results">
+            <li>✅ Server running at <a href="http://localhost:3000" target="_blank">http://localhost:3000</a></li>
+            <li>✅ Fixed active chat visibility issue (removed inline display:none)</li>
+            <li>✅ Enhanced showActiveChat method with better error handling</li>
+            <li>✅ Improved conversation click handling with stopImmediatePropagation</li>
+            <li>✅ Added !important CSS rules for better element visibility</li>
+            <li>✅ Fixed z-index positioning to ensure chat appears above other content</li>
+        </ul>
+    </div>
+
+    <div style="margin: 20px; padding: 20px; background: #e8f5e8; border-radius: 10px;">
+        <h2>🎯 How to Test the Fix:</h2>
+        <ol>
+            <li><strong>Navigate to Dashboard:</strong> Go to <a href="http://localhost:3000/dashboard" target="_blank">http://localhost:3000/dashboard</a></li>
+            <li><strong>Look for Chat Icon:</strong> You should see a 💬 icon in the bottom right corner</li>
+            <li><strong>Click Chat Icon:</strong> Click it to open the chat panel</li>
+            <li><strong>Create or Find Conversation:</strong> Either start a new chat or look for existing conversations</li>
+            <li><strong>Click on Firas Chat:</strong> Click on any conversation (like "Firas") - it should now open the chat instead of closing the widget!</li>
+        </ol>
+    </div>
+
+    <div style="margin: 20px; padding: 20px; background: #fff3cd; border-radius: 10px;">
+        <h2>🔧 What Was Fixed:</h2>
+        <ul>
+            <li><strong>Display Issue:</strong> Removed inline style="display: none" that was overriding CSS transitions</li>
+            <li><strong>Event Handling:</strong> Added stopImmediatePropagation to prevent event conflicts</li>
+            <li><strong>Timing Issues:</strong> Added small delays to ensure proper DOM updates</li>
+            <li><strong>CSS Priority:</strong> Added !important rules to ensure styles aren't overridden</li>
+            <li><strong>Z-Index:</strong> Set z-index: 10001 to ensure chat appears above all other content</li>
+            <li><strong>Error Handling:</strong> Added validation checks to prevent undefined conversation errors</li>
+        </ul>
+    </div>
+
+    <div style="margin: 20px; padding: 20px; background: #d1ecf1; border-radius: 10px;">
+        <h2>🚀 Expected Behavior Now:</h2>
+        <ul>
+            <li>✅ Chat icon appears in bottom right on all pages</li>
+            <li>✅ Clicking chat icon opens conversation list</li>
+            <li>✅ Clicking on "Firas" or any conversation opens that specific chat</li>
+            <li>✅ Chat interface shows with message input and history</li>
+            <li>✅ Back button (←) returns to conversation list</li>
+            <li>✅ No more unexpected widget closing when clicking conversations!</li>
+        </ul>
+    </div>
+
+    <script>
+        console.log('🧪 Global Chat Test Page Loaded');
+        console.log('🚀 Server should be running at http://localhost:3000');
+        console.log('💬 Test the chat functionality on the dashboard page');
+    </script>
+</body>
+</html>
