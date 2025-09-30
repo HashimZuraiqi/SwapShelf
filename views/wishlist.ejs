@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
 </head>
 <body>
     <!-- Navigation -->
@@ -133,23 +134,16 @@
                 <div class="content-controls mb-4">
                     <div class="row align-items-center">
                         <div class="col-md-8">
-                            <div class="search-container" style="max-width: 500px;">
-                                <div class="search-box" style="background: #23242a; border: 1px solid rgba(120,130,150,.2); border-radius: 12px; padding: 0.3rem; position: relative;">
-                                    <div class="input-group">
-                                        <div class="input-group-prepend">
-                                            <span class="input-group-text" style="background: transparent; border: none; color: #3BB7FB; font-size: 1rem; padding-left: 1rem;">
-                                                <i class="bi bi-search"></i>
-                                            </span>
-                                        </div>
-                                        <input
-                                            id="wishlist-search"
-                                            type="text"
-                                            class="form-control search-input"
-                                            placeholder="Search your wishlist by title or author..."
-                                            autocomplete="off"
-                                            style="background: transparent; border: none; color: #fff; font-size: 0.95rem; padding: 0.75rem 1rem; padding-left: 0.5rem;"
-                                        />
-                                    </div>
+                            <div class="history-style-search-container">
+                                <input
+                                    id="wishlist-search"
+                                    type="text"
+                                    class="history-style-search-input"
+                                    placeholder="Search your wishlist by title or author..."
+                                    autocomplete="off"
+                                />
+                                <div class="history-style-search-icon">
+                                    <i class="bi bi-search"></i>
                                 </div>
                             </div>
                         </div>

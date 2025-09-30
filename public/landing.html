@@ -271,12 +271,14 @@
         .section-title {
             font-size: 2.5rem;
             font-weight: 900;
-            text-align: center;
+            text-align: center !important;
             margin-bottom: 1rem;
             background: linear-gradient(135deg, #fff, #e6e9ee);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
+            width: 100%;
+            display: block;
         }
         
         .section-subtitle {
@@ -342,6 +344,17 @@
         
         .section-title {
             margin-top: 2rem;
+            text-align: center !important;
+            width: 100%;
+        }
+        
+        /* Ensure container text alignment */
+        .container h2.section-title {
+            text-align: center !important;
+        }
+        
+        .container p.section-subtitle {
+            text-align: center !important;
         }
         
         /* Step content styling */

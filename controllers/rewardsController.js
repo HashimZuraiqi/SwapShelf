@@ -12,6 +12,44 @@ const Activity = require('../models/Activity');
 class RewardsController {
   
   /**
+   * Debug endpoint to check user's actual badges
+   */
+  static async debugUserBadges(req, res) {
+    try {
+      const userId = req.session?.user?._id || req.session?.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Authentication required' 
+        });
+      }
+
+      const rewards = await Reward.getOrCreateUserRewards(userId);
+      
+      return res.json({
+        success: true,
+        data: {
+          totalBadges: rewards.badges.length,
+          unlockedBadges: rewards.badges.filter(b => b.isUnlocked).length,
+          badges: rewards.badges.map(b => ({
+            badgeId: b.badgeId,
+            isUnlocked: b.isUnlocked,
+            unlockedAt: b.unlockedAt
+          })),
+          unlockedBadgesCount: rewards.unlockedBadgesCount
+        }
+      });
+    } catch (error) {
+      console.error('Debug badges error:', error);
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Error debugging badges' 
+      });
+    }
+  }
+
+  /**
    * Get user's complete rewards data
    */
   static async getUserRewards(req, res) {
@@ -28,6 +66,14 @@ class RewardsController {
       // Get or create user rewards
       const rewards = await Reward.getOrCreateUserRewards(userId);
       
+      // Record visit activity for time-based badges
+      try {
+        await RewardsController.recordActivity(userId, 'visit');
+      } catch (visitError) {
+        console.error('Error recording visit activity:', visitError.message);
+        // Continue without recording visit
+      }
+      
       // Update user stats from recent activities
       try {
         await RewardsController.updateUserStats(userId, rewards);
@@ -42,6 +88,76 @@ class RewardsController {
       } catch (badgeError) {
         console.error('Error checking badges:', badgeError.message);
         // Continue without checking badges
+      }
+      
+      // Debug: Log actual badges for troubleshooting
+      console.log('User badges:', rewards.badges);
+      console.log('Unlocked badges count:', rewards.unlockedBadgesCount);
+      
+      // Validate and fix badge count if needed
+      const actualUnlockedCount = rewards.badges.filter(b => b.isUnlocked === true).length;
+      const virtualCount = rewards.unlockedBadgesCount;
+      
+      console.log(`🔍 Badge count check - Virtual: ${virtualCount}, Actual: ${actualUnlockedCount}`);
+      
+      if (actualUnlockedCount !== virtualCount || actualUnlockedCount > 2) {
+        console.log(`⚠️  Badge count issue detected! Virtual: ${virtualCount}, Actual: ${actualUnlockedCount}`);
+        
+        // Clean up duplicate badges
+        const uniqueBadges = [];
+        const seenBadgeIds = new Set();
+        
+        rewards.badges.forEach(badge => {
+          if (!seenBadgeIds.has(badge.badgeId)) {
+            seenBadgeIds.add(badge.badgeId);
+            uniqueBadges.push(badge);
+          } else {
+            console.log(`🗑️  Removing duplicate: ${badge.badgeId}`);
+          }
+        });
+        
+        // If still more than 2, keep only the first 2 unlocked badges
+        if (uniqueBadges.filter(b => b.isUnlocked).length > 2) {
+          console.log(`🔧 Limiting to 2 unlocked badges`);
+          const unlockedBadges = uniqueBadges.filter(b => b.isUnlocked).slice(0, 2);
+          const lockedBadges = uniqueBadges.filter(b => !b.isUnlocked);
+          rewards.badges = [...unlockedBadges, ...lockedBadges];
+        } else {
+          rewards.badges = uniqueBadges;
+        }
+        
+        // Special case: If user has multiple Night Owl badges, keep only one
+        const nightOwlBadges = rewards.badges.filter(b => b.badgeId === 'night_owl');
+        if (nightOwlBadges.length > 1) {
+          console.log(`🌙 Found ${nightOwlBadges.length} Night Owl badges, keeping only one`);
+          const otherBadges = rewards.badges.filter(b => b.badgeId !== 'night_owl');
+          const firstNightOwl = nightOwlBadges[0];
+          rewards.badges = [...otherBadges, firstNightOwl];
+        }
+        
+        // Recalculate total points to ensure accuracy
+        const badgeDefinitions = Reward.getBadgeDefinitions();
+        let correctPoints = 0;
+        rewards.badges.forEach(badge => {
+          if (badge.isUnlocked && badgeDefinitions[badge.badgeId]) {
+            correctPoints += badgeDefinitions[badge.badgeId].points;
+          }
+        });
+        
+        if (correctPoints !== rewards.totalPoints) {
+          console.log(`💰 Points correction: ${rewards.totalPoints} → ${correctPoints}`);
+          rewards.totalPoints = correctPoints;
+        }
+        
+        rewards.markModified('badges');
+        
+        // Save the changes
+        try {
+          await rewards.save();
+          console.log(`✅ Badge cleanup completed and saved!`);
+        } catch (saveError) {
+          console.error(`❌ Error saving badge cleanup:`, saveError.message);
+        }
       }
       
       // Get badge definitions for frontend
@@ -87,7 +203,7 @@ class RewardsController {
           user: {
             totalPoints: rewards.totalPoints,
             reputationLevel: rewards.reputationLevel,
-            unlockedBadges: rewards.unlockedBadgesCount,
+            unlockedBadges: actualUnlockedCount, // Use manually calculated count
             totalBadges: rewards.totalBadgesAvailable
           },
           stats: rewards.stats,

@@ -10,7 +10,7 @@
     }
     
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
       background: linear-gradient(135deg, #0D0E10 0%, #18191E 50%, #15181D 100%);
       background-attachment: fixed;
       min-height: 100vh;
@@ -369,7 +369,7 @@
       font-weight: 500;
       outline: none;
       cursor: pointer;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Montserrat', sans-serif;
     }
 
     .country-code-select:focus {
@@ -387,7 +387,7 @@
       font-size: 0.9rem;
       font-weight: 500;
       border: none;
-      font-family: 'Inter', sans-serif;
+      font-family: 'Montserrat', sans-serif;
     }
 
     .country-code-select option:hover {
