@@ -22,7 +22,7 @@ const chatSchema = new mongoose.Schema({
     }
 });
 
-const Chat = mongoose.model('SimpleChat', chatSchema);
+const Chat = mongoose.model('SimpleChatServer', chatSchema);
 
 // Routes
 app.get('/', (req, res) => {

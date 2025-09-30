@@ -100,6 +100,8 @@ const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
 const chatRoutes = require('./routes/chat');
 const rewardsRoutes = require('./routes/rewards');
+const simpleChatRoutes = require('./routes/simple-chat');
+const globalChatRoutes = require('./routes/global-chat');
 
 // Mount API Routes
 app.use('/auth', require('./routes/auth'));  // mounts /auth/*
@@ -109,6 +111,8 @@ app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', chatRoutes);
 app.use('/api/rewards', rewardsRoutes);
+app.use('/api/simple-chat', simpleChatRoutes);
+app.use('/api/global-chat', globalChatRoutes);
 app.get('/login.html', (req, res) => res.redirect(301, '/auth/login'));
 app.get('/register.html', (req, res) => res.redirect(301, '/auth/register'));
 // Legacy route for book addition (redirect to API)
