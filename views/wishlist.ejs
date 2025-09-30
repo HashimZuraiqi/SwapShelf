@@ -877,22 +877,21 @@
                 const rating = volumeInfo.averageRating ? `⭐ ${volumeInfo.averageRating}` : '';
                 
                 const bookCard = `
-                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 mb-4">
-                        <div class="book-card h-100">
-                            <div class="text-center mb-3">
+                    <div class="col-6 col-sm-6 col-md-4 col-lg-3 col-xl-2 mb-4">
+                        <div class="book-card-professional h-100">
+                            <div class="book-cover-container">
                                 ${thumbnail 
-                                    ? `<img src="${thumbnail}" class="book-thumbnail-grid" alt="${title}">`
-                                    : `<div class="book-thumbnail-grid bg-secondary d-flex align-items-center justify-content-center mx-auto">
+                                    ? `<img src="${thumbnail}" class="book-cover-professional" alt="${title}">`
+                                    : `<div class="book-cover-placeholder">
                                          <i class="bi bi-book text-white" style="font-size: 2.5rem;"></i>
                                        </div>`
                                 }
                             </div>
-                            <div class="book-info">
-                                <h6 class="text-white font-weight-bold mb-2" style="font-size: 0.95rem; line-height: 1.3; height: 2.6rem; overflow: hidden; text-align: center;">${title}</h6>
-                                <p class="text-muted mb-3" style="font-size: 0.8rem; font-weight: 500; text-align: center;">${authors}</p>
-                                <p class="text-secondary mb-3" style="font-size: 0.7rem; line-height: 1.3; height: 2.8rem; overflow: hidden; text-align: center;">${description}</p>
-                                <div class="mt-auto">
-                                    <div class="text-center mb-3">
+                            <div class="book-info-professional">
+                                <h6 class="book-title-professional">${title}</h6>
+                                <p class="book-author-professional">${authors}</p>
+                                <div class="book-actions">
+                                    <div class="text-center mb-2">
                                         <small class="text-muted" style="font-size: 0.7rem;">
                                             ${publishedDate} ${rating}
                                         </small>

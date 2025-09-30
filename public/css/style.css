@@ -2674,6 +2674,193 @@ body .stats-section .stat-value.text-gradient {
     transform: scale(1.02);
 }
 
+/* Wishlist Book Cards - Fix Google API Integration */
+.book-card-professional {
+    display: flex;
+    flex-direction: column;
+    min-height: 320px;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    background: linear-gradient(135deg, #23242a, #1E1F23);
+    border: 1px solid rgba(120, 130, 150, 0.1);
+    border-radius: 16px;
+    padding: 1.25rem;
+    position: relative;
+    overflow: hidden;
+}
+
+.book-card-professional:hover {
+    background: linear-gradient(135deg, #2A2D35, #23242a) !important;
+    border-color: rgba(59, 183, 251, 0.4) !important;
+    transform: translateY(-6px);
+    box-shadow: 0 15px 45px rgba(0, 0, 0, 0.5);
+}
+
+.book-cover-professional {
+    width: 100%;
+    max-width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+    margin: 0 auto;
+    display: block;
+}
+
+.book-card-professional:hover .book-cover-professional {
+    transform: scale(1.05);
+}
+
+.book-cover-placeholder {
+    width: 120px;
+    height: 160px;
+    background: linear-gradient(135deg, #3BB7FB, #34a0e0);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+}
+
+.book-cover-container {
+    position: relative;
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.book-info-professional {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    text-align: center;
+}
+
+.book-title-professional {
+    color: #fff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    line-height: 1.3;
+    height: 2.6rem;
+    overflow: hidden;
+    margin-bottom: 0.5rem;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+}
+
+.book-author-professional {
+    color: #b0b3b8;
+    font-size: 0.85rem;
+    margin-bottom: 0.75rem;
+    line-height: 1.2;
+    height: 1.7rem;
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-line-clamp: 1;
+    -webkit-box-orient: vertical;
+}
+
+.book-actions {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.book-card-professional .btn-outline-danger {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.book-card-professional .btn-outline-danger:hover {
+    background: linear-gradient(135deg, #dc3545, #c82333) !important;
+    border-color: #dc3545 !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4);
+}
+
+/* Google API Book Cards */
+.book-thumbnail-grid {
+    width: 100%;
+    max-width: 120px;
+    height: 160px;
+    object-fit: cover;
+    border-radius: 10px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+    transition: transform 0.3s ease;
+    margin: 0 auto;
+    display: block;
+}
+
+.book-card:hover .book-thumbnail-grid {
+    transform: scale(1.05);
+}
+
+/* Wishlist Grid Container */
+.wishlist-grid-container {
+    padding: 1rem 0;
+}
+
+.wishlist-grid-container .row {
+    margin: 0 -0.5rem;
+}
+
+.wishlist-grid-container .col-6,
+.wishlist-grid-container .col-sm-6,
+.wishlist-grid-container .col-md-4,
+.wishlist-grid-container .col-lg-3,
+.wishlist-grid-container .col-xl-2 {
+    padding: 0 0.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Fix for Google API books in wishlist */
+.add-book-btn {
+    background: linear-gradient(135deg, #3BB7FB, #F6B443);
+    border: none;
+    color: #fff;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    width: 100%;
+}
+
+.add-book-btn:hover {
+    background: linear-gradient(135deg, #2A9FD9, #E6A23C);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(59, 183, 251, 0.4);
+}
+
+.add-book-btn:active {
+    transform: translateY(0);
+}
+
+/* Ensure consistent spacing for all book cards */
+.book-card-professional .text-center {
+    margin-bottom: 0.75rem;
+}
+
+.book-card-professional .text-muted {
+    color: #b0b3b8 !important;
+    font-size: 0.7rem;
+}
+
+/* Fix for search results in wishlist */
+.wishlist-grid-container .book-card-professional {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
 /* User Search Section */
 .user-search {
     margin-bottom: 3rem;
