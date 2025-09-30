@@ -412,25 +412,33 @@
                     <div class="row">
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <div class="stat-number">10,000+</div>
+                                <div class="stat-number" id="books-exchanged-stat">
+                                    <div class="loading-spinner">...</div>
+                                </div>
                                 <div class="stat-label">Books Exchanged</div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <div class="stat-number">2,500+</div>
+                                <div class="stat-number" id="active-swappers-stat">
+                                    <div class="loading-spinner">...</div>
+                                </div>
                                 <div class="stat-label">Active Swappers</div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <div class="stat-number">150+</div>
+                                <div class="stat-number" id="cities-covered-stat">
+                                    <div class="loading-spinner">...</div>
+                                </div>
                                 <div class="stat-label">Cities Covered</div>
                             </div>
                         </div>
                         <div class="col-6 col-md-3">
                             <div class="stat-item">
-                                <div class="stat-number">98%</div>
+                                <div class="stat-number" id="satisfaction-rate-stat">
+                                    <div class="loading-spinner">...</div>
+                                </div>
                                 <div class="stat-label">Satisfaction Rate</div>
                             </div>
                         </div>
@@ -489,7 +497,7 @@
             </section>
 
             <!-- How It Works Section -->
-            <section class="py-5" style="background: linear-gradient(135deg, rgba(59, 183, 251, 0.05), rgba(246, 180, 67, 0.05)); margin: 4rem 0; border-radius: 20px;">
+            <section id="how-it-works-section" class="py-5" style="background: linear-gradient(135deg, rgba(59, 183, 251, 0.05), rgba(246, 180, 67, 0.05)); margin: 4rem 0; border-radius: 20px;">
                 <div class="container">
                     <h2 class="section-title">How It Works</h2>
                     <p class="section-subtitle">Start your book swapping journey in just three simple steps</p>
@@ -558,8 +566,281 @@
         </main>
     </div>
 
+<!-- Enhanced loading animation CSS -->
+<style>
+.loading-spinner {
+    animation: pulse 1.5s ease-in-out infinite alternate;
+    color: #3BB7FB;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+@keyframes pulse {
+    from { 
+        opacity: 0.4; 
+        transform: scale(0.95);
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1.05);
+    }
+}
+
+.stat-number {
+    transition: all 0.3s ease;
+    min-height: 2em; /* Prevent layout shift */
+}
+
+/* Smooth transition when content loads */
+.stat-loaded {
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tablet and iPad Layout for How It Works Section - FIXED STYLING */
+@media (min-width: 768px) and (max-width: 1024px) {
+    #how-it-works-section .container .row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-rows: auto auto !important;
+        gap: 3rem 2rem !important;
+        justify-items: center !important;
+        max-width: 900px !important;
+        margin: 0 auto !important;
+        flex-direction: initial !important;
+        flex-wrap: initial !important;
+    }
+    
+    /* Preserve Bootstrap column properties but adjust for grid */
+    #how-it-works-section .col-lg-4 {
+        flex: initial !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding-right: 15px !important;
+        padding-left: 15px !important;
+        margin-bottom: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    
+    /* Build Library - Top Left */
+    #how-it-works-section .col-lg-4:nth-child(1) {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+    }
+    
+    /* Find Perfect Matches - Top Right */
+    #how-it-works-section .col-lg-4:nth-child(2) {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+    }
+    
+    /* Exchange & Enjoy - Bottom Center (spans both columns) */
+    #how-it-works-section .col-lg-4:nth-child(3) {
+        grid-column: 1 / 3 !important; /* Spans both columns */
+        grid-row: 2 !important;
+        justify-self: center !important;
+        max-width: 400px !important;
+    }
+    
+    /* Restore proper step-card styling */
+    #how-it-works-section .step-card {
+        background: rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        padding: 2.5rem 2rem !important;
+        text-align: center !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        min-height: 300px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+    }
+    
+    /* Hover effects */
+    #how-it-works-section .step-card:hover {
+        transform: translateY(-8px) !important;
+        box-shadow: 0 12px 40px rgba(59, 183, 251, 0.15) !important;
+        border-color: rgba(59, 183, 251, 0.3) !important;
+    }
+    
+    /* Icon styling */
+    #how-it-works-section .action-icon-modern {
+        width: 80px !important;
+        height: 80px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 auto 2rem auto !important;
+        box-shadow: 0 8px 25px rgba(59, 183, 251, 0.3) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    #how-it-works-section .action-icon-modern i {
+        font-size: 2rem !important;
+        color: white !important;
+    }
+    
+    /* Text styling */
+    #how-it-works-section .step-title {
+        color: #ffffff !important;
+        font-size: 1.4rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 1rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    #how-it-works-section .step-desc {
+        color: rgba(255, 255, 255, 0.85) !important;
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 0 !important;
+        flex-grow: 1 !important;
+    }
+    
+    /* Content wrapper */
+    #how-it-works-section .step-content {
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important;
+        text-align: center !important;
+    }
+}
+
+</style>
+
 <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+
+<!-- Enhanced JavaScript with smooth transitions -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    console.log('🚀 Loading real platform statistics...');
+    
+    // Enhanced animate numbers function with smooth loading
+    function animateNumber(element, start, end, duration = 1200) {
+        // Remove loading spinner
+        const spinner = element.querySelector('.loading-spinner');
+        if (spinner) {
+            spinner.remove();
+        }
+        
+        // Add loaded class for smooth transition
+        element.classList.add('stat-loaded');
+        
+        let startTimestamp = null;
+        const step = (timestamp) => {
+            if (!startTimestamp) startTimestamp = timestamp;
+            const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+            
+            // Smooth easing function
+            const easeOutQuart = 1 - Math.pow(1 - progress, 4);
+            const current = Math.floor(easeOutQuart * (end - start) + start);
+            
+            // Format number with commas and add + for larger numbers
+            element.textContent = current.toLocaleString() + (end >= 100 ? '+' : '');
+            
+            if (progress < 1) {
+                window.requestAnimationFrame(step);
+            }
+        };
+        window.requestAnimationFrame(step);
+    }
+    
+    // Fetch real stats from API
+    fetch('/api/platform/stats')
+        .then(response => response.json())
+        .then(data => {
+            console.log('📊 Received platform stats:', data);
+            
+            if (data.success && data.data) {
+                const stats = data.data;
+                
+                // Animate Books Exchanged with delay for better UX
+                setTimeout(() => {
+                    const booksExchangedElement = document.getElementById('books-exchanged-stat');
+                    if (booksExchangedElement) {
+                        animateNumber(booksExchangedElement, 0, stats.booksExchanged);
+                    }
+                }, 300);
+                
+                // Animate Active Swappers with slight delay
+                setTimeout(() => {
+                    const activeSwappersElement = document.getElementById('active-swappers-stat');
+                    if (activeSwappersElement) {
+                        animateNumber(activeSwappersElement, 0, stats.activeSwappers);
+                    }
+                }, 500);
+                
+                // Animate Cities Covered
+                setTimeout(() => {
+                    const citiesElement = document.getElementById('cities-covered-stat');
+                    if (citiesElement) {
+                        animateNumber(citiesElement, 0, stats.citiesCovered);
+                    }
+                }, 700);
+                
+                // Update Satisfaction Rate
+                setTimeout(() => {
+                    const satisfactionElement = document.getElementById('satisfaction-rate-stat');
+                    if (satisfactionElement) {
+                        const spinner = satisfactionElement.querySelector('.loading-spinner');
+                        if (spinner) spinner.remove();
+                        
+                        satisfactionElement.classList.add('stat-loaded');
+                        satisfactionElement.textContent = stats.satisfactionRate + '%';
+                    }
+                }, 900);
+                
+                console.log('✅ Stats updated successfully with smooth animations');
+            }
+        })
+        .catch(error => {
+            console.error('❌ Failed to load stats:', error);
+            
+            // Enhanced fallback with better UX
+            const fallbackStats = {
+                'books-exchanged-stat': '150+',
+                'active-swappers-stat': '85+',
+                'cities-covered-stat': '25+',
+                'satisfaction-rate-stat': '94%'
+            };
+            
+            Object.entries(fallbackStats).forEach(([id, value], index) => {
+                setTimeout(() => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        const spinner = element.querySelector('.loading-spinner');
+                        if (spinner) spinner.remove();
+                        
+                        element.classList.add('stat-loaded');
+                        element.textContent = value;
+                    }
+                }, 300 + (index * 200));
+            });
+            
+            console.log('📊 Using enhanced fallback stats with animations');
+        });
+});
+</script>
 </body>
 </html>
