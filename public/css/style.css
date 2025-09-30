@@ -340,7 +340,7 @@ body {
 .no-books-placeholder .text-muted {
     color: #b0b3b8 !important;
 }
-/* Home Page CSS Start */
+/* Landing Page CSS Start */
 .home-page h1 {
     font-size: 4.5rem;
     font-family: 'Montserrat', Arial, sans-serif;
@@ -501,6 +501,7 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
     line-height: 1;
 }
 /* Why Choose BookSwap section styles start */
+
 /* How It Works Section Styles */
 .how-it-works-section {
     padding: 3rem 0 2rem 0;
@@ -764,6 +765,165 @@ box-shadow: 0 4px 16px 0 rgba(63, 183, 251, 0.18), 0 2px 8px 0 rgba(246, 180, 67
 }
 
 /* Why Choose BookSwap section styles end */
+
+/* <-- Enhanced loading animation CSS --> */
+
+.loading-spinner {
+    animation: pulse 1.5s ease-in-out infinite alternate;
+    color: #3BB7FB;
+    font-size: 1.2em;
+    font-weight: 600;
+}
+
+@keyframes pulse {
+    from { 
+        opacity: 0.4; 
+        transform: scale(0.95);
+    }
+    to { 
+        opacity: 1; 
+        transform: scale(1.05);
+    }
+}
+
+.stat-number {
+    transition: all 0.3s ease;
+    min-height: 2em; /* Prevent layout shift */
+}
+
+/* Smooth transition when content loads */
+.stat-loaded {
+    opacity: 0;
+    animation: fadeInUp 0.6s ease-out forwards;
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Tablet and iPad Layout for How It Works Section - FIXED STYLING */
+@media (min-width: 768px) and (max-width: 1024px) {
+    #how-it-works-section .container .row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        grid-template-rows: auto auto !important;
+        gap: 3rem 2rem !important;
+        justify-items: center !important;
+        max-width: 900px !important;
+        margin: 0 auto !important;
+        flex-direction: initial !important;
+        flex-wrap: initial !important;
+    }
+    
+    /* Preserve Bootstrap column properties but adjust for grid */
+    #how-it-works-section .col-lg-4 {
+        flex: initial !important;
+        max-width: 100% !important;
+        width: 100% !important;
+        padding-right: 15px !important;
+        padding-left: 15px !important;
+        margin-bottom: 0 !important;
+        display: flex !important;
+        justify-content: center !important;
+    }
+    
+    /* Build Library - Top Left */
+    #how-it-works-section .col-lg-4:nth-child(1) {
+        grid-column: 1 !important;
+        grid-row: 1 !important;
+    }
+    
+    /* Find Perfect Matches - Top Right */
+    #how-it-works-section .col-lg-4:nth-child(2) {
+        grid-column: 2 !important;
+        grid-row: 1 !important;
+    }
+    
+    /* Exchange & Enjoy - Bottom Center (spans both columns) */
+    #how-it-works-section .col-lg-4:nth-child(3) {
+        grid-column: 1 / 3 !important; /* Spans both columns */
+        grid-row: 2 !important;
+        justify-self: center !important;
+        max-width: 400px !important;
+    }
+    
+    /* Restore proper step-card styling */
+    #how-it-works-section .step-card {
+        background: rgba(255, 255, 255, 0.08) !important;
+        backdrop-filter: blur(10px) !important;
+        border: 1px solid rgba(255, 255, 255, 0.1) !important;
+        border-radius: 16px !important;
+        padding: 2.5rem 2rem !important;
+        text-align: center !important;
+        transition: all 0.3s ease !important;
+        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1) !important;
+        width: 100% !important;
+        max-width: 320px !important;
+        min-height: 300px !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: flex-start !important;
+        align-items: center !important;
+    }
+    
+    /* Hover effects */
+    #how-it-works-section .step-card:hover {
+        transform: translateY(-8px) !important;
+        box-shadow: 0 12px 40px rgba(59, 183, 251, 0.15) !important;
+        border-color: rgba(59, 183, 251, 0.3) !important;
+    }
+    
+    /* Icon styling */
+    #how-it-works-section .action-icon-modern {
+        width: 80px !important;
+        height: 80px !important;
+        border-radius: 50% !important;
+        background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%) !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        margin: 0 auto 2rem auto !important;
+        box-shadow: 0 8px 25px rgba(59, 183, 251, 0.3) !important;
+        transition: all 0.3s ease !important;
+    }
+    
+    #how-it-works-section .action-icon-modern i {
+        font-size: 2rem !important;
+        color: white !important;
+    }
+    
+        /* Text styling */
+    #how-it-works-section .step-title {
+        color: #ffffff !important;
+        font-size: 1.4rem !important;
+        font-weight: 600 !important;
+        margin-bottom: 1rem !important;
+        line-height: 1.3 !important;
+    }
+    
+    #how-it-works-section .step-desc {
+        color: rgba(255, 255, 255, 0.85) !important;
+        font-size: 0.95rem !important;
+        line-height: 1.6 !important;
+        margin-bottom: 0 !important;
+        flex-grow: 1 !important;
+    }
+    
+    /* Content wrapper */
+    #how-it-works-section .step-content {
+        display: flex !important;
+        flex-direction: column !important;
+        flex-grow: 1 !important;
+        text-align: center !important;
+    }
+}
 
 
 /* Home Page CSS End */
@@ -4178,12 +4338,17 @@ main.container-fluid {
         padding: 3rem 1.5rem;
         border-radius: 16px;
     }
-    
     .hero-title {
+                font-size: 2.5rem !important;
+                line-height: 1.15 !important;
+                margin-bottom: 1.25rem !important;
+            }
+    
+    /* .hero-title {
         font-size: 2.5rem;
         line-height: 1.1;
         margin-bottom: 1rem;
-    }
+    } */
     
     .hero-subtitle {
         font-size: 1.1rem;
@@ -4203,6 +4368,29 @@ main.container-fluid {
         font-size: 1.1rem;
     }
 }
+
+        @media (max-width: 480px) {
+            .hero-title {
+                font-size: 2rem !important;
+                line-height: 1.2 !important;
+                margin-bottom: 1rem !important;
+                padding: 0 0.5rem !important;
+            }
+        }
+
+        @media (max-width: 375px) {
+            .hero-title {
+                font-size: 1.9rem !important;
+                padding: 0 1rem !important;
+            }
+        }
+
+        @media (max-width: 320px) {
+            .hero-title {
+                font-size: 1.6rem !important;
+            }
+        }
+
 
 /* Feature Cards Mobile Responsive */
 @media (max-width: 768px) {
@@ -4706,6 +4894,4 @@ main.container-fluid {
   color: #ffffff;
 }
 .input-container .iti { margin-left: 2.5rem; width: calc(100% - 2.5rem); }
-
-
 }
