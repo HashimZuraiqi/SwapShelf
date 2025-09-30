@@ -1988,12 +1988,13 @@ app.get('/api/books', async (req, res) => {
   res.json(books);
 });
 
-if (process.env.NODE_ENV !== 'production') {
-  app.listen(3000, () => {
-    console.log('Server is running at http://localhost:3000');
-    console.log('Dashboard available at: http://localhost:3000/dashboard');
-  });
-}
+const PORT = process.env.PORT || 5000;
+const HOST = '0.0.0.0';
+
+app.listen(PORT, HOST, () => {
+  console.log(`✅ Server is running at http://${HOST}:${PORT}`);
+  console.log(`📊 Dashboard available at: http://${HOST}:${PORT}/dashboard`);
+});
 
 // Full history page (server-rendered shell + first page)
 app.get('/history', async (req, res) => {
