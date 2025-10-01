@@ -1,0 +1,444 @@
+    /* Active navigation styling for static page */
+    .nav-item.active .nav-link {
+      color: #3BB7FB !important;
+      background: rgba(59, 183, 251, 0.1);
+      border-radius: 5px;
+      font-weight: 600;
+    }
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #0D0E10 0%, #18191E 50%, #15181D 100%);
+      background-attachment: fixed;
+      min-height: 100vh;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      color: #ffffff;
+    }
+    
+    .register-container {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1rem;
+    }
+    
+    .register-card {
+      background: rgba(31, 34, 41, 0.95);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 24px;
+      padding: 3rem;
+      width: 100%;
+      max-width: 600px;
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .register-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: linear-gradient(90deg, transparent, #3BB7FB, #F6B443, transparent);
+      opacity: 0.6;
+    }
+    
+    .brand-header {
+      text-align: center;
+      margin-bottom: 2rem;
+    }
+    
+    .brand-logo {
+      width: 64px;
+      height: 64px;
+      margin: 0 auto 1.5rem;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3);
+      position: relative;
+    }
+    
+    .brand-logo::after {
+      content: '';
+      position: absolute;
+      inset: 2px;
+      border-radius: 18px;
+      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
+      opacity: 0.1;
+    }
+    
+    .brand-title {
+      font-size: 1.875rem;
+      font-weight: 700;
+      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      margin-bottom: 0.5rem;
+      letter-spacing: -0.02em;
+    }
+    
+    .brand-subtitle {
+      color: #9CA3AF;
+      font-size: 1rem;
+      font-weight: 400;
+      margin-bottom: 0;
+    }
+    
+    .form-group {
+      margin-bottom: 1.25rem;
+    }
+    
+    .form-label {
+      color: #E5E7EB;
+      font-weight: 600;
+      font-size: 0.875rem;
+      margin-bottom: 0.5rem;
+      display: block;
+      letter-spacing: 0.01em;
+    }
+    
+    .input-container {
+      position: relative;
+    }
+    
+    .input-icon {
+      position: absolute;
+      left: 1rem;
+      top: 50%;
+      transform: translateY(-50%);
+      color: #6B7280;
+      font-size: 1.125rem;
+      transition: color 0.2s ease;
+      z-index: 2;
+    }
+    
+    .toggle-pass {
+      position: absolute;
+      right: 0.75rem;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 0;
+      background: transparent;
+      color: #6B7280;
+      cursor: pointer;
+      outline: none;
+      border-radius: 6px;
+      transition: all 0.2s ease;
+      z-index: 3;
+    }
+    
+    .toggle-pass:hover {
+      color: #3BB7FB;
+      background: rgba(59, 183, 251, 0.1);
+    }
+    
+    .form-control {
+      background: rgba(17, 20, 24, 0.8) !important;
+      border: 1.5px solid rgba(55, 65, 81, 0.8) !important;
+      color: #ffffff !important;
+      border-radius: 12px !important;
+      height: 52px !important;
+      padding: 0 3rem 0 3rem !important;
+      font-size: 0.95rem !important;
+      font-weight: 400 !important;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+      backdrop-filter: blur(10px);
+    }
+    
+    .form-control::placeholder {
+      color: #6B7280 !important;
+      font-weight: 400 !important;
+    }
+    
+    .form-control:focus {
+      background: rgba(17, 20, 24, 0.9) !important;
+      border-color: #3BB7FB !important;
+      box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.1) !important;
+      transform: translateY(-1px);
+    }
+    
+    .form-control:focus + .input-icon {
+      color: #3BB7FB;
+    }
+    
+    .btn-primary {
+      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
+      border: none;
+      border-radius: 12px;
+      height: 52px;
+      font-weight: 600;
+      font-size: 1rem;
+      letter-spacing: 0.025em;
+      color: #ffffff;
+      width: 100%;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 4px 16px rgba(59, 183, 251, 0.3);
+      margin-top: 1rem;
+    }
+    
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+      transition: left 0.5s ease;
+    }
+    
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59, 183, 251, 0.4);
+      color: #ffffff;
+    }
+    
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+    
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+    
+    .form-footer {
+      margin-top: 1.5rem;
+      text-align: center;
+    }
+    
+    .form-footer p {
+      color: #9CA3AF;
+      font-size: 0.875rem;
+      margin-bottom: 0;
+    }
+    
+    .form-footer a {
+      color: #3BB7FB;
+      text-decoration: none;
+      font-weight: 600;
+      transition: color 0.2s ease;
+    }
+    
+    .form-footer a:hover {
+      color: #F6B443;
+      text-decoration: none;
+    }
+    
+    .alert {
+      border-radius: 12px;
+      border: none;
+      padding: 1rem 1.25rem;
+      margin-bottom: 1.5rem;
+      font-weight: 500;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .alert-danger {
+      background: rgba(239, 68, 68, 0.1);
+      color: #FCA5A5;
+      border: 1px solid rgba(239, 68, 68, 0.2);
+    }
+    
+    .alert-success {
+      background: rgba(34, 197, 94, 0.1);
+      color: #86EFAC;
+      border: 1px solid rgba(34, 197, 94, 0.2);
+    }
+    
+    /* Password Requirements */
+    .password-requirements {
+      background: rgba(17, 20, 24, 0.6);
+      border: 1px solid rgba(55, 65, 81, 0.4);
+      border-radius: 10px;
+      padding: 1rem;
+      margin-top: 0.5rem;
+      display: none;
+    }
+    
+    .password-requirements.show {
+      display: block;
+    }
+    
+    .requirements-title {
+      color: #9CA3AF;
+      font-size: 0.8rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+    }
+    
+    .requirement-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .requirement-item {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.25rem 0;
+      color: #6B7280;
+      font-size: 0.8rem;
+      transition: color 0.2s ease;
+    }
+    
+    .requirement-item.valid {
+      color: #10B981;
+    }
+    
+    .requirement-item.invalid {
+      color: #EF4444;
+    }
+    
+    .requirement-icon {
+      font-size: 0.9rem;
+    }
+    
+    /* Status Messages */
+    .field-status {
+      font-size: 0.8rem;
+      margin-top: 0.5rem;
+      font-weight: 500;
+    }
+    
+    .field-status.valid {
+      color: #10B981;
+    }
+    
+    .field-status.invalid {
+      color: #EF4444;
+    }
+
+    /* ----- PHONE/COUNTRY ONLY ----- */
+    .country-select option {
+      background: rgba(31, 34, 41, 0.95);
+      color: #ffffff;
+    }
+
+    .phone-input-wrapper {
+      display: flex;
+      align-items: stretch;
+      background: rgba(17, 20, 24, 0.8);
+      border: 1.5px solid rgba(55, 65, 81, 0.8);
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      backdrop-filter: blur(10px);
+    }
+
+    .phone-input-wrapper:focus-within {
+      border-color: #3BB7FB;
+      box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.1);
+      transform: translateY(-1px);
+    }
+
+    .country-code-select {
+      background: rgba(31, 34, 41, 0.9);
+      border: none;
+      border-right: 1px solid rgba(55, 65, 81, 0.8);
+      color: #ffffff;
+      padding: 0 10px;
+      min-width: 140px;
+      max-width: 140px;
+      height: 52px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      outline: none;
+      cursor: pointer;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .country-code-select:focus {
+      background: rgba(31, 34, 41, 1);
+    }
+
+    .country-code-select:hover {
+      background: rgba(35, 38, 45, 0.9);
+    }
+
+    .country-code-select option {
+      background: rgba(31, 34, 41, 0.98);
+      color: #ffffff;
+      padding: 10px;
+      font-size: 0.9rem;
+      font-weight: 500;
+      border: none;
+      font-family: 'Montserrat', sans-serif;
+    }
+
+    .country-code-select option:hover {
+      background-color: rgba(59, 183, 251, 0.1);
+    }
+
+    .phone-input {
+      border: none !important;
+      background: transparent !important;
+      padding: 0 16px !important;
+      height: 52px !important;
+      flex: 1;
+      color: #ffffff !important;
+      font-size: 0.95rem !important;
+      font-weight: 400 !important;
+    }
+
+    .phone-input:focus {
+      box-shadow: none !important;
+      outline: none !important;
+      transform: none !important;
+    }
+
+    .phone-input::placeholder {
+      color: #6B7280 !important;
+      font-weight: 400 !important;
+    }
+    /* ----- /PHONE/COUNTRY ONLY ----- */
+    
+    @media (max-width: 576px) {
+      .register-card {
+        padding: 2rem 1.5rem;
+        margin: 1rem;
+        border-radius: 20px;
+      }
+      
+      .brand-title {
+        font-size: 1.625rem;
+      }
+    }
+
+    @media (max-width: 768px) {
+        /* Make logo bigger on mobile */
+        .logo-image {
+            transform: scale(3.5) !important;
+            height: 38px !important;
+        }
+        
+        .navbar-brand {
+            margin-left: 20px !important;
+            margin-right: 20px !important;
+        }
+    }
+

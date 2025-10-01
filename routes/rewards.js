@@ -15,6 +15,13 @@ router.use(rateLimit(50, 10 * 60 * 1000)); // 50 requests per 10 minutes
 router.get('/', requireAuth, RewardsController.getUserRewards);
 
 /**
+ * @route   GET /api/rewards/debug
+ * @desc    Debug user's badges (troubleshooting)
+ * @access  Private
+ */
+router.get('/debug', requireAuth, RewardsController.debugUserBadges);
+
+/**
  * @route   GET /api/rewards/leaderboard
  * @desc    Get leaderboard data
  * @access  Private

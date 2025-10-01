@@ -39,7 +39,7 @@
   background-attachment: fixed;
   min-height: 100vh;
   color: var(--text-primary);
-  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
 /* Badge Unlock Notification - EXACTLY as before but with your colors */

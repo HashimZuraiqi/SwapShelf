@@ -356,6 +356,17 @@ rewardSchema.methods.canUnlockBadge = function(badgeId) {
       return this.stats.completedSwaps >= badge.requirement.condition.count;
     case 'consecutive_days':
       return this.stats.consecutiveDays >= badge.requirement.condition.days;
+    case 'visit_time':
+      const now = new Date();
+      const currentHour = now.getHours();
+      const { start, end } = badge.requirement.condition;
+      
+      // Handle overnight time ranges (e.g., 10pm to 5am)
+      if (start > end) {
+        return currentHour >= start || currentHour < end;
+      } else {
+        return currentHour >= start && currentHour < end;
+      }
     case 'weekend_visit':
       return this.stats.visitStreak > 0; // Simplified check
     case 'reports_made':
@@ -391,18 +402,23 @@ rewardSchema.methods.unlockBadge = function(badgeId) {
   // Add or update badge
   const existingBadge = this.badges.find(b => b.badgeId === badgeId);
   if (existingBadge) {
-    existingBadge.isUnlocked = true;
-    existingBadge.unlockedAt = new Date();
+    // Badge already exists - only update if not already unlocked
+    if (!existingBadge.isUnlocked) {
+      existingBadge.isUnlocked = true;
+      existingBadge.unlockedAt = new Date();
+      // Add points only if badge was not previously unlocked
+      this.totalPoints += badge.points;
+    }
+    // If already unlocked, do nothing (prevent duplicate points)
   } else {
+    // New badge - add it and award points
     this.badges.push({
       badgeId,
       isUnlocked: true,
       unlockedAt: new Date()
     });
+    this.totalPoints += badge.points;
   }
-  
-  // Add points
-  this.totalPoints += badge.points;
   
   // Update reputation level
   this.reputationLevel = this.calculateReputationLevel();

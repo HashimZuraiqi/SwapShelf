@@ -5,16 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rewards & Achievements | BookSwap</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="/css/rewards.css">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
 </head>
 <body class="rewards-main">
 
-<!-- Badge Unlock Notification -->
-<div id="badgeNotification" class="badge-notification">
+<!-- Badge Unlock Notification - Hidden by default -->
+<div id="badgeNotification" class="badge-notification" style="display: none;">
     <div class="badge-notification-content">
         <div class="badge-notification-icon" id="notificationIcon">🏆</div>
         <div class="badge-notification-text">
@@ -29,57 +29,63 @@
 <!-- Navigation -->
 <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
     <div class="container-fluid">
-        <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
-            <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
-                height: 32px; 
-                width: auto; 
-                transform: scale(4);
-                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-                transition: all 0.3s ease;
-                z-index: 10;
-                position: relative;
-            " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
-        </a>
-        
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>">
-                    <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                </li>
-                <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>">
-                    <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
-                </li>
-                <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>">
-                    <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
-                </li>
-                <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>">
-                    <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
-                </li>
-                <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>">
-                    <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
-                </li>
-            </ul>
-            
-            <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown">
-                        <i class="bi bi-person-circle"></i> Profile
-                    </a>
-                    <div class="dropdown-menu dropdown-menu-right">
-                        <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
-                        <a class="dropdown-item" href="/history"><i class="bi bi-clock-history"></i> Activity History</a>
-                        <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-                    </div>
-                </li>
-            </ul>
-        </div>
+      <!-- Logo on far left -->
+      <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
+        <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
+            height: 32px; 
+            width: auto; 
+            transform: scale(4);
+            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
+            transition: all 0.3s ease;
+            z-index: 10;
+            position: relative;
+        " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
+      </a>
+      
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- Navigation options in the center with correct order -->
+        <ul class="navbar-nav mx-auto">
+            <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
+              <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
+            </li>
+            <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
+              <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
+            </li>
+            <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
+              <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
+            </li>
+            <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
+              <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
+          </li>
+          <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
+              <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
+            </li>
+          </ul>
+  
+          <!-- Profile dropdown on far right -->
+          <ul class="navbar-nav ml-auto">
+            <li class="nav-item dropdown">
+              <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
+                 data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <i class="bi bi-person-circle"></i> Profile
+              </a>
+              <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
+                <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
+                <a class="dropdown-item" href="/history"><i class="bi bi-clock-history"></i> Activity History</a>
+                <div class="dropdown-divider"></div>
+                <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
+              </div>
+          </li>
+        </ul>
+      </div>
     </div>
-</nav>
+  </nav>
+  
 
 <!-- Main Content -->
 <div class="container-fluid px-4 py-4">
@@ -139,6 +145,9 @@
                     <div class="stat-card-body">
                         <div class="stat-value">
                             <span id="badgesUnlocked">0</span>/<span id="totalBadges">0</span>
+                            <button onclick="fixBadgeCount()" class="btn btn-sm btn-outline-warning ms-2" style="font-size: 0.7rem; padding: 2px 6px;" title="Fix Badge Count">
+                                🔧
+                            </button>
                         </div>
                         <div class="stat-label">Badges Earned</div>
                         <div class="stat-progress-mini">
@@ -461,15 +470,23 @@ function showBadgeNotification(badge) {
     document.getElementById('notificationMessage').textContent = badge.description;
     document.getElementById('notificationPoints').textContent = badge.points;
     
+    notification.style.display = 'block';
     notification.classList.add('show');
     
     setTimeout(() => {
         notification.classList.remove('show');
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 400);
     }, 5000);
 }
 
 function closeNotification() {
-    document.getElementById('badgeNotification').classList.remove('show');
+    const notification = document.getElementById('badgeNotification');
+    notification.classList.remove('show');
+    setTimeout(() => {
+        notification.style.display = 'none';
+    }, 400);
 }
 
 function hideLoading() {
@@ -482,6 +499,29 @@ function showError(message) {
     document.getElementById('mainContent').classList.remove('d-none');
 }
 
+// Fix badge count function
+async function fixBadgeCount() {
+    try {
+        console.log('🔧 Fixing badge count...');
+        
+        // Call the debug endpoint to trigger cleanup
+        const response = await fetch('/api/rewards/debug');
+        const data = await response.json();
+        
+        if (data.success) {
+            console.log('✅ Badge count fixed!', data.data);
+            // Reload the page to show updated count
+            location.reload();
+        } else {
+            console.error('❌ Failed to fix badge count:', data.message);
+            alert('Failed to fix badge count. Please try again.');
+        }
+    } catch (error) {
+        console.error('❌ Error fixing badge count:', error);
+        alert('Error fixing badge count. Please try again.');
+    }
+}
+
 // Load data when page loads
 document.addEventListener('DOMContentLoaded', () => {
     console.log('📄 Page loaded, initializing rewards...');
@@ -489,14 +529,7 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 </script>
 
-<!-- Include Simple Chat Widget -->
-<!-- Include Real-Time Chat System -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/css/realTimeChat.css">
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/realTimeChat.js"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
 
 </body>
 </html>
