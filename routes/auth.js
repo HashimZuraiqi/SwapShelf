@@ -32,6 +32,20 @@ router.get('/test', (req, res) => {
   res.json({ message: 'Auth router is working!' });
 });
 
+// Get current user info for chat system
+router.get('/me', (req, res) => {
+  if (req.session && req.session.user) {
+    res.json({
+      _id: req.session.user.id,
+      username: req.session.user.username,
+      email: req.session.user.email,
+      avatar: req.session.user.avatar
+    });
+  } else {
+    res.status(401).json({ error: 'Not authenticated' });
+  }
+});
+
 /* ---------------------- Username availability check --------------------- */
 /* Used by the registration page live-check: /auth/check-username?username=foo */
 router.get('/check-username', async (req, res) => {

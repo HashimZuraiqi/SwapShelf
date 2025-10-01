@@ -1,6 +1,8 @@
 require('dotenv').config();
 
 const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
 const path = require('path');
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
@@ -13,7 +15,20 @@ const Swap = require('./models/Swap'); // Mongoose Swap model
 const Activity = require('./models/Activity');
 const { getDashboardData } = require('./controllers/dashboardController'); // Dashboard data controller
 
+// Real-Time Chat System
+const { ChatRoom, ChatMessage } = require('./models/RealTimeChat');
+
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, {
+  cors: {
+    origin: "*",
+    methods: ["GET", "POST"]
+  },
+  transports: ['websocket', 'polling']
+});
+
+// Real-time chat will be handled by Socket.IO events below
 
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -98,10 +113,30 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
-const chatRoutes = require('./routes/chat');
+// const chatRoutes = require('./routes/chat'); // Disabled old chat system
 const rewardsRoutes = require('./routes/rewards');
-const simpleChatRoutes = require('./routes/simple-chat');
-const globalChatRoutes = require('./routes/global-chat');
+// const simpleChatRoutes = require('./routes/simple-chat'); // Disabled old chat system
+// const globalChatRoutes = require('./routes/global-chat'); // Disabled old chat system
+const authBypassRoutes = require('./routes/auth-bypass');
+// const simpleMessageRoutes = require('./routes/simple-message'); // Disabled old chat system
+// const enhancedChatRoutes = require('./routes/enhancedChat'); // Disabled old chat system
+const realTimeChatRoutes = require('./routes/realTimeChat');
+
+// Auth API for Chat
+app.get('/api/auth/me', (req, res) => {
+  if (!req.session || !req.session.user) {
+    return res.status(401).json({ error: 'Not authenticated' });
+  }
+  
+  const user = req.session.user;
+  res.json({
+    _id: user._id || user.id,
+    fullname: user.fullname,
+    username: user.username,
+    email: user.email,
+    profileImage: user.profileImage || '/images/default-avatar.png'
+  });
+});
 
 // Mount API Routes
 app.use('/auth', require('./routes/auth'));  // mounts /auth/*
@@ -109,10 +144,13 @@ app.use('/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/chat', chatRoutes);
+app.use('/api/chat', realTimeChatRoutes);
+// app.use('/api/enhanced-chat', enhancedChatRoutes); // Disabled old chat system
 app.use('/api/rewards', rewardsRoutes);
-app.use('/api/simple-chat', simpleChatRoutes);
-app.use('/api/global-chat', globalChatRoutes);
+// app.use('/api/simple-chat', simpleChatRoutes); // Disabled old chat system
+// app.use('/api/global-chat', globalChatRoutes); // Disabled old chat system
+app.use('/api/auth-bypass', authBypassRoutes);
+// app.use('/api/simple-message', simpleMessageRoutes); // Disabled old chat system
 app.get('/login.html', (req, res) => res.redirect(301, '/auth/login'));
 app.get('/register.html', (req, res) => res.redirect(301, '/auth/register'));
 // Legacy route for book addition (redirect to API)
@@ -390,6 +428,16 @@ app.get('/', (req, res) => {
 
 app.get('/home', (req, res) => res.redirect('/'));
 
+// Working Chat Demo Route
+app.get('/working-chat-demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'working-chat-demo.html'));
+});
+
+// Master Chat System Demo Route
+app.get('/chat-demo', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'chat-system-demo.html'));
+});
+
 /**
  * Dashboard Route - Real-time data integration
  * 
@@ -480,6 +528,15 @@ app.get('/dashboard', async (req, res) => {
             error: 'Unable to load dashboard data. Please try again.'
         });
     }
+});
+
+// Chat test page
+app.get('/chat-test', (req, res) => {
+    res.render('chat-test', { 
+        title: 'Simple Chat System Test',
+        userLoggedIn: true,
+        activePage: 'chat-test'
+    });
 });
 
 /**
@@ -1744,8 +1801,7 @@ app.get('/api/books', async (req, res) => {
 
 if (process.env.NODE_ENV !== 'production') {
   app.listen(3000, () => {
-    console.log('Server is running at http://localhost:3000');
-    console.log('Dashboard available at: http://localhost:3000/dashboard');
+
   });
 }
 
@@ -1812,6 +1868,15 @@ const openPaths = [
   '/auth/check-username'
 ];
 
+// Additional public prefixes for API routes
+const openApiPrefixes = [
+  /^\/api\/simple-message\//, // Allow all simple message API endpoints
+  /^\/api\/enhanced-chat\//, // Allow enhanced chat API endpoints
+  /^\/api\/auth-bypass\//, // Allow auth bypass endpoints
+  /^\/api\/auth\/me$/, // Allow auth check endpoint
+  /^\/chat-integration-test\.html$/ // Allow test page
+];
+
 // Use regexes for directories / assets
 const openPrefixes = [
   /^\/css\//, /^\/js\//, /^\/images?\//, /^\/img\//, /^\/fonts?\//,
@@ -1822,15 +1887,69 @@ app.use((req, res, next) => {
   const path = req.path;
   const isOpen =
     openPaths.includes(path) ||
-    openPrefixes.some(rx => rx.test(path));
+    openPrefixes.some(rx => rx.test(path)) ||
+    openApiPrefixes.some(rx => rx.test(path)); // Check API prefixes too
 
-  if (!req.session || !req.session.user) {
+  if (!isOpen && (!req.session || !req.session.user)) {
     // don’t trap the user in a redirect loop
     if (path !== '/login') return res.redirect('/login');
   }
   next();
 });
 
+// Real-Time Chat Socket.IO Handling
+io.on('connection', (socket) => {
+  console.log(`🔌 New socket connection: ${socket.id}`);
+  
+  // Handle joining rooms
+  socket.on('joinRoom', (roomId) => {
+    socket.join(roomId);
+    console.log(`👋 Socket ${socket.id} joined room ${roomId}`);
+  });
+  
+  // Handle real-time message sending
+  socket.on('sendMessage', async (data) => {
+    try {
+      const { roomId, message } = data;
+      console.log('📨 Real-time message received:', message.content);
+      
+      // Broadcast to room (excluding sender)
+      socket.to(roomId).emit('newMessage', message);
+      
+      console.log('✅ Message broadcasted to room:', roomId);
+    } catch (error) {
+      console.error('Error handling real-time message:', error);
+      socket.emit('error', { message: 'Failed to send message' });
+    }
+  });
+  
+  // Handle authentication for socket
+  socket.on('authenticate', async (data) => {
+    try {
+      const { userId } = data;
+      socket.authenticated = true;
+      socket.userId = userId;
+      console.log(`✅ Socket ${socket.id} authenticated for user ${userId}`);
+      socket.emit('authenticated', { success: true });
+    } catch (error) {
+      console.error('Socket authentication failed:', error);
+      socket.emit('authError', { message: 'Authentication failed' });
+    }
+  });
 
+  // Handle disconnection
+  socket.on('disconnect', () => {
+    console.log('🔌 User disconnected:', socket.id);
+  });
+});
 
-module.exports = app;
+// Start server
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`🚀 Server is running at http://localhost:${PORT}`);
+  console.log(`📊 Dashboard available at: http://localhost:${PORT}/dashboard`);
+  console.log(`💬 Enhanced Chat System: ACTIVE`);
+  console.log(`🔌 WebSocket Server: READY`);
+});
+
+module.exports = { app, server, io };

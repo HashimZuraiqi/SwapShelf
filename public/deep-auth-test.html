@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 40px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-result {
+            background: #2d2d2d;
+            padding: 20px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3BB7FB;
+        }
+        .success { border-left-color: #4CAF50; }
+        .error { border-left-color: #f44336; }
+        pre {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #3BB7FB;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔍 Deep Authentication Analysis</h1>
+
+    <button onclick="runAllTests()">Run All Tests</button>
+    <button onclick="testStep1()">Test Step 1: Check Session</button>
+    <button onclick="testStep2()">Test Step 2: Profile API</button>
+    <button onclick="testStep3()">Test Step 3: Chat APIs</button>
+
+    <div id="results"></div>
+
+    <script>
+        async function runAllTests() {
+            document.getElementById('results').innerHTML = '';
+            console.log('🚀 Starting comprehensive authentication tests...');
+            
+            await testStep1();
+            await testStep2();
+            await testStep3();
+        }
+
+        async function testStep1() {
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            result.innerHTML = '<h3>Step 1: Session Check</h3><p>Checking document.cookie and basic session info...</p>';
+            document.getElementById('results').appendChild(result);
+
+            try {
+                console.log('🍪 Current cookies:', document.cookie);
+                console.log('🌐 Current URL:', window.location.href);
+                console.log('📍 Current domain:', window.location.hostname);
+                
+                // Check if we have any session cookies
+                const cookies = document.cookie.split(';').map(c => c.trim());
+                const sessionCookie = cookies.find(c => c.startsWith('connect.sid') || c.includes('session'));
+                
+                result.innerHTML = `
+                    <h3>Step 1: Session Check</h3>
+                    <p><strong>Session Cookie Found:</strong> ${sessionCookie ? 'Yes' : 'No'}</p>
+                    <p><strong>Cookie:</strong> ${sessionCookie || 'None'}</p>
+                    <p><strong>All Cookies:</strong></p>
+                    <pre>${document.cookie || 'No cookies found'}</pre>
+                `;
+                
+                if (sessionCookie) {
+                    result.className = 'test-result success';
+                } else {
+                    result.className = 'test-result error';
+                }
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <h3>Step 1: Session Check - ERROR</h3>
+                    <pre>${error.message}</pre>
+                `;
+                result.className = 'test-result error';
+            }
+        }
+
+        async function testStep2() {
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            result.innerHTML = '<h3>Step 2: Profile API Test</h3><p>Testing /api/users/profile...</p>';
+            document.getElementById('results').appendChild(result);
+
+            try {
+                console.log('📡 Making request to /api/users/profile...');
+                
+                const response = await $.ajax({
+                    url: '/api/users/profile',
+                    method: 'GET',
+                    dataType: 'json'
+                });
+                
+                console.log('✅ Profile API Response:', response);
+                
+                result.innerHTML = `
+                    <h3>Step 2: Profile API Test - SUCCESS</h3>
+                    <p><strong>Status:</strong> Success</p>
+                    <p><strong>User ID:</strong> ${response._id || response.id || 'Not found'}</p>
+                    <p><strong>Email:</strong> ${response.email || 'Not found'}</p>
+                    <p><strong>Name:</strong> ${response.fullname || response.name || 'Not found'}</p>
+                    <p><strong>Full Response:</strong></p>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+                result.className = 'test-result success';
+                
+            } catch (error) {
+                console.error('❌ Profile API Error:', error);
+                
+                result.innerHTML = `
+                    <h3>Step 2: Profile API Test - FAILED</h3>
+                    <p><strong>Status:</strong> ${error.status || 'Unknown'}</p>
+                    <p><strong>Status Text:</strong> ${error.statusText || 'Unknown'}</p>
+                    <p><strong>Response:</strong></p>
+                    <pre>${JSON.stringify(error.responseJSON || error.responseText || error.message, null, 2)}</pre>
+                `;
+                result.className = 'test-result error';
+            }
+        }
+
+        async function testStep3() {
+            const result = document.createElement('div');
+            result.className = 'test-result';
+            result.innerHTML = '<h3>Step 3: Chat API Tests</h3><p>Testing chat endpoints...</p>';
+            document.getElementById('results').appendChild(result);
+
+            try {
+                console.log('💬 Testing chat APIs...');
+                
+                // Test conversations endpoint
+                let conversationsResult = 'Not tested';
+                try {
+                    const convResponse = await $.ajax({
+                        url: '/api/global-chat/conversations',
+                        method: 'GET',
+                        dataType: 'json'
+                    });
+                    conversationsResult = `Success - ${JSON.stringify(convResponse, null, 2)}`;
+                } catch (convError) {
+                    conversationsResult = `Error ${convError.status}: ${JSON.stringify(convError.responseJSON || convError.responseText, null, 2)}`;
+                }
+                
+                // Test users endpoint  
+                let usersResult = 'Not tested';
+                try {
+                    const usersResponse = await $.ajax({
+                        url: '/api/global-chat/users',
+                        method: 'GET',
+                        dataType: 'json'
+                    });
+                    usersResult = `Success - ${JSON.stringify(usersResponse, null, 2)}`;
+                } catch (usersError) {
+                    usersResult = `Error ${usersError.status}: ${JSON.stringify(usersError.responseJSON || usersError.responseText, null, 2)}`;
+                }
+                
+                result.innerHTML = `
+                    <h3>Step 3: Chat API Tests</h3>
+                    <p><strong>Conversations API:</strong></p>
+                    <pre>${conversationsResult}</pre>
+                    <p><strong>Users API:</strong></p>
+                    <pre>${usersResult}</pre>
+                `;
+                
+                if (conversationsResult.includes('Success') && usersResult.includes('Success')) {
+                    result.className = 'test-result success';
+                } else {
+                    result.className = 'test-result error';
+                }
+                
+            } catch (error) {
+                result.innerHTML = `
+                    <h3>Step 3: Chat API Tests - ERROR</h3>
+                    <pre>${error.message}</pre>
+                `;
+                result.className = 'test-result error';
+            }
+        }
+
+        // Auto-run on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Authentication test page loaded');
+        });
+    </script>
+</body>
+</html>

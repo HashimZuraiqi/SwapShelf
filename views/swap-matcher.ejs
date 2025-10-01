@@ -1435,7 +1435,7 @@ function submitSwapRequest() {
     });
 }
 
-// Global chat integration function
+// Real-time chat integration function
 function openSimpleChat() {
     if (!selectedUserBook || !targetBook) {
         showErrorMessage('Please select books for the swap first');
@@ -1453,40 +1453,44 @@ function openSimpleChat() {
         // Hide the swap modal
         $('#swapRequestModal').modal('hide');
         
-        // Get current user info from global chat widget
-        const currentUser = window.globalChatWidget?.currentUser;
-        const currentUsername = currentUser?.username || currentUser?.fullname || currentUser?.name || 'You';
+        // Get the book owner's user ID
+        const ownerUserId = requestedBook.owner?._id || requestedBook.owner?.id;
+        const ownerUsername = requestedBook.owner?.username || requestedBook.owner?.name || 'Book Owner';
         
-        // Create the chat data for global chat widget
-        const chatData = {
-            user1: currentUsername,
-            user2: requestedBook.owner?.username || requestedBook.owner?.fullname || requestedBook.owner?.name || 'Book Owner',
-            offeredBook: offeredBook.title,
-            requestedBook: requestedBook.title,
-            context: `${offeredBook.title} ↔ ${requestedBook.title}`
-        };
+        if (!ownerUserId) {
+            showErrorMessage('Unable to find book owner information');
+            return;
+        }
         
-        console.log('📋 Swap matcher: Chat data prepared:', chatData);
+        console.log('📋 Starting direct chat with owner:', ownerUserId, ownerUsername);
         
-        // Use the global chat widget to create and open the conversation
-        if (window.globalChatWidget) {
-            console.log('🔥 Creating chat with data:', chatData);
-            window.globalChatWidget.createNewChat(chatData)
-                .done((response) => {
-                    console.log('✅ Chat created successfully:', response);
-                    showSuccessMessage('Chat conversation started! Check the chat widget at bottom right.');
-                })
-                .fail((xhr, status, error) => {
-                    console.error('❌ Failed to create chat:', xhr, status, error);
-                    const errorMessage = xhr.responseJSON?.error || xhr.responseText || error || 'Unknown error';
-                    showErrorMessage('Failed to start chat conversation: ' + errorMessage);
-                });
+        // Use the real-time chat widget to create and open the conversation directly
+        if (window.realTimeChat) {
+            try {
+                // Expand the chat widget if minimized
+                const chatWidget = document.getElementById('real-chat-widget');
+                if (chatWidget && chatWidget.classList.contains('minimized')) {
+                    chatWidget.classList.remove('minimized');
+                }
+                
+                // Start chat with the book owner directly without any alerts
+                window.realTimeChat.startChat(ownerUserId, ownerUsername);
+                
+                // No success message - direct seamless experience
+                console.log('✅ Direct chat opened with', ownerUsername);
+                
+            } catch (error) {
+                console.error('❌ Failed to start chat:', error);
+                // Only show error if something actually fails
+                showErrorMessage('Failed to start chat conversation. Please try again.');
+            }
         } else {
-            console.error('❌ Global chat widget not available');
+            console.error('❌ Real-time chat widget not available');
             showErrorMessage('Chat system not available. Please refresh the page.');
         }
         
-    }).catch(() => {
+    }).catch((error) => {
+        console.error('❌ Failed to load book information:', error);
         showErrorMessage('Failed to load book information for chat');
     });
 }
@@ -2561,7 +2565,11 @@ $(document).on('input', '#chat-input', function() {
 </style>
 
 <!-- Include Global Chat Widget -->
-<%- include('partials/global-chat') %>
+<!-- Include Real-Time Chat System -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link rel="stylesheet" href="/css/realTimeChat.css">
+<script src="/socket.io/socket.io.js"></script>
+<script src="/js/realTimeChat.js"></script>
 
 </body>
 </html>
