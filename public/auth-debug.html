@@ -1,0 +1,220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Authentication Debug</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .test-section {
+            background: #2d2d2d;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3BB7FB;
+        }
+        .success { color: #4CAF50; }
+        .error { color: #f44336; }
+        .info { color: #2196F3; }
+        pre {
+            background: #1e1e1e;
+            padding: 15px;
+            border-radius: 4px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+        button {
+            background: #3BB7FB;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover {
+            background: #2d9ce8;
+        }
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+        }
+        .status-success { background: #4CAF50; }
+        .status-error { background: #f44336; }
+        .status-unknown { background: #ff9800; }
+    </style>
+</head>
+<body>
+    <h1>🔍 Authentication Debug Tool</h1>
+    <p>This tool helps debug authentication issues with the global chat system.</p>
+
+    <div class="test-section">
+        <h2>🔐 Authentication Test</h2>
+        <button onclick="testAuthentication()">Test Authentication</button>
+        <div id="auth-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>💬 Chat API Tests</h2>
+        <button onclick="testChatConversations()">Test Conversations API</button>
+        <button onclick="testChatUsers()">Test Users API</button>
+        <div id="chat-result"></div>
+    </div>
+
+    <div class="test-section">
+        <h2>🔄 Real-time Test</h2>
+        <button onclick="simulateChatWidget()">Simulate Chat Widget Logic</button>
+        <div id="realtime-result"></div>
+    </div>
+
+    <script>
+        async function testAuthentication() {
+            const resultDiv = document.getElementById('auth-result');
+            resultDiv.innerHTML = '<p class="info">🔄 Testing authentication...</p>';
+            
+            try {
+                console.log('🔍 Testing /api/users/profile...');
+                const response = await $.get('/api/users/profile');
+                console.log('✅ Auth response:', response);
+                
+                resultDiv.innerHTML = `
+                    <p class="success"><span class="status-indicator status-success"></span>Authentication successful!</p>
+                    <p><strong>User Data:</strong></p>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('❌ Auth error:', error);
+                resultDiv.innerHTML = `
+                    <p class="error"><span class="status-indicator status-error"></span>Authentication failed!</p>
+                    <p><strong>Error:</strong> ${error.status} - ${error.statusText}</p>
+                    <pre>${JSON.stringify(error.responseJSON || error.responseText || error.message, null, 2)}</pre>
+                `;
+            }
+        }
+
+        async function testChatConversations() {
+            const resultDiv = document.getElementById('chat-result');
+            resultDiv.innerHTML = '<p class="info">🔄 Testing chat conversations...</p>';
+            
+            try {
+                console.log('🔍 Testing /api/global-chat/conversations...');
+                const response = await $.get('/api/global-chat/conversations');
+                console.log('✅ Conversations response:', response);
+                
+                resultDiv.innerHTML = `
+                    <p class="success"><span class="status-indicator status-success"></span>Conversations loaded successfully!</p>
+                    <p><strong>Data:</strong></p>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('❌ Conversations error:', error);
+                resultDiv.innerHTML = `
+                    <p class="error"><span class="status-indicator status-error"></span>Conversations failed!</p>
+                    <p><strong>Error:</strong> ${error.status} - ${error.statusText}</p>
+                    <pre>${JSON.stringify(error.responseJSON || error.responseText || error.message, null, 2)}</pre>
+                `;
+            }
+        }
+
+        async function testChatUsers() {
+            const resultDiv = document.getElementById('chat-result');
+            const currentContent = resultDiv.innerHTML;
+            resultDiv.innerHTML = currentContent + '<p class="info">🔄 Testing chat users...</p>';
+            
+            try {
+                console.log('🔍 Testing /api/global-chat/users...');
+                const response = await $.get('/api/global-chat/users');
+                console.log('✅ Users response:', response);
+                
+                resultDiv.innerHTML = currentContent + `
+                    <p class="success"><span class="status-indicator status-success"></span>Users loaded successfully!</p>
+                    <p><strong>Data:</strong></p>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                console.error('❌ Users error:', error);
+                resultDiv.innerHTML = currentContent + `
+                    <p class="error"><span class="status-indicator status-error"></span>Users failed!</p>
+                    <p><strong>Error:</strong> ${error.status} - ${error.statusText}</p>
+                    <pre>${JSON.stringify(error.responseJSON || error.responseText || error.message, null, 2)}</pre>
+                `;
+            }
+        }
+
+        async function simulateChatWidget() {
+            const resultDiv = document.getElementById('realtime-result');
+            resultDiv.innerHTML = '<p class="info">🔄 Simulating chat widget logic...</p>';
+            
+            let currentUser = null;
+            let chatEnabled = false;
+            
+            try {
+                // Step 1: Get current user (like the chat widget does)
+                console.log('🔍 Step 1: Getting current user...');
+                const response = await $.get('/api/users/profile');
+                currentUser = response.user || response;
+                console.log('👤 Current user:', currentUser);
+                
+                if (currentUser) {
+                    chatEnabled = true;
+                    console.log('✅ Chat enabled for user:', currentUser.email || currentUser.username || currentUser.name);
+                } else {
+                    console.log('❌ No user found, chat disabled');
+                }
+                
+                // Step 2: Load conversations
+                let conversations = [];
+                if (chatEnabled) {
+                    try {
+                        console.log('📋 Step 2: Loading conversations...');
+                        const convResponse = await $.get('/api/global-chat/conversations');
+                        conversations = convResponse.conversations || [];
+                        console.log('📊 Conversations loaded:', conversations.length);
+                    } catch (convError) {
+                        console.error('❌ Failed to load conversations:', convError);
+                        if (convError.status === 401) {
+                            chatEnabled = false;
+                        }
+                    }
+                }
+                
+                // Step 3: Show results
+                resultDiv.innerHTML = `
+                    <p class="success"><span class="status-indicator status-success"></span>Chat widget simulation complete!</p>
+                    <p><strong>User Authenticated:</strong> ${currentUser ? 'Yes' : 'No'}</p>
+                    <p><strong>Chat Enabled:</strong> ${chatEnabled ? 'Yes' : 'No'}</p>
+                    <p><strong>Conversations Count:</strong> ${conversations.length}</p>
+                    <p><strong>User Data:</strong></p>
+                    <pre>${JSON.stringify(currentUser, null, 2)}</pre>
+                    <p><strong>Conversations:</strong></p>
+                    <pre>${JSON.stringify(conversations, null, 2)}</pre>
+                `;
+                
+            } catch (error) {
+                console.error('❌ Simulation error:', error);
+                resultDiv.innerHTML = `
+                    <p class="error"><span class="status-indicator status-error"></span>Simulation failed!</p>
+                    <p><strong>Error:</strong> ${error.status} - ${error.statusText}</p>
+                    <pre>${JSON.stringify(error.responseJSON || error.responseText || error.message, null, 2)}</pre>
+                `;
+            }
+        }
+
+        // Auto-run tests on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Authentication debug tool loaded');
+        });
+    </script>
+</body>
+</html>

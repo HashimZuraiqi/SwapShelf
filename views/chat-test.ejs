@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Chat Test</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/js/all.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .test-container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3BB7FB;
+        }
+        .user-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            align-items: center;
+        }
+        .user-btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .user-btn.active {
+            background: #3BB7FB;
+            color: white;
+        }
+        .user-btn:not(.active) {
+            background: #e9ecef;
+            color: #495057;
+        }
+        .status {
+            background: #d4edda;
+            color: #155724;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+        }
+    </style>
+</head>
+<body>
+    <div class="test-container">
+        <h1>🚀 Simple Chat System Test</h1>
+        <p>Test the new simple messaging system with multiple users!</p>
+
+        <div class="test-section">
+            <h3>👤 Select Test User:</h3>
+            <div class="user-selector">
+                <button class="user-btn active" data-user="alice">Alice</button>
+                <button class="user-btn" data-user="bob">Bob</button>
+                <button class="user-btn" data-user="charlie">Charlie</button>
+                <span style="margin-left: 20px;">Current: <strong id="current-user">alice</strong></span>
+            </div>
+        </div>
+
+        <div class="test-section">
+            <h3>📡 API Tests:</h3>
+            <button onclick="testCreateRoom()">Create Room (Alice ↔ Bob)</button>
+            <button onclick="testSendMessage()">Send Test Message</button>
+            <button onclick="testGetMessages()">Get Messages</button>
+            <button onclick="testGetRooms()">Get Rooms for Current User</button>
+            <button onclick="testHealthCheck()">Health Check</button>
+            <div id="api-results" style="margin-top: 15px;"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>💬 Live Chat Test:</h3>
+            <p>Open this page in multiple browser tabs/windows and select different users to test real-time messaging!</p>
+            <div style="display: flex; gap: 10px; margin-bottom: 10px;">
+                <input id="chat-message" type="text" placeholder="Type a message..." style="flex: 1; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+                <button onclick="sendLiveMessage()" style="padding: 8px 15px; background: #3BB7FB; color: white; border: none; border-radius: 4px; cursor: pointer;">Send</button>
+            </div>
+            <div id="live-messages" style="height: 200px; overflow-y: auto; border: 1px solid #ddd; border-radius: 4px; padding: 10px; background: white;"></div>
+        </div>
+    </div>
+
+    <!-- Include the simple chat widget -->
+    <%- include('partials/simple-chat-widget') %>
+
+    <script>
+        let currentUser = 'alice';
+        let currentRoom = 'alice_bob';
+        let messagePolling = null;
+
+        // User selection
+        $('.user-btn').on('click', function() {
+            $('.user-btn').removeClass('active');
+            $(this).addClass('active');
+            currentUser = $(this).data('user');
+            $('#current-user').text(currentUser);
+            
+            // Update the chat widget's current user
+            if (window.simpleChatWidget) {
+                window.simpleChatWidget.currentUser = currentUser;
+                localStorage.setItem('simpleChatUser', currentUser);
+            }
+            
+            console.log('Switched to user:', currentUser);
+        });
+
+        // API Tests
+        async function testCreateRoom() {
+            try {
+                const response = await $.post('/api/simple-message/room/create', {
+                    user1: 'alice',
+                    user2: 'bob',
+                    roomName: 'Test Room'
+                });
+                
+                showResult('✅ Room created successfully', response);
+            } catch (error) {
+                showResult('❌ Failed to create room', error.responseJSON || error, true);
+            }
+        }
+
+        async function testSendMessage() {
+            try {
+                const response = await $.post('/api/simple-message/message/send', {
+                    roomId: currentRoom,
+                    sender: currentUser,
+                    content: `Test message from ${currentUser} at ${new Date().toLocaleTimeString()}`
+                });
+                
+                showResult('✅ Message sent successfully', response);
+            } catch (error) {
+                showResult('❌ Failed to send message', error.responseJSON || error, true);
+            }
+        }
+
+        async function testGetMessages() {
+            try {
+                const response = await $.get(`/api/simple-message/messages/${currentRoom}`);
+                showResult('✅ Messages retrieved successfully', response);
+            } catch (error) {
+                showResult('❌ Failed to get messages', error.responseJSON || error, true);
+            }
+        }
+
+        async function testGetRooms() {
+            try {
+                const response = await $.get(`/api/simple-message/rooms/${currentUser}`);
+                showResult('✅ Rooms retrieved successfully', response);
+            } catch (error) {
+                showResult('❌ Failed to get rooms', error.responseJSON || error, true);
+            }
+        }
+
+        async function testHealthCheck() {
+            try {
+                const response = await $.get('/api/simple-message/health');
+                showResult('✅ Health check successful', response);
+            } catch (error) {
+                showResult('❌ Health check failed', error.responseJSON || error, true);
+            }
+        }
+
+        function showResult(message, data, isError = false) {
+            const container = $('#api-results');
+            const className = isError ? 'error' : 'status';
+            const html = `
+                <div class="${className}">
+                    <strong>${message}</strong>
+                    <pre style="margin-top: 10px; font-size: 12px; white-space: pre-wrap;">${JSON.stringify(data, null, 2)}</pre>
+                </div>
+            `;
+            container.html(html);
+        }
+
+        // Live messaging
+        async function sendLiveMessage() {
+            const input = $('#chat-message');
+            const content = input.val().trim();
+            
+            if (!content) return;
+            
+            try {
+                await $.post('/api/simple-message/message/send', {
+                    roomId: currentRoom,
+                    sender: currentUser,
+                    content: content
+                });
+                
+                input.val('');
+                loadLiveMessages();
+            } catch (error) {
+                console.error('Failed to send live message:', error);
+            }
+        }
+
+        async function loadLiveMessages() {
+            try {
+                const response = await $.get(`/api/simple-message/messages/${currentRoom}`);
+                
+                if (response.success) {
+                    const container = $('#live-messages');
+                    let html = '';
+                    
+                    response.messages.forEach(msg => {
+                        const time = new Date(msg.timestamp).toLocaleTimeString();
+                        const style = msg.sender === currentUser ? 'color: #3BB7FB; font-weight: bold;' : 'color: #666;';
+                        html += `<div style="${style}">[${time}] ${msg.sender}: ${msg.content}</div>`;
+                    });
+                    
+                    container.html(html);
+                    container.scrollTop(container[0].scrollHeight);
+                }
+            } catch (error) {
+                console.error('Failed to load live messages:', error);
+            }
+        }
+
+        // Auto-refresh live messages
+        setInterval(loadLiveMessages, 2000);
+
+        // Enter key for live chat
+        $('#chat-message').on('keypress', function(e) {
+            if (e.which === 13) {
+                sendLiveMessage();
+            }
+        });
+
+        // Initial load
+        $(document).ready(function() {
+            testHealthCheck();
+            loadLiveMessages();
+        });
+    </script>
+</body>
+</html>

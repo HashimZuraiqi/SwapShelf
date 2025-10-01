@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Integration Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            background: #f8f9fa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3BB7FB;
+        }
+        .status {
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .warning { background: #fff3cd; color: #856404; }
+        button {
+            background: #3BB7FB;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        button:hover { background: #2d9ce8; }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+            border-radius: 4px;
+            overflow-x: auto;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔧 Chat Integration Test & Fix</h1>
+        <p>This page tests all chat functionality and provides fixes for common issues.</p>
+
+        <div class="test-section">
+            <h3>1️⃣ Dependencies Check</h3>
+            <button onclick="checkDependencies()">Check Dependencies</button>
+            <div id="deps-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>2️⃣ API Health Check</h3>
+            <button onclick="testAPIHealth()">Test API Health</button>
+            <div id="api-health-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>3️⃣ User ID Generation</h3>
+            <button onclick="testUserGeneration()">Test User Generation</button>
+            <div id="user-gen-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>4️⃣ Room Creation Test</h3>
+            <input id="test-user1" placeholder="User 1" value="testuser1">
+            <input id="test-user2" placeholder="User 2" value="testuser2">
+            <button onclick="testRoomCreation()">Create Test Room</button>
+            <div id="room-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>5️⃣ Message Sending Test</h3>
+            <input id="test-room-id" placeholder="Room ID (from above)">
+            <input id="test-message" placeholder="Test message">
+            <button onclick="testMessageSending()">Send Test Message</button>
+            <div id="message-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>6️⃣ Chat Widget Test</h3>
+            <button onclick="testChatWidget()">Test Chat Widget</button>
+            <button onclick="forceChatInit()">Force Initialize Chat</button>
+            <div id="widget-result"></div>
+        </div>
+
+        <div class="test-section">
+            <h3>🔧 Quick Fixes</h3>
+            <button onclick="fixJQuery()">Fix jQuery Issues</button>
+            <button onclick="fixFontAwesome()">Fix Font Awesome</button>
+            <button onclick="resetLocalStorage()">Reset User Data</button>
+            <div id="fixes-result"></div>
+        </div>
+    </div>
+
+    <!-- Load the simple chat widget for testing -->
+    <%- include('partials/simple-chat-widget') %>
+
+    <script>
+        async function checkDependencies() {
+            const result = document.getElementById('deps-result');
+            let html = '<div class="status success">✅ Dependencies Check:</div>';
+            
+            // Check jQuery
+            if (typeof $ !== 'undefined') {
+                html += '<div class="status success">✅ jQuery loaded (version: ' + ($.fn.jquery || 'unknown') + ')</div>';
+            } else {
+                html += '<div class="status error">❌ jQuery not loaded</div>';
+            }
+            
+            // Check Font Awesome
+            const faTest = document.createElement('i');
+            faTest.className = 'fas fa-test';
+            document.body.appendChild(faTest);
+            const faStyles = window.getComputedStyle(faTest);
+            document.body.removeChild(faTest);
+            
+            if (faStyles.fontFamily.includes('Font Awesome')) {
+                html += '<div class="status success">✅ Font Awesome loaded</div>';
+            } else {
+                html += '<div class="status warning">⚠️ Font Awesome may not be loaded properly</div>';
+            }
+            
+            // Check Chat Widget
+            if (typeof window.simpleChatWidget !== 'undefined') {
+                html += '<div class="status success">✅ Simple Chat Widget available</div>';
+            } else {
+                html += '<div class="status error">❌ Simple Chat Widget not found</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+
+        async function testAPIHealth() {
+            const result = document.getElementById('api-health-result');
+            
+            try {
+                result.innerHTML = '<div class="status warning">🔄 Testing API health...</div>';
+                
+                const response = await $.get('/api/simple-message/health');
+                
+                result.innerHTML = `
+                    <div class="status success">✅ API Health Check Passed</div>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="status error">❌ API Health Check Failed</div>
+                    <pre>Error: ${error.status} - ${error.statusText}
+Response: ${JSON.stringify(error.responseJSON || error.responseText, null, 2)}</pre>
+                `;
+            }
+        }
+
+        function testUserGeneration() {
+            const result = document.getElementById('user-gen-result');
+            
+            if (window.simpleChatWidget && window.simpleChatWidget.getCurrentUser) {
+                const user = window.simpleChatWidget.getCurrentUser();
+                result.innerHTML = `
+                    <div class="status success">✅ User ID Generated</div>
+                    <pre>Current User: ${user}
+LocalStorage: ${localStorage.getItem('simpleChatUser')}
+Page URL: ${window.location.pathname}</pre>
+                `;
+            } else {
+                result.innerHTML = '<div class="status error">❌ Chat widget not available</div>';
+            }
+        }
+
+        async function testRoomCreation() {
+            const result = document.getElementById('room-result');
+            const user1 = document.getElementById('test-user1').value.trim();
+            const user2 = document.getElementById('test-user2').value.trim();
+            
+            if (!user1 || !user2) {
+                result.innerHTML = '<div class="status error">❌ Please enter both usernames</div>';
+                return;
+            }
+            
+            try {
+                result.innerHTML = '<div class="status warning">🔄 Creating room...</div>';
+                
+                const response = await $.post('/api/simple-message/room/create', {
+                    user1: user1,
+                    user2: user2,
+                    roomName: `Test Room: ${user1} ↔ ${user2}`
+                });
+                
+                document.getElementById('test-room-id').value = response.roomId;
+                
+                result.innerHTML = `
+                    <div class="status success">✅ Room Created Successfully</div>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="status error">❌ Room Creation Failed</div>
+                    <pre>Error: ${error.status} - ${error.statusText}
+Response: ${JSON.stringify(error.responseJSON || error.responseText, null, 2)}</pre>
+                `;
+            }
+        }
+
+        async function testMessageSending() {
+            const result = document.getElementById('message-result');
+            const roomId = document.getElementById('test-room-id').value.trim();
+            const message = document.getElementById('test-message').value.trim();
+            const sender = document.getElementById('test-user1').value.trim();
+            
+            if (!roomId || !message || !sender) {
+                result.innerHTML = '<div class="status error">❌ Please fill in room ID, message, and sender</div>';
+                return;
+            }
+            
+            try {
+                result.innerHTML = '<div class="status warning">🔄 Sending message...</div>';
+                
+                const response = await $.post('/api/simple-message/message/send', {
+                    roomId: roomId,
+                    sender: sender,
+                    content: message
+                });
+                
+                result.innerHTML = `
+                    <div class="status success">✅ Message Sent Successfully</div>
+                    <pre>${JSON.stringify(response, null, 2)}</pre>
+                `;
+            } catch (error) {
+                result.innerHTML = `
+                    <div class="status error">❌ Message Sending Failed</div>
+                    <pre>Error: ${error.status} - ${error.statusText}
+Response: ${JSON.stringify(error.responseJSON || error.responseText, null, 2)}</pre>
+                `;
+            }
+        }
+
+        function testChatWidget() {
+            const result = document.getElementById('widget-result');
+            
+            let html = '<div class="status success">🔍 Chat Widget Status:</div>';
+            
+            // Check if widget exists
+            if (window.simpleChatWidget) {
+                html += '<div class="status success">✅ Widget object exists</div>';
+                
+                // Check current user
+                if (window.simpleChatWidget.currentUser) {
+                    html += `<div class="status success">✅ User: ${window.simpleChatWidget.currentUser}</div>`;
+                } else {
+                    html += '<div class="status warning">⚠️ No current user set</div>';
+                }
+                
+                // Check if initialized
+                if (window.simpleChatInitialized) {
+                    html += '<div class="status success">✅ Widget initialized</div>';
+                } else {
+                    html += '<div class="status warning">⚠️ Widget not initialized</div>';
+                }
+                
+                // Check DOM elements
+                if ($('#simple-chat-widget').length > 0) {
+                    html += '<div class="status success">✅ Chat widget DOM elements found</div>';
+                } else {
+                    html += '<div class="status error">❌ Chat widget DOM elements missing</div>';
+                }
+                
+            } else {
+                html += '<div class="status error">❌ Widget object not found</div>';
+            }
+            
+            result.innerHTML = html;
+        }
+
+        function forceChatInit() {
+            const result = document.getElementById('widget-result');
+            
+            try {
+                if (window.simpleChatWidget) {
+                    window.simpleChatWidget.init();
+                    result.innerHTML = '<div class="status success">✅ Forced chat initialization complete</div>';
+                } else {
+                    result.innerHTML = '<div class="status error">❌ Chat widget not available for initialization</div>';
+                }
+            } catch (error) {
+                result.innerHTML = `<div class="status error">❌ Initialization failed: ${error.message}</div>`;
+            }
+        }
+
+        function fixJQuery() {
+            const result = document.getElementById('fixes-result');
+            
+            if (typeof $ === 'undefined') {
+                // Load jQuery if not available
+                const script = document.createElement('script');
+                script.src = 'https://code.jquery.com/jquery-3.6.0.min.js';
+                script.onload = function() {
+                    result.innerHTML = '<div class="status success">✅ jQuery loaded successfully</div>';
+                };
+                document.head.appendChild(script);
+            } else {
+                result.innerHTML = '<div class="status success">✅ jQuery already available</div>';
+            }
+        }
+
+        function fixFontAwesome() {
+            const result = document.getElementById('fixes-result');
+            
+            // Add Font Awesome CSS if not already present
+            if (!document.querySelector('link[href*="font-awesome"]')) {
+                const link = document.createElement('link');
+                link.rel = 'stylesheet';
+                link.href = 'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css';
+                document.head.appendChild(link);
+                result.innerHTML = '<div class="status success">✅ Font Awesome CSS added</div>';
+            } else {
+                result.innerHTML = '<div class="status success">✅ Font Awesome already available</div>';
+            }
+        }
+
+        function resetLocalStorage() {
+            const result = document.getElementById('fixes-result');
+            
+            localStorage.removeItem('simpleChatUser');
+            result.innerHTML = '<div class="status success">✅ User data reset. Refresh page to generate new user ID.</div>';
+        }
+
+        // Auto-run basic checks on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(() => {
+                checkDependencies();
+                testAPIHealth();
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

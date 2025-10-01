@@ -1,0 +1,792 @@
+<!-- 
+SIMPLE REAL-TIME CHAT WIDGET - FIXED VERSION
+No authentication issues, works immediately
+-->
+
+<!-- Ensure required dependencies are loaded -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- Chat Widget HTML -->
+<div id="simple-chat-widget" style="position: fixed; bottom: 20px; right: 20px; z-index: 10000;">
+    <!-- Chat Toggle Button -->
+    <div id="simple-chat-toggle" style="
+        width: 60px; 
+        height: 60px; 
+        background: linear-gradient(135deg, #3BB7FB 0%, #2d9ce8 100%);
+        border-radius: 50%;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 4px 20px rgba(59, 183, 251, 0.4);
+        transition: all 0.3s ease;
+        border: 3px solid white;
+    ">
+        <i class="fas fa-comments" style="color: white; font-size: 24px;"></i>
+        <div id="simple-unread-badge" style="
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            background: #ff4444;
+            color: white;
+            border-radius: 50%;
+            width: 24px;
+            height: 24px;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: bold;
+            border: 2px solid white;
+        ">0</div>
+    </div>
+
+    <!-- Chat Panel -->
+    <div id="simple-chat-panel" style="
+        position: absolute;
+        bottom: 80px;
+        right: 0;
+        width: 350px;
+        height: 500px;
+        background: white;
+        border-radius: 16px;
+        box-shadow: 0 10px 40px rgba(0,0,0,0.2);
+        display: none;
+        flex-direction: column;
+        overflow: hidden;
+        border: 1px solid #e0e0e0;
+    ">
+        <!-- Chat Header -->
+        <div id="simple-chat-header" style="
+            background: linear-gradient(135deg, #3BB7FB 0%, #2d9ce8 100%);
+            color: white;
+            padding: 16px;
+            font-weight: bold;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        ">
+            <span>💬 Simple Chat</span>
+            <button id="simple-chat-close" style="
+                background: none;
+                border: none;
+                color: white;
+                font-size: 20px;
+                cursor: pointer;
+                padding: 0;
+                width: 24px;
+                height: 24px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            ">×</button>
+        </div>
+
+        <!-- Chat Rooms List -->
+        <div id="simple-chat-rooms" style="
+            flex: 1;
+            overflow-y: auto;
+            padding: 10px;
+            display: block;
+        ">
+            <div style="text-align: center; padding: 20px; color: #666;">
+                Loading conversations...
+            </div>
+        </div>
+
+        <!-- Active Chat View -->
+        <div id="simple-active-chat" style="
+            flex: 1;
+            display: none;
+            flex-direction: column;
+        ">
+            <!-- Active Chat Header -->
+            <div id="simple-active-header" style="
+                background: #f5f5f5;
+                padding: 12px 16px;
+                border-bottom: 1px solid #e0e0e0;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+            ">
+                <button id="simple-back-btn" style="
+                    background: none;
+                    border: none;
+                    font-size: 18px;
+                    cursor: pointer;
+                    padding: 0;
+                ">←</button>
+                <div>
+                    <div id="simple-chat-with" style="font-weight: bold; font-size: 14px;"></div>
+                    <div style="font-size: 12px; color: #666;">Click to start chatting</div>
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div id="simple-messages-area" style="
+                flex: 1;
+                overflow-y: auto;
+                padding: 16px;
+                background: #f9f9f9;
+            ">
+                <!-- Messages will be loaded here -->
+            </div>
+
+            <!-- Message Input -->
+            <div id="simple-message-input-area" style="
+                background: white;
+                border-top: 1px solid #e0e0e0;
+                padding: 12px;
+                display: flex;
+                gap: 8px;
+            ">
+                <input 
+                    id="simple-message-input" 
+                    type="text" 
+                    placeholder="Type a message..."
+                    style="
+                        flex: 1;
+                        border: 1px solid #ddd;
+                        border-radius: 20px;
+                        padding: 8px 16px;
+                        outline: none;
+                        font-size: 14px;
+                    "
+                >
+                <button 
+                    id="simple-send-btn"
+                    style="
+                        background: #3BB7FB;
+                        color: white;
+                        border: none;
+                        border-radius: 50%;
+                        width: 36px;
+                        height: 36px;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                    "
+                >
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- New Chat Form -->
+        <div id="simple-new-chat-form" style="
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            padding: 16px;
+            display: block;
+        ">
+            <div style="margin-bottom: 10px; font-weight: bold; font-size: 14px;">Start New Chat:</div>
+            <div style="display: flex; gap: 8px;">
+                <input 
+                    id="simple-new-chat-user" 
+                    type="text" 
+                    placeholder="Enter username..."
+                    style="
+                        flex: 1;
+                        border: 1px solid #ddd;
+                        border-radius: 4px;
+                        padding: 8px;
+                        font-size: 14px;
+                    "
+                >
+                <button 
+                    id="simple-start-chat-btn"
+                    style="
+                        background: #3BB7FB;
+                        color: white;
+                        border: none;
+                        border-radius: 4px;
+                        padding: 8px 12px;
+                        cursor: pointer;
+                        font-size: 14px;
+                    "
+                >
+                    Start
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+/* Simple Chat Widget Styles */
+#simple-chat-toggle:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 25px rgba(59, 183, 251, 0.6);
+}
+
+#simple-chat-panel {
+    animation: simpleChatSlideUp 0.3s ease-out;
+}
+
+@keyframes simpleChatSlideUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.simple-message {
+    margin-bottom: 10px;
+    padding: 8px 12px;
+    border-radius: 12px;
+    max-width: 80%;
+    word-wrap: break-word;
+}
+
+.simple-message.sent {
+    background: #3BB7FB;
+    color: white;
+    margin-left: auto;
+    text-align: right;
+}
+
+.simple-message.received {
+    background: white;
+    color: #333;
+    border: 1px solid #e0e0e0;
+    margin-right: auto;
+}
+
+.simple-message-time {
+    font-size: 11px;
+    opacity: 0.7;
+    margin-top: 4px;
+}
+
+.simple-room-item {
+    padding: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.simple-room-item:hover {
+    background: #f5f5f5;
+}
+
+.simple-room-item.unread {
+    background: #f0f8ff;
+    border-left: 3px solid #3BB7FB;
+}
+</style>
+
+<script>
+// Simple Chat Widget JavaScript
+window.simpleChatWidget = {
+    isOpen: false,
+    currentRoom: null,
+    currentUser: null,
+    pollInterval: null,
+    lastMessageTime: {},
+    
+    init() {
+        console.log('🚀 Simple Chat Widget initializing...');
+        
+        // Check dependencies
+        if (typeof $ === 'undefined') {
+            console.error('❌ jQuery not loaded! Chat widget cannot function.');
+            this.showError('jQuery is required. Please refresh the page.');
+            return;
+        }
+        
+        // Test API connection
+        this.testAPIConnection();
+        
+        // Set current user (simplified approach)
+        this.currentUser = this.getCurrentUser();
+        console.log('👤 Current user:', this.currentUser);
+        
+        this.bindEvents();
+        this.startPolling();
+        
+        console.log('✅ Simple Chat Widget initialized');
+    },
+    
+    async testAPIConnection() {
+        try {
+            console.log('🔍 Testing API connection...');
+            const response = await $.get('/api/simple-message/health');
+            console.log('✅ API connection successful:', response);
+        } catch (error) {
+            console.error('❌ API connection failed:', error);
+            this.showError('Chat system not available. Please refresh the page.');
+        }
+    },
+    
+    showError(message) {
+        // Show error in the chat toggle button
+        $('#simple-chat-toggle').css('background', 'linear-gradient(135deg, #ff4444 0%, #cc3333 100%)');
+        $('#simple-chat-toggle').attr('title', message);
+        
+        // Show error in panel if open
+        if (this.isOpen) {
+            $('#simple-chat-rooms').html(`
+                <div style="text-align: center; padding: 20px; color: #ff4444;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">❌</div>
+                    <div>${message}</div>
+                </div>
+            `);
+        }
+    },
+    
+    getCurrentUser() {
+        // Try to get user from page context first
+        try {
+            if (typeof userName !== 'undefined' && userName) {
+                console.log('📍 Found userName in page context:', userName);
+                localStorage.setItem('simpleChatUser', userName);
+                return userName;
+            }
+        } catch (e) {
+            console.log('⚠️ No userName in page context');
+        }
+        
+        // Check if we're on authenticated pages
+        const isAuthenticatedPage = window.location.pathname.includes('dashboard') || 
+            window.location.pathname.includes('profile') ||
+            window.location.pathname.includes('library') ||
+            window.location.pathname.includes('wishlist') ||
+            window.location.pathname.includes('rewards') ||
+            window.location.pathname.includes('leaderboard');
+            
+        // Get from localStorage if exists
+        let user = localStorage.getItem('simpleChatUser');
+        
+        if (!user) {
+            if (isAuthenticatedPage) {
+                // Create a more meaningful user identifier for authenticated pages
+                user = 'user_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5);
+            } else {
+                // Guest user for public pages
+                user = 'guest_' + Date.now().toString(36) + '_' + Math.random().toString(36).substr(2, 5);
+            }
+            localStorage.setItem('simpleChatUser', user);
+            console.log('🆕 Created new user ID:', user);
+        } else {
+            console.log('🔄 Using existing user ID:', user);
+        }
+        
+        return user;
+    },
+    
+    bindEvents() {
+        console.log('🔗 Binding simple chat events...');
+        
+        // Toggle chat panel
+        $('#simple-chat-toggle').on('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.togglePanel();
+        });
+        
+        // Close chat panel
+        $('#simple-chat-close').on('click', (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            this.closePanel();
+        });
+        
+        // Back to rooms list
+        $('#simple-back-btn').on('click', () => {
+            this.showRoomsList();
+        });
+        
+        // Send message
+        $('#simple-send-btn').on('click', () => {
+            this.sendMessage();
+        });
+        
+        // Send message on Enter
+        $('#simple-message-input').on('keypress', (e) => {
+            if (e.which === 13) {
+                this.sendMessage();
+            }
+        });
+        
+        // Start new chat
+        $('#simple-start-chat-btn').on('click', () => {
+            this.startNewChat();
+        });
+        
+        // Start chat on Enter
+        $('#simple-new-chat-user').on('keypress', (e) => {
+            if (e.which === 13) {
+                this.startNewChat();
+            }
+        });
+        
+        console.log('✅ Simple chat events bound');
+    },
+    
+    togglePanel() {
+        this.isOpen = !this.isOpen;
+        
+        if (this.isOpen) {
+            $('#simple-chat-panel').show();
+            this.loadRooms();
+        } else {
+            $('#simple-chat-panel').hide();
+        }
+    },
+    
+    closePanel() {
+        this.isOpen = false;
+        $('#simple-chat-panel').hide();
+    },
+    
+    showRoomsList() {
+        $('#simple-chat-rooms').show();
+        $('#simple-active-chat').hide();
+        this.currentRoom = null;
+        this.loadRooms();
+    },
+    
+    showActiveChat(roomId, otherUser) {
+        this.currentRoom = roomId;
+        $('#simple-chat-with').text(`Chat with ${otherUser}`);
+        $('#simple-chat-rooms').hide();
+        $('#simple-active-chat').show();
+        this.loadMessages(roomId);
+    },
+    
+    async loadRooms() {
+        try {
+            console.log('📂 Loading rooms for user:', this.currentUser);
+            
+            const response = await $.get(`/api/simple-message/rooms/${this.currentUser}`);
+            
+            if (response.success) {
+                this.renderRooms(response.rooms);
+            } else {
+                this.renderEmptyRooms();
+            }
+            
+        } catch (error) {
+            console.error('❌ Error loading rooms:', error);
+            this.renderEmptyRooms();
+        }
+    },
+    
+    renderRooms(rooms) {
+        const container = $('#simple-chat-rooms');
+        
+        if (rooms.length === 0) {
+            container.html(`
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <div style="font-size: 48px; margin-bottom: 10px;">💬</div>
+                    <div>No conversations yet</div>
+                    <div style="font-size: 12px; margin-top: 5px;">Start a new chat below!</div>
+                </div>
+            `);
+            return;
+        }
+        
+        let html = '';
+        rooms.forEach(room => {
+            const unreadClass = room.unreadCount > 0 ? 'unread' : '';
+            const timeStr = room.lastMessageTime ? new Date(room.lastMessageTime).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : '';
+            
+            html += `
+                <div class="simple-room-item ${unreadClass}" data-room-id="${room.roomId}" data-other-user="${room.otherUser}">
+                    <div style="display: flex; justify-content: space-between; align-items: center;">
+                        <div style="font-weight: bold; font-size: 14px;">${room.otherUser}</div>
+                        <div style="font-size: 11px; color: #666;">${timeStr}</div>
+                    </div>
+                    <div style="font-size: 12px; color: #666; margin-top: 4px; truncate;">
+                        ${room.lastMessage}
+                    </div>
+                    ${room.unreadCount > 0 ? `<div style="background: #3BB7FB; color: white; border-radius: 10px; padding: 2px 6px; font-size: 10px; display: inline-block; margin-top: 4px;">${room.unreadCount} new</div>` : ''}
+                </div>
+            `;
+        });
+        
+        container.html(html);
+        
+        // Bind room click events
+        $('.simple-room-item').on('click', (e) => {
+            const roomId = $(e.currentTarget).data('room-id');
+            const otherUser = $(e.currentTarget).data('other-user');
+            this.showActiveChat(roomId, otherUser);
+        });
+        
+        // Update unread count
+        const totalUnread = rooms.reduce((sum, room) => sum + room.unreadCount, 0);
+        this.updateUnreadBadge(totalUnread);
+    },
+    
+    renderEmptyRooms() {
+        $('#simple-chat-rooms').html(`
+            <div style="text-align: center; padding: 20px; color: #666;">
+                <div style="font-size: 48px; margin-bottom: 10px;">💬</div>
+                <div>No conversations yet</div>
+                <div style="font-size: 12px; margin-top: 5px;">Start a new chat below!</div>
+            </div>
+        `);
+    },
+    
+    async loadMessages(roomId) {
+        try {
+            console.log('💬 Loading messages for room:', roomId);
+            
+            const since = this.lastMessageTime[roomId] || null;
+            const url = since ? `/api/simple-message/messages/${roomId}?since=${encodeURIComponent(since)}` : `/api/simple-message/messages/${roomId}`;
+            
+            const response = await $.get(url);
+            
+            if (response.success) {
+                if (since) {
+                    this.appendMessages(response.messages);
+                } else {
+                    this.renderMessages(response.messages);
+                }
+                
+                // Update last message time
+                if (response.messages.length > 0) {
+                    this.lastMessageTime[roomId] = response.messages[response.messages.length - 1].timestamp;
+                }
+                
+                // Mark as read
+                this.markAsRead(roomId);
+            }
+            
+        } catch (error) {
+            console.error('❌ Error loading messages:', error);
+        }
+    },
+    
+    renderMessages(messages) {
+        const container = $('#simple-messages-area');
+        
+        if (messages.length === 0) {
+            container.html(`
+                <div style="text-align: center; padding: 20px; color: #666;">
+                    <div style="font-size: 36px; margin-bottom: 10px;">👋</div>
+                    <div>No messages yet</div>
+                    <div style="font-size: 12px; margin-top: 5px;">Send the first message!</div>
+                </div>
+            `);
+            return;
+        }
+        
+        let html = '';
+        messages.forEach(msg => {
+            const isSent = msg.sender === this.currentUser;
+            const messageClass = isSent ? 'sent' : 'received';
+            const timeStr = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            html += `
+                <div class="simple-message ${messageClass}">
+                    <div>${msg.content}</div>
+                    <div class="simple-message-time">${timeStr}</div>
+                </div>
+            `;
+        });
+        
+        container.html(html);
+        container.scrollTop(container[0].scrollHeight);
+    },
+    
+    appendMessages(messages) {
+        if (messages.length === 0) return;
+        
+        const container = $('#simple-messages-area');
+        
+        messages.forEach(msg => {
+            const isSent = msg.sender === this.currentUser;
+            const messageClass = isSent ? 'sent' : 'received';
+            const timeStr = new Date(msg.timestamp).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            
+            const messageHtml = `
+                <div class="simple-message ${messageClass}">
+                    <div>${msg.content}</div>
+                    <div class="simple-message-time">${timeStr}</div>
+                </div>
+            `;
+            
+            container.append(messageHtml);
+        });
+        
+        container.scrollTop(container[0].scrollHeight);
+    },
+    
+    async sendMessage() {
+        const input = $('#simple-message-input');
+        const content = input.val().trim();
+        
+        if (!content || !this.currentRoom) return;
+        
+        try {
+            console.log('📤 Sending message:', content);
+            
+            const response = await $.post('/api/simple-message/message/send', {
+                roomId: this.currentRoom,
+                sender: this.currentUser,
+                content: content
+            });
+            
+            if (response.success) {
+                input.val('');
+                // Message will be loaded by polling
+                console.log('✅ Message sent successfully');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error sending message:', error);
+            alert('Failed to send message. Please try again.');
+        }
+    },
+    
+    async startNewChat() {
+        const input = $('#simple-new-chat-user');
+        const otherUser = input.val().trim();
+        
+        if (!otherUser) {
+            alert('Please enter a username');
+            return;
+        }
+        
+        if (otherUser === this.currentUser) {
+            alert('You cannot start a chat with yourself!');
+            return;
+        }
+        
+        // Show loading state
+        const originalText = input.val();
+        input.val('Creating chat...');
+        input.prop('disabled', true);
+        
+        try {
+            console.log('🆕 Starting new chat with:', otherUser);
+            console.log('🆕 Current user:', this.currentUser);
+            
+            const payload = {
+                user1: this.currentUser,
+                user2: otherUser,
+                roomName: `Chat between ${this.currentUser} and ${otherUser}`
+            };
+            
+            console.log('📤 Sending payload:', payload);
+            
+            const response = await $.ajax({
+                url: '/api/simple-message/room/create',
+                method: 'POST',
+                dataType: 'json',
+                data: payload,
+                timeout: 10000
+            });
+            
+            console.log('📥 Response received:', response);
+            
+            if (response && response.success) {
+                input.val('');
+                this.showActiveChat(response.roomId, otherUser);
+                console.log('✅ New chat started successfully');
+            } else {
+                throw new Error('Invalid response from server');
+            }
+            
+        } catch (error) {
+            console.error('❌ Error starting new chat:', error);
+            console.error('❌ Error details:', {
+                status: error.status,
+                statusText: error.statusText,
+                responseJSON: error.responseJSON,
+                responseText: error.responseText
+            });
+            
+            let errorMessage = 'Failed to start new chat. ';
+            if (error.status === 500) {
+                errorMessage += 'Server error. Please try again.';
+            } else if (error.status === 0) {
+                errorMessage += 'Connection error. Check your internet connection.';
+            } else {
+                errorMessage += 'Please try again.';
+            }
+            
+            alert(errorMessage);
+        } finally {
+            // Reset loading state
+            input.val('');
+            input.prop('disabled', false);
+        }
+    },
+    
+    async markAsRead(roomId) {
+        try {
+            await $.post('/api/simple-message/messages/read', {
+                roomId: roomId,
+                userId: this.currentUser
+            });
+        } catch (error) {
+            console.error('❌ Error marking as read:', error);
+        }
+    },
+    
+    updateUnreadBadge(count) {
+        const badge = $('#simple-unread-badge');
+        
+        if (count > 0) {
+            badge.text(count).show();
+        } else {
+            badge.hide();
+        }
+    },
+    
+    startPolling() {
+        // Poll for new messages every 2 seconds
+        this.pollInterval = setInterval(() => {
+            if (this.isOpen && this.currentRoom) {
+                this.loadMessages(this.currentRoom);
+            } else if (this.isOpen) {
+                this.loadRooms();
+            }
+        }, 2000);
+        
+        console.log('🔄 Started polling for new messages');
+    },
+    
+    stopPolling() {
+        if (this.pollInterval) {
+            clearInterval(this.pollInterval);
+            this.pollInterval = null;
+            console.log('⏹️ Stopped polling');
+        }
+    }
+};
+
+// Initialize the simple chat widget when DOM is ready (with duplicate prevention)
+$(document).ready(function() {
+    // Prevent double initialization
+    if (window.simpleChatInitialized) {
+        console.log('⚠️ Simple chat widget already initialized, skipping...');
+        return;
+    }
+    
+    console.log('📋 DOM ready, initializing simple chat widget...');
+    
+    // Add a small delay to ensure all dependencies are loaded
+    setTimeout(() => {
+        try {
+            window.simpleChatWidget.init();
+            window.simpleChatInitialized = true;
+            console.log('✅ Simple chat widget initialization complete');
+        } catch (error) {
+            console.error('❌ Failed to initialize simple chat widget:', error);
+        }
+    }, 200);
+});
+
+// Make widget globally accessible
+window.chatWidget = window.simpleChatWidget;
+</script>

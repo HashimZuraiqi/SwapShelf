@@ -6,14 +6,24 @@
  * Check if user is authenticated
  */
 const requireAuth = (req, res, next) => {
+    console.log('🔐 Auth middleware called for:', req.method, req.originalUrl);
     console.log('🔐 Auth check - Session exists:', !!req.session);
     console.log('🔐 Auth check - User in session:', !!req.session?.user);
+    console.log('🔐 Auth check - Session ID:', req.sessionID);
+    console.log('🔐 Auth check - Headers:', {
+        'user-agent': req.headers['user-agent']?.substring(0, 50),
+        'accept': req.headers.accept,
+        'xhr': req.xhr
+    });
     
     if (!req.session || !req.session.user) {
-        console.log('❌ Authentication failed - redirecting');
+        console.log('❌ Authentication failed - no session or user');
+        console.log('❌ Session:', req.session ? 'exists but no user' : 'missing');
         if (req.xhr || req.headers.accept?.includes('application/json')) {
+            console.log('❌ Returning 401 JSON error');
             return res.status(401).json({ error: 'Authentication required' });
         }
+        console.log('❌ Redirecting to login');
         return res.redirect('/login?error=auth_required');
     }
     

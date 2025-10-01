@@ -16,12 +16,22 @@ class UserController {
      */
     static async getProfile(req, res) {
         try {
+            console.log('🔍 UserController.getProfile called');
+            console.log('🔍 Session exists:', !!req.session);
+            console.log('🔍 Session user:', req.session?.user ? 'exists' : 'missing');
+            console.log('🔍 Session user email:', req.session?.user?.email);
+            console.log('🔍 Session user id:', req.session?.user?._id || req.session?.user?.id);
+            
             const userId = req.session.user._id || req.session.user.id;
+            console.log('🔍 Using userId:', userId);
             
             const user = await User.findById(userId).select('-password');
             if (!user) {
+                console.log('❌ User not found in database for ID:', userId);
                 return res.status(404).json({ error: 'User not found' });
             }
+            
+            console.log('✅ User found in database:', user.email);
             
             // Get user statistics
             const [booksCount, completedSwaps, activeSwaps] = await Promise.all([
@@ -45,6 +55,11 @@ class UserController {
                     wishlistSize: user.wishlist ? user.wishlist.length : 0
                 }
             };
+            
+            console.log('✅ Sending user profile response');
+            console.log('✅ Profile keys:', Object.keys(userProfile));
+            console.log('✅ Profile email:', userProfile.email);
+            console.log('✅ Profile _id:', userProfile._id);
             
             res.json(userProfile);
             

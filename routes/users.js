@@ -159,4 +159,49 @@ router.get('/history', requireAuth, async (req, res) => {
   }
 });
 
+// User search endpoint for chat
+router.get('/search', requireAuth, async (req, res) => {
+  try {
+    const { q = '' } = req.query;
+    const currentUserId = req.session.user._id || req.session.user.id;
+    
+    console.log(`🔍 User search query: "${q}" by user: ${currentUserId}`);
+    
+    // Build search query
+    const searchQuery = {
+      _id: { $ne: currentUserId } // Exclude current user
+    };
+    
+    if (q.trim()) {
+      searchQuery.$or = [
+        { fullname: { $regex: q, $options: 'i' } },
+        { username: { $regex: q, $options: 'i' } },
+        { email: { $regex: q, $options: 'i' } }
+      ];
+    }
+    
+    const User = require('../models/User');
+    const users = await User.find(searchQuery)
+      .select('_id fullname username email profileImage photo')
+      .limit(20)
+      .lean();
+    
+    // Format the response
+    const formattedUsers = users.map(user => ({
+      _id: user._id,
+      fullname: user.fullname,
+      username: user.username,
+      email: user.email,
+      profileImage: user.profileImage || user.photo || '/images/default-avatar.png'
+    }));
+    
+    console.log(`✅ Found ${formattedUsers.length} users`);
+    res.json(formattedUsers);
+    
+  } catch (error) {
+    console.error('User search error:', error);
+    res.status(500).json({ error: 'Failed to search users' });
+  }
+});
+
 module.exports = router;

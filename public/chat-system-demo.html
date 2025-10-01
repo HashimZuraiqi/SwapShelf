@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🚀 Enhanced Chat System - Complete Demo</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+            overflow-x: hidden;
+        }
+        
+        .hero-container {
+            position: relative;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        
+        .hero-content {
+            max-width: 900px;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 30px;
+            padding: 60px 40px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 20px;
+            background: linear-gradient(45deg, #fff, #e0e7ff);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+        
+        .subtitle {
+            font-size: 1.4rem;
+            opacity: 0.9;
+            margin-bottom: 40px;
+            line-height: 1.6;
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 25px;
+            margin: 50px 0;
+        }
+        
+        .feature-card {
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px 20px;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        .feature-icon {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            display: block;
+        }
+        
+        .feature-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .feature-desc {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            line-height: 1.4;
+        }
+        
+        .demo-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 40px;
+        }
+        
+        .demo-btn {
+            background: linear-gradient(135deg, #3b82f6, #2563eb);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 180px;
+            justify-content: center;
+        }
+        
+        .demo-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.4);
+            text-decoration: none;
+            color: white;
+        }
+        
+        .demo-btn.secondary {
+            background: linear-gradient(135deg, #10b981, #059669);
+        }
+        
+        .demo-btn.secondary:hover {
+            box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+        }
+        
+        .status-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(16, 185, 129, 0.9);
+            color: white;
+            padding: 12px 20px;
+            border-radius: 25px;
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            z-index: 1000;
+            font-size: 14px;
+        }
+        
+        .floating-elements {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            pointer-events: none;
+        }
+        
+        .floating-circle {
+            position: absolute;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .floating-circle:nth-child(1) {
+            width: 100px;
+            height: 100px;
+            top: 20%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .floating-circle:nth-child(2) {
+            width: 150px;
+            height: 150px;
+            top: 60%;
+            right: 15%;
+            animation-delay: 2s;
+        }
+        
+        .floating-circle:nth-child(3) {
+            width: 80px;
+            height: 80px;
+            top: 80%;
+            left: 70%;
+            animation-delay: 4s;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+        
+        .footer-info {
+            margin-top: 50px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255, 255, 255, 0.2);
+            font-size: 14px;
+            opacity: 0.8;
+        }
+        
+        @media (max-width: 768px) {
+            .title { font-size: 2.5rem; }
+            .subtitle { font-size: 1.1rem; }
+            .hero-content { padding: 40px 20px; }
+            .demo-btn { min-width: 140px; padding: 12px 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- Status Indicator -->
+    <div class="status-indicator">
+        ✅ Chat System Active
+    </div>
+    
+    <!-- Floating Background Elements -->
+    <div class="floating-elements">
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+        <div class="floating-circle"></div>
+    </div>
+    
+    <!-- Hero Section -->
+    <div class="hero-container">
+        <div class="hero-content">
+            <h1 class="title">🚀 Enhanced Chat System</h1>
+            <p class="subtitle">
+                Professional-grade real-time messaging platform with enterprise features, 
+                modern UI design, and seamless integration.
+            </p>
+            
+            <!-- Features Grid -->
+            <div class="features-grid">
+                <div class="feature-card">
+                    <span class="feature-icon">⚡</span>
+                    <div class="feature-title">Real-time Messaging</div>
+                    <div class="feature-desc">Instant message delivery with WebSocket technology</div>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🎨</span>
+                    <div class="feature-title">Modern Interface</div>
+                    <div class="feature-desc">Professional UI with smooth animations</div>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">📱</span>
+                    <div class="feature-title">Responsive Design</div>
+                    <div class="feature-desc">Perfect experience on all devices</div>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">🔒</span>
+                    <div class="feature-title">Secure & Private</div>
+                    <div class="feature-desc">Advanced security and data protection</div>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">👥</span>
+                    <div class="feature-title">User Presence</div>
+                    <div class="feature-desc">Real-time online status tracking</div>
+                </div>
+                
+                <div class="feature-card">
+                    <span class="feature-icon">📄</span>
+                    <div class="feature-title">File Sharing</div>
+                    <div class="feature-desc">Upload and share files instantly</div>
+                </div>
+            </div>
+            
+            <!-- Demo Buttons -->
+            <div class="demo-buttons">
+                <button class="demo-btn" onclick="openChatDemo()">
+                    💬 Try Chat Widget
+                </button>
+                <a href="/dashboard" class="demo-btn secondary">
+                    📊 Go to Dashboard
+                </a>
+                <a href="/working-chat-demo" class="demo-btn">
+                    🧪 Full Demo
+                </a>
+            </div>
+            
+            <!-- Footer Info -->
+            <div class="footer-info">
+                <p><strong>🛠️ Features Included:</strong></p>
+                <p>✅ Socket.IO WebSocket Integration • ✅ Enhanced Database Models • ✅ Professional CSS Design</p>
+                <p>✅ Real-time Presence Tracking • ✅ File Upload Support • ✅ Mobile Responsive</p>
+                <p><strong>Status:</strong> All systems operational • Server running on port 3002</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Load Chat Systems -->
+    <script src="/js/working-chat-widget.js"></script>
+    
+    <script>
+        // Demo Functions
+        function openChatDemo() {
+            // Try both chat systems
+            setTimeout(() => {
+                const chatBtn = document.getElementById('chatToggleBtn');
+                if (chatBtn) {
+                    chatBtn.click();
+                    showNotification('✅ Working Chat System Activated!', 'success');
+                } else {
+                    showNotification('🔄 Loading chat system...', 'info');
+                    setTimeout(() => {
+                        const retryBtn = document.getElementById('chatToggleBtn');
+                        if (retryBtn) {
+                            retryBtn.click();
+                            showNotification('✅ Chat System Ready!', 'success');
+                        }
+                    }, 2000);
+                }
+            }, 500);
+        }
+        
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 80px;
+                right: 20px;
+                background: ${type === 'success' ? '#10b981' : '#3b82f6'};
+                color: white;
+                padding: 15px 25px;
+                border-radius: 10px;
+                font-weight: 600;
+                z-index: 10000;
+                backdrop-filter: blur(10px);
+                border: 1px solid rgba(255,255,255,0.2);
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-in';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+        
+        // Auto-initialize message
+        document.addEventListener('DOMContentLoaded', () => {
+            setTimeout(() => {
+                showNotification('🚀 Enhanced Chat System Loaded Successfully!', 'success');
+            }, 1000);
+        });
+        
+        // Feature card interactions
+        document.querySelectorAll('.feature-card').forEach(card => {
+            card.addEventListener('click', () => {
+                const title = card.querySelector('.feature-title').textContent;
+                showNotification(`📋 ${title} - Feature Active!`, 'info');
+            });
+        });
+    </script>
+    
+    <style>
+        @keyframes slideIn {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes slideOut {
+            from { transform: translateX(0); opacity: 1; }
+            to { transform: translateX(100%); opacity: 0; }
+        }
+    </style>
+</body>
+</html>

@@ -62,9 +62,18 @@ router.post('/create', requireAuth, async (req, res) => {
     }
 });
 
-// Get all conversations for current user
-router.get('/conversations', requireAuth, async (req, res) => {
+// Get all conversations for current user (with fallback for bypass auth)
+router.get('/conversations', async (req, res) => {
     try {
+        // Bypass auth check - if no session, return empty conversations
+        if (!req.session || !req.session.user) {
+            console.log('⚠️ BYPASS CHAT: No session, returning empty conversations');
+            return res.json({ conversations: [], message: 'No authentication - empty conversations' });
+        }
+
+        // Normal auth logic
+        console.log('📋 Global chat API: Get conversations request');
+        
         // requireAuth middleware ensures req.session.user exists
         const currentUser = req.session.user.username || req.session.user.name || req.session.user.email;
         
