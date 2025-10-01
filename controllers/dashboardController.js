@@ -307,11 +307,11 @@ const getDashboardData = async (userId) => {
                 'rewards.badges': -1,
                 'createdAt': 1 
             })
-            .limit(5) // Get more users to have better selection
+            .limit(3) // Only get top 3 users
             .select('name email photo rewards stats createdAt')
             .lean();
         
-        // Process leaderboard users and add missing information
+        // Process leaderboard users with real data only
         if (leaderboardUsers.length > 0) {
             console.log(`Using ${leaderboardUsers.length} real leaderboard users from database`);
             console.log('Leaderboard users found:', leaderboardUsers.map(u => ({ 
@@ -319,24 +319,13 @@ const getDashboardData = async (userId) => {
                 points: u.rewards?.points || 0 
             })));
             
-            // Add missing information for leaderboard users
+            // Process real user data without modification
             leaderboardUsers = leaderboardUsers.map((user, index) => {
                 const userObj = user;
                 
-                // Calculate additional stats
-                let totalPoints = userObj.rewards?.points || 0;
+                // Use actual points from database - no fake assignment
+                const totalPoints = userObj.rewards?.points || 0;
                 const badgeCount = userObj.rewards?.badges?.length || 0;
-                
-                // Give the current user (you) the highest points to be in first place
-                const isCurrentUser = userObj._id.toString() === userId.toString();
-                if (isCurrentUser) {
-                    totalPoints = 1500; // You get the highest points
-                } else if (totalPoints === 0) {
-                    // Other users get some points based on their position
-                    const otherUserPoints = [1200, 900, 600, 300, 150];
-                    totalPoints = otherUserPoints[index] || 100;
-                }
-                
                 const level = Math.floor(totalPoints / 100) + 1; // 100 points per level
                 
                 return {
@@ -347,64 +336,18 @@ const getDashboardData = async (userId) => {
                     level: level,
                     avatar: userObj.photo || '/images/default-avatar.png',
                     joinDate: userObj.createdAt ? new Date(userObj.createdAt).toLocaleDateString() : 'Unknown',
-                    isCurrentUser: isCurrentUser
+                    rank: index + 1 // Rank based on database sort order
                 };
             });
             
-            // Sort by points after assigning demo points
-            leaderboardUsers.sort((a, b) => b.totalPoints - a.totalPoints);
-            
-            // Add rank after sorting
-            leaderboardUsers = leaderboardUsers.map((user, index) => ({
-                ...user,
-                rank: index + 1
-            }));
-            
-            // Take only top 3
-            leaderboardUsers = leaderboardUsers.slice(0, 3);
-            
-            console.log('Final leaderboard after sorting:', leaderboardUsers.map(u => ({ 
+            console.log('Final leaderboard with real data:', leaderboardUsers.map(u => ({ 
                 name: u.displayName, 
                 points: u.totalPoints, 
                 rank: u.rank 
             })));
         } else {
-            console.log('No users found, using sample leaderboard for demonstration...');
-            leaderboardUsers = [
-                {
-                    _id: 'leader1',
-                    displayName: 'Emma Watson',
-                    email: 'emma@example.com',
-                    totalPoints: 1250,
-                    badgeCount: 8,
-                    level: 13,
-                    avatar: '/images/default-avatar.png',
-                    joinDate: '2024-01-15',
-                    rank: 1
-                },
-                {
-                    _id: 'leader2',
-                    displayName: 'John Smith',
-                    email: 'john@example.com',
-                    totalPoints: 980,
-                    badgeCount: 6,
-                    level: 10,
-                    avatar: '/images/default-avatar.png',
-                    joinDate: '2024-02-03',
-                    rank: 2
-                },
-                {
-                    _id: 'leader3',
-                    displayName: 'Diana Prince',
-                    email: 'diana@example.com',
-                    totalPoints: 750,
-                    badgeCount: 4,
-                    level: 8,
-                    avatar: '/images/default-avatar.png',
-                    joinDate: '2024-02-20',
-                    rank: 3
-                }
-            ];
+            console.log('No users found in database, leaderboard will be empty');
+            leaderboardUsers = [];
         }
         
         // No need for image enhancement for leaderboard users

@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
    <link rel="stylesheet" href="/css/style.css">
+   <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
    
    <!-- Remove button styles for high visibility -->
    <style>
@@ -119,6 +120,39 @@
        border-color: rgba(59, 183, 251, 0.7);
        background: rgba(59, 183, 251, 0.1);
        transform: translateY(-1px);
+     }
+     
+     /* Enhanced Search Container Styling */
+     .search-container {
+       position: relative;
+     }
+     
+     .search-wrapper {
+       display: flex;
+       align-items: center;
+     }
+     
+     .search-wrapper .btn:hover {
+       background: linear-gradient(135deg, #34a0e0, #e6a03c) !important;
+       color: #fff !important;
+       transform: translateY(-2px) scale(1.05);
+       box-shadow: 0 6px 20px rgba(59, 183, 251, 0.4);
+     }
+     
+     .form-control:focus {
+       border-color: rgba(59, 183, 251, 0.6) !important;
+       box-shadow: 0 0 0 4px rgba(59, 183, 251, 0.15) !important;
+       transform: translateY(-1px);
+     }
+     
+     .form-control:hover {
+       border-color: rgba(59, 183, 251, 0.4) !important;
+       transform: translateY(-1px);
+     }
+     
+     .btn-gradient:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 6px 20px rgba(59, 183, 251, 0.4);
      }
      
      /* Enhanced Book Cards - Wishlist Style */
@@ -571,28 +605,20 @@
             <!-- Search and Filter Bar -->
             <div class="content-controls mb-4">
                 <div class="row align-items-center">
-                    <div class="col-md-8">
-                        <div class="search-container" style="max-width: 500px;">
-                            <div class="search-box" style="background: #23242a; border: 1px solid rgba(120,130,150,.2); border-radius: 12px; padding: 0.3rem; position: relative;">
-                                <div class="input-group">
-                                    <div class="input-group-prepend">
-                                        <span class="input-group-text" style="background: transparent; border: none; color: #3BB7FB; font-size: 1rem; padding-left: 1rem;">
-                                            <i class="bi bi-search"></i>
-                                        </span>
-                                    </div>
-                                    <input
-                                        id="library-search"
-                                        type="text"
-                                        class="form-control search-input"
-                                        placeholder="Search your library by title or author..."
-                                        autocomplete="off"
-                                        style="background: transparent; border: none; color: #fff; font-size: 0.95rem; padding: 0.75rem 1rem; padding-left: 0.5rem;"
-                                    />
+                        <div class="col-md-6">
+                            <div class="search-container" style="max-width: 800px; height: 32px;">
+                                <div class="search-wrapper" style="display: flex; align-items: center; gap: 0.4rem; height: 100%;">
+                                    <input type="text" class="form-control" id="library-search" 
+                                           placeholder="Search your library by title or author..."
+                                           autocomplete="off"
+                                           style="background: #1E1F23; border: 1px solid #2A2D35; color: #e6e9ee; padding: 0.2rem 0.8rem; font-size: 0.85rem; border-radius: 999px; width: 100%; max-width: 720px; height: 32px; transition: all 0.3s ease;">
+                                    <button class="btn" type="button" style="background: linear-gradient(135deg, #3BB7FB, #F6B443); border: none; color: #fff; padding: 0.2rem 0.4rem; border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center; transition: all 0.3s ease; box-shadow: 0 4px 12px rgba(59, 183, 251, 0.3);">
+                                        <i class="bi bi-search" style="font-size: 0.7rem;"></i>
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="col-md-4 text-md-right">
+                    <div class="col-md-6 text-md-right">
                         <div class="view-options d-flex align-items-center justify-content-md-end justify-content-start mt-3 mt-md-0">
                             <small class="text-muted me-3" style="font-size: 0.85rem;">
                                 <i class="bi bi-grid-3x3-gap me-1"></i> Grid View
@@ -1801,12 +1827,8 @@ document.addEventListener('DOMContentLoaded', function() {
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Include Enhanced Chat Widget -->
-<!-- Include Real-Time Chat System -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/css/realTimeChat.css">
-<script src="/socket.io/socket.io.js"></script>
-<script src="/js/realTimeChat.js"></script>
+<!-- Include Global Chat Widget -->
+<%- include('partials/global-chat') %>
 
 </body>
 </html>
