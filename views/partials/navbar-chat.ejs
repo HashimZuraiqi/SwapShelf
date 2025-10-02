@@ -1,0 +1,131 @@
+<!-- Chat Icon in Navbar (to be included in navbar) -->
+<li class="nav-item">
+    <a class="nav-link chat-toggle" href="#" id="chatToggle">
+        <i class="bi bi-chat-dots"></i>
+        <span class="chat-notification-badge" id="chatBadge" style="display: none;">0</span>
+    </a>
+</li>
+
+<!-- Professional Card-Style Chat Modal -->
+<div id="chatModal" class="chat-modal">
+    <div class="chat-modal-overlay"></div>
+    <div class="chat-modal-card">
+        <!-- Card Header -->
+        <div class="chat-card-header">
+            <h2 class="chat-title">Messages</h2>
+            <button id="chatCloseBtn" class="chat-close-btn">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Two Main Choices Section -->
+        <div class="chat-choices-section">
+            <div class="choice-tabs">
+                <button id="contactsTab" class="choice-tab active" data-panel="contacts">
+                    <i class="bi bi-people"></i>
+                    <span>Find Users</span>
+                </button>
+                <button id="conversationsTab" class="choice-tab" data-panel="conversations">
+                    <i class="bi bi-chat-left-text"></i>
+                    <span>My Chats</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="chat-card-content">
+            <!-- Contacts Panel -->
+            <div id="contactsPanel" class="chat-panel active">
+                <div class="panel-header">
+                    <div class="search-container">
+                        <div class="search-input-wrapper">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" id="contactSearch" placeholder="Search users to chat with..." class="search-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="contacts-list-container">
+                    <div id="chatSearchResults" class="contacts-list">
+                        <!-- Search results will be populated here -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- Conversations Panel -->
+            <div id="conversationsPanel" class="chat-panel">
+                <div class="panel-header">
+                    <div class="search-container">
+                        <div class="search-input-wrapper">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" id="conversationSearch" placeholder="Search conversations..." class="search-input">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="conversations-list-container">
+                    <div id="conversationsList" class="conversations-list">
+                        <!-- Conversations will be populated here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chat View (when a conversation is selected) -->
+        <div id="chatView" class="chat-view">
+            <div class="chat-view-header">
+                <button id="backToMain" class="back-btn">
+                    <i class="bi bi-arrow-left"></i>
+                </button>
+                <div class="chat-contact-info">
+                    <div class="contact-avatar">
+                        <img id="currentChatAvatar" src="/images/default-avatar.png" alt="Contact">
+                        <div class="online-status"></div>
+                    </div>
+                    <div class="contact-details">
+                        <div id="currentChatName" class="contact-name">Contact Name</div>
+                        <div id="currentChatStatus" class="contact-status">Last seen recently</div>
+                    </div>
+                </div>
+                <div class="chat-actions">
+                    <button class="action-btn">
+                        <i class="bi bi-telephone"></i>
+                    </button>
+                    <button class="action-btn">
+                        <i class="bi bi-camera-video"></i>
+                    </button>
+                    <button class="action-btn">
+                        <i class="bi bi-info-circle"></i>
+                    </button>
+                </div>
+            </div>
+
+            <div id="chatMessages" class="messages-container">
+                <div class="welcome-message">
+                    <div class="welcome-icon">
+                        <i class="bi bi-book"></i>
+                    </div>
+                    <h3>Start Your Book Journey</h3>
+                    <p>Share your reading passion and discover amazing books together!</p>
+                </div>
+            </div>
+
+            <div class="message-input-container">
+                <div class="message-input-wrapper">
+                    <button class="attach-btn">
+                        <i class="bi bi-paperclip"></i>
+                    </button>
+                    <div class="message-input-field">
+                        <input type="text" id="messageInput" placeholder="Type your message..." autocomplete="off">
+                        <button class="emoji-btn">
+                            <i class="bi bi-emoji-smile"></i>
+                        </button>
+                    </div>
+                    <button id="sendMessageBtn" class="send-btn">
+                        <i class="bi bi-send"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

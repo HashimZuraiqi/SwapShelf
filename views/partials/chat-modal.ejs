@@ -1,0 +1,128 @@
+<!-- Professional Card-Style Chat Modal -->
+<div id="chatModal" class="chat-modal">
+    <div class="chat-modal-overlay"></div>
+    <div class="chat-modal-card">
+        <!-- Card Header -->
+        <div class="chat-card-header">
+            <div class="chat-brand-header">
+                <div class="chat-brand-logo">
+                    <i class="bi bi-chat-dots" style="font-size: 2rem; color: #ffffff;"></i>
+                </div>
+                <h2 class="chat-brand-title">Messages</h2>
+                <p class="chat-brand-subtitle">Connect & Share Books</p>
+            </div>
+            <button id="chatCloseBtn" class="chat-close-btn">
+                <i class="bi bi-x-lg"></i>
+            </button>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="chat-card-content">
+            <!-- Conversations Panel -->
+            <div id="conversationsPanel" class="chat-panel active">
+                <div class="panel-header">
+                    <div class="search-container">
+                        <div class="search-input-wrapper">
+                            <i class="bi bi-search search-icon"></i>
+                            <input type="text" id="conversationSearch" placeholder="Search conversations, users, or messages..." class="search-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="conversations-list-container">
+                    <div id="conversationsList" class="conversations-list">
+                        <!-- Conversations will be loaded here -->
+                        <div class="loading-state" id="conversationsLoading">
+                            <div class="loading-spinner"></div>
+                            <p>Loading your conversations...</p>
+                        </div>
+                        
+                        <div class="empty-state" id="conversationsEmpty" style="display: none;">
+                            <i class="bi bi-chat-left-text"></i>
+                            <p>No conversations yet. Start chatting with other users!</p>
+                        </div>
+                    </div>
+                    
+                    <!-- Pagination Controls -->
+                    <div class="pagination-container" id="chatPagination" style="display: none;">
+                        <div class="pagination-info">
+                            <span id="chatPaginationInfo">Showing 1-20 of 0 conversations</span>
+                        </div>
+                        <div class="pagination-controls">
+                            <button id="chatPrevPage" class="pagination-btn" disabled>
+                                <i class="bi bi-chevron-left"></i>
+                                Previous
+                            </button>
+                            <div class="pagination-numbers" id="chatPageNumbers">
+                                <!-- Page numbers will be generated here -->
+                            </div>
+                            <button id="chatNextPage" class="pagination-btn">
+                                Next
+                                <i class="bi bi-chevron-right"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chat View (Individual Conversation) -->
+            <div id="chatView" class="chat-view" style="display: none;">
+                <div class="chat-view-header">
+                    <button id="backToMain" class="back-btn">
+                        <i class="bi bi-arrow-left"></i>
+                    </button>
+                    <div class="chat-contact-info">
+                        <img id="currentChatAvatar" src="/images/default-avatar.png" alt="Contact" class="contact-avatar">
+                        <div class="contact-details">
+                            <h3 id="currentChatName">Contact Name</h3>
+                            <p id="chatContactStatus" class="contact-status">Online</p>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="action-btn" title="Call">
+                            <i class="bi bi-telephone"></i>
+                        </button>
+                        <button class="action-btn" title="Video Call">
+                            <i class="bi bi-camera-video"></i>
+                        </button>
+                        <button class="action-btn" title="More Options">
+                            <i class="bi bi-three-dots-vertical"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="messages-container" id="chatMessages">
+                    <!-- Messages will be loaded here -->
+                    <div class="welcome-message">
+                        <div class="welcome-icon">
+                            <i class="bi bi-chat-heart"></i>
+                        </div>
+                        <h3>Start Your Conversation</h3>
+                        <p>Send a message to begin chatting with this user. Be respectful and enjoy connecting over your shared love of books!</p>
+                    </div>
+                </div>
+                
+                <div class="message-input-container">
+                    <div class="message-input-wrapper">
+                        <button class="attach-btn" title="Attach File">
+                            <i class="bi bi-paperclip"></i>
+                        </button>
+                        
+                        <textarea id="messageInput" 
+                                  placeholder="Type your message..." 
+                                  class="message-input"
+                                  rows="1"></textarea>
+                        
+                        <button class="emoji-btn" title="Add Emoji">
+                            <i class="bi bi-emoji-smile"></i>
+                        </button>
+                        
+                        <button id="sendMessageBtn" class="send-btn" title="Send Message">
+                            <i class="bi bi-send"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
