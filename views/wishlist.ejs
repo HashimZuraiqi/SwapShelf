@@ -78,49 +78,55 @@
             <div class="container-fluid px-4">
                 <div class="row justify-content-center">
                     <div class="col-lg-10 col-xl-8">
-                        <div class="header-content text-center" style="position: relative; z-index: 2;">
-                            <!-- Main Title Section -->
-                            <div class="title-section mb-4">
-                                <div class="title-icon-wrapper" style="background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; width: 70px; height: 70px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3); position: relative;">
+                        <div class="header-content" style="position: relative; z-index: 2; text-align: center; width: 100%;">
+                            <!-- All elements in single container, stacked vertically -->
+                            <div style="display: block; width: 100%;">
+                                <!-- Icon -->
+                                <div class="title-icon-wrapper" style="background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; width: 70px; height: 70px; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3); position: relative;">
                                     <i class="bi bi-heart-fill" style="color: #fff; font-size: 1.8rem;"></i>
                                     <!-- Glow effect -->
                                     <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; opacity: 0.3; filter: blur(8px); z-index: -1;"></div>
                                 </div>
                                 
-                                <h1 class="page-title" style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 1rem; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                <!-- Title -->
+                                <h1 class="page-title" style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 1rem 0; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; width: 100%;">
                                     My Wishlist
                                 </h1>
                                 
                                 <!-- Book Count Badge -->
-                                <div class="count-badge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(35, 36, 42, 0.8); border: 1px solid rgba(59, 183, 251, 0.2); border-radius: 50px; padding: 0.6rem 1.2rem; backdrop-filter: blur(20px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
-                                    <div style="background: linear-gradient(135deg, #3BB7FB, #F6B443); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-                                        <i class="bi bi-book" style="color: #fff; font-size: 0.7rem;"></i>
-                                    </div>
-                                    <span style="color: #fff; font-weight: 700; font-size: 0.95rem;">
-                                        <%= wishlistBooks ? wishlistBooks.length : 0 %> 
-                                        <span style="color: #b0b3b8; font-weight: 500; margin-left: 0.2rem;">
-                                            <%= (wishlistBooks && wishlistBooks.length === 1) ? 'Book' : 'Books' %>
+                                <div style="display: block; width: 100%; margin-bottom: 1.5rem;">
+                                    <div class="count-badge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(35, 36, 42, 0.8); border: 1px solid rgba(59, 183, 251, 0.2); border-radius: 50px; padding: 0.6rem 1.2rem; backdrop-filter: blur(20px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                                        <div style="background: linear-gradient(135deg, #3BB7FB, #F6B443); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                                            <i class="bi bi-book" style="color: #fff; font-size: 0.7rem;"></i>
+                                        </div>
+                                        <span style="color: #fff; font-weight: 700; font-size: 0.95rem;">
+                                            <%= wishlistBooks ? wishlistBooks.length : 0 %> 
+                                            <span style="color: #b0b3b8; font-weight: 500; margin-left: 0.2rem;">
+                                                <%= (wishlistBooks && wishlistBooks.length === 1) ? 'Book' : 'Books' %>
+                                            </span>
                                         </span>
-                                    </span>
+                                    </div>
                                 </div>
-                            </div>
-                            
-                            <!-- Subtitle -->
-                            <p class="subtitle" style="font-size: 1.2rem; color: #b0b3b8; line-height: 1.7; margin: 0 auto; max-width: 560px; opacity: 0.9;">
-                                Curate your personal reading collection and discover your next great book
-                            </p>
-                            
-                            <!-- Action Button -->
-                            <div class="header-action mt-4">
-                                <button class="btn btn-gradient btn-lg" onclick="openBookExplorer()" 
-                                        style="font-size: 1rem; font-weight: 700; border-radius: 50px; padding: 1rem 2.5rem; box-shadow: 0 6px 25px rgba(59, 183, 251, 0.4); transition: all 0.3s ease; border: none; position: relative; overflow: hidden;">
-                                    <span style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.6rem;">
-                                        <i class="bi bi-plus-circle"></i>
-                                        Explore Books
-                                    </span>
-                                    <!-- Button glow effect -->
-                                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity 0.3s ease; border-radius: 50px;"></div>
-                                </button>
+                                
+                                <!-- Subtitle -->
+                                <div style="display: block; width: 100%; margin-bottom: 1.5rem;">
+                                    <p class="subtitle" style="font-size: 1.2rem; color: #b0b3b8; line-height: 1.7; margin: 0; max-width: 560px; opacity: 0.9; display: block; margin-left: auto; margin-right: auto;">
+                                        Curate your personal reading collection and discover your next great book
+                                    </p>
+                                </div>
+                                
+                                <!-- Action Button -->
+                                <div style="display: block; width: 100%;">
+                                    <button class="btn btn-gradient btn-lg" onclick="openBookExplorer()" 
+                                            style="font-size: 1rem; font-weight: 700; border-radius: 50px; padding: 1rem 2.5rem; box-shadow: 0 6px 25px rgba(59, 183, 251, 0.4); transition: all 0.3s ease; border: none; position: relative; overflow: hidden; display: inline-block;">
+                                        <span style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.6rem;">
+                                            <i class="bi bi-plus-circle"></i>
+                                            Explore Books
+                                        </span>
+                                        <!-- Button glow effect -->
+                                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity 0.3s ease; border-radius: 50px;"></div>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -1240,7 +1246,10 @@
         });
     </script>
     
-    <!-- Include Global Chat Widget -->
-    <%- include('partials/global-chat') %>
+    <!-- Include Real-Time Chat System -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="/css/realTimeChat.css">
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/js/realTimeChat.js"></script>
 </body>
 </html>

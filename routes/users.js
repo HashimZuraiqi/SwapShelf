@@ -181,22 +181,32 @@ router.get('/search', requireAuth, async (req, res) => {
     }
     
     const User = require('../models/User');
+    const Book = require('../models/Book');
+    
     const users = await User.find(searchQuery)
-      .select('_id fullname username email profileImage photo')
+      .select('_id fullname username email profileImage photo points badges')
       .limit(20)
       .lean();
     
-    // Format the response
-    const formattedUsers = users.map(user => ({
-      _id: user._id,
-      fullname: user.fullname,
-      username: user.username,
-      email: user.email,
-      profileImage: user.profileImage || user.photo || '/images/default-avatar.png'
+    // Format the response with additional stats
+    const formattedUsers = await Promise.all(users.map(async (user) => {
+      // Get book count for this user
+      const booksOwned = await Book.countDocuments({ owner: user._id });
+      
+      return {
+        _id: user._id,
+        name: user.fullname || user.username,
+        username: user.username,
+        email: user.email,
+        avatar: user.profileImage || user.photo || '/images/default-avatar.png',
+        points: user.points || 0,
+        badges: user.badges?.length || 0,
+        booksOwned: booksOwned
+      };
     }));
     
     console.log(`✅ Found ${formattedUsers.length} users`);
-    res.json(formattedUsers);
+    res.json({ users: formattedUsers });
     
   } catch (error) {
     console.error('User search error:', error);

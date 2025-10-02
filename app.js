@@ -154,13 +154,7 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
-// const chatRoutes = require('./routes/chat'); // Disabled old chat system
 const rewardsRoutes = require('./routes/rewards');
-// const simpleChatRoutes = require('./routes/simple-chat'); // Disabled old chat system
-// const globalChatRoutes = require('./routes/global-chat'); // Disabled old chat system
-const authBypassRoutes = require('./routes/auth-bypass');
-// const simpleMessageRoutes = require('./routes/simple-message'); // Disabled old chat system
-// const enhancedChatRoutes = require('./routes/enhancedChat'); // Disabled old chat system
 const realTimeChatRoutes = require('./routes/realTimeChat');
 
 // Auth API for Chat
@@ -186,12 +180,7 @@ app.use('/api/books', bookRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/chat', realTimeChatRoutes);
-// app.use('/api/enhanced-chat', enhancedChatRoutes); // Disabled old chat system
 app.use('/api/rewards', rewardsRoutes);
-// app.use('/api/simple-chat', simpleChatRoutes); // Disabled old chat system
-// app.use('/api/global-chat', globalChatRoutes); // Disabled old chat system
-app.use('/api/auth-bypass', authBypassRoutes);
-// app.use('/api/simple-message', simpleMessageRoutes); // Disabled old chat system
 app.get('/login.html', (req, res) => res.redirect(301, '/auth/login'));
 app.get('/register.html', (req, res) => res.redirect(301, '/auth/register'));
 // Legacy route for book addition (redirect to API)

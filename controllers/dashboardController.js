@@ -458,10 +458,10 @@ const getDashboardData = async (userId) => {
             })
             .sort({ createdAt: -1 })
             .limit(5)
-            .populate('requester', 'name email')
-            .populate('owner', 'name email')
+            .populate('requester', 'username email')
+            .populate('owner', 'username email')
             .populate('requestedBook.id', 'title author')
-            .populate('offeredBook.id', 'title author');
+            .populate('offeredBooks.id', 'title author');
         } catch (error) {
             console.error('Error fetching recent activity:', error);
             recentActivity = []; // Use empty array as fallback
