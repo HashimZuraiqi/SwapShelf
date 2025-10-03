@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 
 const chatRoomSchema = new mongoose.Schema({
+  roomId: { type: String, unique: true, sparse: true }, // Add roomId field
   participants: [{
     user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
     joinedAt: { type: Date, default: Date.now }

@@ -1,14 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
   <title>My Library | BookSwap</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
    <link rel="stylesheet" href="/css/style.css">
    <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
+   
+   <!-- Navbar Chat System CSS -->
+   <link rel="stylesheet" href="/css/navbar-chat.css">
    
    <!-- Remove button styles for high visibility -->
    <style>
@@ -120,6 +123,39 @@
        border-color: rgba(59, 183, 251, 0.7);
        background: rgba(59, 183, 251, 0.1);
        transform: translateY(-1px);
+     }
+     
+     /* Enhanced Search Container Styling */
+     .search-container {
+       position: relative;
+     }
+     
+     .search-wrapper {
+       display: flex;
+       align-items: center;
+     }
+     
+     .search-wrapper .btn:hover {
+       background: linear-gradient(135deg, #34a0e0, #e6a03c) !important;
+       color: #fff !important;
+       transform: translateY(-2px) scale(1.05);
+       box-shadow: 0 6px 20px rgba(59, 183, 251, 0.4);
+     }
+     
+     .form-control:focus {
+       border-color: rgba(59, 183, 251, 0.6) !important;
+       box-shadow: 0 0 0 4px rgba(59, 183, 251, 0.15) !important;
+       transform: translateY(-1px);
+     }
+     
+     .form-control:hover {
+       border-color: rgba(59, 183, 251, 0.4) !important;
+       transform: translateY(-1px);
+     }
+     
+     .btn-gradient:hover {
+       transform: translateY(-2px);
+       box-shadow: 0 6px 20px rgba(59, 183, 251, 0.4);
      }
      
      /* Enhanced Book Cards - Wishlist Style */
@@ -455,57 +491,8 @@
    </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-  <div class="container-fluid">
-    <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
-      <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
-          height: 32px; 
-          width: auto; 
-          transform: scale(4);
-          filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-          transition: all 0.3s ease;
-          z-index: 10;
-          position: relative;
-      " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
-    </a>
-
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav mx-auto">
-        <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
-            <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
-        </li>
-        <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
-            <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
-        </li>
-        <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
-            <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
-        </li>
-        <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
-            <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
-        </li>
-        <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
-            <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
-        </li>
-      </ul>
-      <ul class="navbar-nav ml-auto">
-        <li class="nav-item dropdown">
-          <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-            <i class="bi bi-person-circle"></i> Profile
-          </a>
-          <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-            <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
-            <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-          </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
+<!-- Include Standard Navbar -->
+<%- include('partials/navbar') %>
 
 <main class="main-content">
     <!-- Clean & Stylish Header Section with Rounded Design -->
@@ -516,49 +503,55 @@
         <div class="container-fluid px-4">
             <div class="row justify-content-center">
                 <div class="col-lg-10 col-xl-8">
-                    <div class="header-content text-center" style="position: relative; z-index: 2;">
-                        <!-- Main Title Section -->
-                        <div class="title-section mb-4">
-                            <div class="title-icon-wrapper" style="background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; width: 70px; height: 70px; margin: 0 auto 1.5rem; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3); position: relative;">
+                    <div class="header-content" style="position: relative; z-index: 2; text-align: center; width: 100%;">
+                        <!-- All elements in single container, stacked vertically -->
+                        <div style="display: block; width: 100%;">
+                            <!-- Icon -->
+                            <div class="title-icon-wrapper" style="background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; width: 70px; height: 70px; margin: 0 auto 1.5rem auto; display: flex; align-items: center; justify-content: center; box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3); position: relative;">
                                 <i class="bi bi-book-fill" style="color: #fff; font-size: 1.8rem;"></i>
                                 <!-- Glow effect -->
                                 <div style="position: absolute; top: -2px; left: -2px; right: -2px; bottom: -2px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; opacity: 0.3; filter: blur(8px); z-index: -1;"></div>
                             </div>
                             
-                            <h1 class="page-title" style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 1rem; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                            <!-- Title -->
+                            <h1 class="page-title" style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 1rem 0; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; display: block; width: 100%;">
                                 My Library
                             </h1>
                             
                             <!-- Book Count Badge -->
-                            <div class="count-badge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(35, 36, 42, 0.8); border: 1px solid rgba(59, 183, 251, 0.2); border-radius: 50px; padding: 0.6rem 1.2rem; backdrop-filter: blur(20px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
-                                <div style="background: linear-gradient(135deg, #3BB7FB, #F6B443); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
-                                    <i class="bi bi-collection" style="color: #fff; font-size: 0.7rem;"></i>
-                                </div>
-                                <span style="color: #fff; font-weight: 700; font-size: 0.95rem;">
-                                    <%= (books && books.length) ? books.length : 0 %> 
-                                    <span style="color: #b0b3b8; font-weight: 500; margin-left: 0.2rem;">
-                                        <%= (books && books.length === 1) ? 'Book' : 'Books' %>
+                            <div style="display: block; width: 100%; margin-bottom: 1.5rem;">
+                                <div class="count-badge" style="display: inline-flex; align-items: center; gap: 0.5rem; background: rgba(35, 36, 42, 0.8); border: 1px solid rgba(59, 183, 251, 0.2); border-radius: 50px; padding: 0.6rem 1.2rem; backdrop-filter: blur(20px); box-shadow: 0 4px 20px rgba(0,0,0,0.2);">
+                                    <div style="background: linear-gradient(135deg, #3BB7FB, #F6B443); border-radius: 50%; width: 24px; height: 24px; display: flex; align-items: center; justify-content: center;">
+                                        <i class="bi bi-collection" style="color: #fff; font-size: 0.7rem;"></i>
+                                    </div>
+                                    <span style="color: #fff; font-weight: 700; font-size: 0.95rem;">
+                                        <%= (books && books.length) ? books.length : 0 %> 
+                                        <span style="color: #b0b3b8; font-weight: 500; margin-left: 0.2rem;">
+                                            <%= (books && books.length === 1) ? 'Book' : 'Books' %>
+                                        </span>
                                     </span>
-                                </span>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <!-- Subtitle -->
-                        <p class="subtitle" style="font-size: 1.2rem; color: #b0b3b8; line-height: 1.7; margin: 0 auto; max-width: 560px; opacity: 0.9;">
-                            Manage your book collection and share with fellow readers
-                        </p>
-                        
-                        <!-- Action Button -->
-                        <div class="header-action mt-4">
-                            <a href="/add-book" class="btn btn-gradient btn-lg" 
-                                    style="font-size: 1rem; font-weight: 700; border-radius: 50px; padding: 1rem 2.5rem; box-shadow: 0 6px 25px rgba(59, 183, 251, 0.4); transition: all 0.3s ease; border: none; position: relative; overflow: hidden; text-decoration: none;">
-                                <span style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.6rem;">
-                                    <i class="bi bi-plus-circle"></i>
-                                    Add Book
-                                </span>
-                                <!-- Button glow effect -->
-                                <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity 0.3s ease; border-radius: 50px;"></div>
-                            </a>
+                            
+                            <!-- Subtitle -->
+                            <div style="display: block; width: 100%; margin-bottom: 1.5rem;">
+                                <p class="subtitle" style="font-size: 1.2rem; color: #b0b3b8; line-height: 1.7; margin: 0; max-width: 560px; opacity: 0.9; display: block; margin-left: auto; margin-right: auto;">
+                                    Manage your book collection and share with fellow readers
+                                </p>
+                            </div>
+                            
+                            <!-- Action Button -->
+                            <div style="display: block; width: 100%;">
+                                <a href="/add-book" class="btn btn-gradient btn-lg" 
+                                        style="font-size: 1rem; font-weight: 700; border-radius: 50px; padding: 1rem 2.5rem; box-shadow: 0 6px 25px rgba(59, 183, 251, 0.4); transition: all 0.3s ease; border: none; position: relative; overflow: hidden; text-decoration: none; display: inline-block;">
+                                    <span style="position: relative; z-index: 2; display: flex; align-items: center; gap: 0.6rem;">
+                                        <i class="bi bi-plus-circle"></i>
+                                        Add Book
+                                    </span>
+                                    <!-- Button glow effect -->
+                                    <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: linear-gradient(135deg, rgba(255,255,255,0.1), transparent); opacity: 0; transition: opacity 0.3s ease; border-radius: 50px;"></div>
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -1791,16 +1784,12 @@ document.addEventListener('DOMContentLoaded', function() {
     loadLibraryBookImages();
 });
 </script>
-
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Include Enhanced Chat Widget -->
-<!-- Include Real-Time Chat System -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/css/realTimeChat.css">
+<!-- Include Navbar Chat System -->
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/realTimeChat.js"></script>
+<script src="/js/navbar-chat.js"></script>
 
 </body>
 </html>

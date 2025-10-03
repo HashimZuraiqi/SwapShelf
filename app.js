@@ -15,9 +15,6 @@ const Swap = require('./models/Swap'); // Mongoose Swap model
 const Activity = require('./models/Activity');
 const { getDashboardData } = require('./controllers/dashboardController'); // Dashboard data controller
 
-// Real-Time Chat System
-const { ChatRoom, ChatMessage } = require('./models/RealTimeChat');
-
 /**
  * Calculate user activity score based on real platform usage
  */
@@ -157,16 +154,11 @@ const authRoutes = require('./routes/auth');
 const bookRoutes = require('./routes/books');
 const swapRoutes = require('./routes/swaps');
 const userRoutes = require('./routes/users');
-// const chatRoutes = require('./routes/chat'); // Disabled old chat system
 const rewardsRoutes = require('./routes/rewards');
-// const simpleChatRoutes = require('./routes/simple-chat'); // Disabled old chat system
-// const globalChatRoutes = require('./routes/global-chat'); // Disabled old chat system
-const authBypassRoutes = require('./routes/auth-bypass');
-// const simpleMessageRoutes = require('./routes/simple-message'); // Disabled old chat system
-// const enhancedChatRoutes = require('./routes/enhancedChat'); // Disabled old chat system
-const realTimeChatRoutes = require('./routes/realTimeChat');
+const chatRoutes = require('./routes/chat'); // Updated chat system
 
-// Auth API for Chat
+// Auth API for Chat - Now handled in chat.js routes
+/*
 app.get('/api/auth/me', (req, res) => {
   if (!req.session || !req.session.user) {
     return res.status(401).json({ error: 'Not authenticated' });
@@ -181,6 +173,7 @@ app.get('/api/auth/me', (req, res) => {
     profileImage: user.profileImage || '/images/default-avatar.png'
   });
 });
+*/
 
 // Mount API Routes
 app.use('/auth', require('./routes/auth'));  // mounts /auth/*
@@ -188,13 +181,8 @@ app.use('/auth', authRoutes);
 app.use('/api/books', bookRoutes);
 app.use('/api/swaps', swapRoutes);
 app.use('/api/users', userRoutes);
-app.use('/api/chat', realTimeChatRoutes);
-// app.use('/api/enhanced-chat', enhancedChatRoutes); // Disabled old chat system
+app.use('/', chatRoutes); // Chat routes (includes /api/chat and /api/users/search)
 app.use('/api/rewards', rewardsRoutes);
-// app.use('/api/simple-chat', simpleChatRoutes); // Disabled old chat system
-// app.use('/api/global-chat', globalChatRoutes); // Disabled old chat system
-app.use('/api/auth-bypass', authBypassRoutes);
-// app.use('/api/simple-message', simpleMessageRoutes); // Disabled old chat system
 app.get('/login.html', (req, res) => res.redirect(301, '/auth/login'));
 app.get('/register.html', (req, res) => res.redirect(301, '/auth/register'));
 // Legacy route for book addition (redirect to API)
@@ -869,6 +857,45 @@ app.get('/api/user/profile/:userId', async (req, res) => {
     } catch (error) {
         console.error('API error fetching user profile:', error);
         res.status(500).json({ error: 'Failed to fetch user profile' });
+    }
+});
+
+// User profile view route
+app.get('/user/:userId', async (req, res) => {
+    if (!req.session || !req.session.user) {
+        return res.redirect('/login');
+    }
+    
+    try {
+        const { userId } = req.params;
+        const User = require('./models/User');
+        const Book = require('./models/Book');
+        
+        // Get user profile
+        const user = await User.findById(userId)
+            .select('username fullname email profileImage createdAt')
+            .lean();
+            
+        if (!user) {
+            return res.status(404).render('404', { message: 'User not found' });
+        }
+        
+        // Get user's books
+        const userBooks = await Book.find({ owner: userId })
+            .select('title author genre condition imageUrl description')
+            .lean();
+        
+        // Render user profile view
+        res.render('user-profile', {
+            activePage: 'user-profile',
+            user: req.session.user,
+            profileUser: user,
+            books: userBooks,
+            booksCount: userBooks.length
+        });
+    } catch (error) {
+        console.error('Error fetching user profile:', error);
+        res.status(500).render('error', { message: 'Failed to load user profile' });
     }
 });
 

@@ -1,12 +1,17 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#18191E">
     <title>Dashboard | BookSwap</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <!-- Navbar Chat System CSS -->
+    <link rel="stylesheet" href="/css/navbar-chat.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
@@ -43,66 +48,442 @@
         .default-avatar-dashboard svg {
             transition: all 0.3s ease;
         }
+        
+        /* Chat Toggle Button Styles */
+        .chat-toggle {
+            position: relative;
+        }
+        
+        .chat-notification-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #F6B443;
+            color: #ffffff;
+            border-radius: 50%;
+            min-width: 18px;
+            height: 18px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 6px rgba(246, 180, 67, 0.4);
+        }
+        
+        /* Instagram-like Chat Container */
+        .chat-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 9999;
+            display: flex;
+        }
+        
+        .chat-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(5px);
+        }
+        
+        .chat-sidebar {
+            width: 400px;
+            background: linear-gradient(145deg, #18191E, #1E1F26);
+            border-right: 1px solid #2A2D35;
+            display: flex;
+            flex-direction: column;
+            z-index: 10000;
+            box-shadow: 2px 0 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .chat-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #2A2D35;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .chat-header h3 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 1.4rem;
+            font-weight: 600;
+        }
+        
+        .chat-header h3 i {
+            color: #3BB7FB;
+            margin-right: 0.5rem;
+        }
+        
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: #8b94a1;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-close-btn:hover {
+            background: rgba(59, 183, 251, 0.1);
+            color: #3BB7FB;
+        }
+        
+        .chat-search {
+            padding: 16px 24px;
+            border-bottom: 1px solid #2A2D35;
+        }
+        
+        .search-input-container {
+            position: relative;
+        }
+        
+        .chat-search-input {
+            width: 100%;
+            padding: 12px 40px 12px 16px;
+            background: rgba(42, 45, 53, 0.6);
+            border: 1px solid #3a3f46;
+            border-radius: 25px;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-search-input:focus {
+            border-color: #3BB7FB;
+            box-shadow: 0 0 0 2px rgba(59, 183, 251, 0.2);
+        }
+        
+        .chat-search-input::placeholder {
+            color: #8b94a1;
+        }
+        
+        .search-input-container .search-icon {
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #8b94a1;
+            font-size: 14px;
+        }
+        
+        .chat-tabs {
+            display: flex;
+            border-bottom: 1px solid #2A2D35;
+        }
+        
+        .chat-tab-btn {
+            flex: 1;
+            padding: 16px 20px;
+            background: none;
+            border: none;
+            color: #8b94a1;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-bottom: 2px solid transparent;
+        }
+        
+        .chat-tab-btn.active {
+            color: #3BB7FB;
+            border-bottom-color: #3BB7FB;
+        }
+        
+        .chat-tab-btn:hover {
+            color: #ffffff;
+            background: rgba(59, 183, 251, 0.1);
+        }
+        
+        .chat-content {
+            flex: 1;
+            overflow-y: auto;
+        }
+        
+        .chat-tab-panel {
+            display: none;
+            height: 100%;
+        }
+        
+        .chat-tab-panel.active {
+            display: block;
+        }
+        
+        .conversations-list {
+            padding: 0;
+        }
+        
+        .conversation-item {
+            padding: 16px 24px;
+            border-bottom: 1px solid #2A2D35;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+        }
+        
+        .conversation-item:hover {
+            background: rgba(59, 183, 251, 0.05);
+        }
+        
+        .conversation-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid rgba(59, 183, 251, 0.2);
+        }
+        
+        .conversation-info {
+            flex: 1;
+        }
+        
+        .conversation-name {
+            color: #ffffff;
+            font-weight: 600;
+            margin: 0 0 4px 0;
+            font-size: 15px;
+        }
+        
+        .conversation-preview {
+            color: #8b94a1;
+            font-size: 13px;
+            margin: 0;
+        }
+        
+        .conversation-meta {
+            text-align: right;
+            color: #8b94a1;
+            font-size: 12px;
+        }
+        
+        .unread-badge {
+            background: #3BB7FB;
+            color: #ffffff;
+            border-radius: 50%;
+            min-width: 20px;
+            height: 20px;
+            font-size: 11px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 4px;
+        }
+        
+        /* Chat Main Area */
+        .chat-main {
+            flex: 1;
+            background: linear-gradient(145deg, #18191E, #1E1F26);
+            display: flex;
+            flex-direction: column;
+            z-index: 10000;
+        }
+        
+        .chat-main-header {
+            padding: 20px 24px;
+            border-bottom: 1px solid #2A2D35;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+        
+        .back-to-chats-btn {
+            background: none;
+            border: none;
+            color: #3BB7FB;
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .back-to-chats-btn:hover {
+            background: rgba(59, 183, 251, 0.1);
+        }
+        
+        .chat-user-info {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .chat-user-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: 2px solid rgba(59, 183, 251, 0.3);
+        }
+        
+        .chat-user-details h4 {
+            color: #ffffff;
+            margin: 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+        
+        .chat-user-status {
+            color: #8b94a1;
+            font-size: 13px;
+        }
+        
+        .chat-actions {
+            display: flex;
+            gap: 8px;
+        }
+        
+        .chat-action-btn {
+            background: none;
+            border: none;
+            color: #8b94a1;
+            font-size: 1.1rem;
+            cursor: pointer;
+            padding: 10px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-action-btn:hover {
+            background: rgba(59, 183, 251, 0.1);
+            color: #3BB7FB;
+        }
+        
+        .chat-messages {
+            flex: 1;
+            padding: 20px 24px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+        
+        .message {
+            display: flex;
+            gap: 8px;
+            max-width: 70%;
+        }
+        
+        .message.sent {
+            align-self: flex-end;
+            flex-direction: row-reverse;
+        }
+        
+        .message-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+        
+        .message-content {
+            background: rgba(42, 45, 53, 0.8);
+            padding: 12px 16px;
+            border-radius: 18px;
+            color: #ffffff;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        
+        .message.sent .message-content {
+            background: linear-gradient(135deg, #3BB7FB, #2196F3);
+        }
+        
+        .message-time {
+            font-size: 11px;
+            color: #8b94a1;
+            margin-top: 4px;
+            text-align: center;
+        }
+        
+        .chat-input-area {
+            padding: 20px 24px;
+            border-top: 1px solid #2A2D35;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            background: rgba(42, 45, 53, 0.6);
+            border: 1px solid #3a3f46;
+            border-radius: 25px;
+            padding: 8px 16px;
+            transition: all 0.3s ease;
+        }
+        
+        .chat-input-container:focus-within {
+            border-color: #3BB7FB;
+            box-shadow: 0 0 0 2px rgba(59, 183, 251, 0.2);
+        }
+        
+        .message-input {
+            flex: 1;
+            background: none;
+            border: none;
+            color: #ffffff;
+            font-size: 14px;
+            outline: none;
+            padding: 8px 0;
+        }
+        
+        .message-input::placeholder {
+            color: #8b94a1;
+        }
+        
+        .attachment-btn,
+        .emoji-btn,
+        .send-btn {
+            background: none;
+            border: none;
+            color: #8b94a1;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+        }
+        
+        .send-btn {
+            color: #3BB7FB;
+        }
+        
+        .attachment-btn:hover,
+        .emoji-btn:hover,
+        .send-btn:hover {
+            background: rgba(59, 183, 251, 0.1);
+            color: #3BB7FB;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .chat-sidebar {
+                width: 100%;
+            }
+            
+            .chat-main {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+            }
+        }
     </style>
 </head>
 <body>
-<nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-  <div class="container-fluid">
-    <!-- Logo on far left -->
-    <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
-      <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
-          height: 32px; 
-          width: auto; 
-          transform: scale(4);
-          filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-          transition: all 0.3s ease;
-          z-index: 10;
-          position: relative;
-      " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
-    </a>
-    
-    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-      <span class="navbar-toggler-icon"></span>
-    </button>
-    
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <!-- Navigation options in the center with correct order -->
-      <ul class="navbar-nav mx-auto">
-          <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
-            <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
-          </li>
-          <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
-            <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
-          </li>
-          <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
-            <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
-          </li>
-          <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
-            <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
-        </li>
-        <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
-            <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
-          </li>
-        </ul>
-
-        <!-- Profile dropdown on far right -->
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
-               data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-              <i class="bi bi-person-circle"></i> Profile
-            </a>
-            <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-              <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
-              <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-        </li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
+<!-- Include Standard Navbar -->
+<%- include('partials/navbar') %>
 
 <!-- Dashboard Main Content -->
 <main class="container-fluid py-4">
@@ -149,48 +530,61 @@
     </section>
 
     <!-- Stats Overview -->
-    <section class="stats-section mb-5" id="user-stats-section">
+    <section class="dashboard-stats mb-5" id="user-stats-section">
         <div class="container">
-            <div class="stats-container">
-                <div class="stats-inner p-4">
-                    <div class="stats-title text-center mb-4">
-                        Your Reading Journey
-                        <button type="button" class="btn btn-sm btn-outline-primary ml-2 refresh-stats" title="Refresh Stats">
-                            <i class="bi bi-arrow-clockwise"></i>
-                        </button>
-                    </div>
-                    <div class="row text-center">
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="stat-item">
-                                <div class="stat-value text-gradient" id="books-owned-count"><%= userStats.booksOwned %></div>
-                                <div class="stat-label">Books Owned</div>
-                                <div class="stat-icon"><i class="bi bi-book" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+            <h3 class="section-title mb-4">
+                <i class="bi bi-graph-up"></i> Your Reading Journey
+                <button type="button" class="btn btn-sm btn-outline-primary ml-2 refresh-stats" title="Refresh Stats">
+                    <i class="bi bi-arrow-clockwise"></i>
+                </button>
+            </h3>
+            <div class="row text-center">
+                        <div class="col-6 col-md-6 col-lg-3 mb-4">
+                            <div class="card card-dark h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-item">
+                                        <div class="stat-value text-gradient" id="books-owned-count"><%= userStats.booksOwned %></div>
+                                        <div class="stat-label">Books Owned</div>
+                                        <div class="stat-icon"><i class="bi bi-book" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="stat-item">
-                                <div class="stat-value text-gradient" id="swaps-completed-count"><%= userStats.swapsCompleted %></div>
-                                <div class="stat-label">Swaps Completed</div>
-                                <div class="stat-icon"><i class="bi bi-arrow-left-right" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+                        <div class="col-6 col-md-6 col-lg-3 mb-4">
+                            <div class="card card-dark h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-item">
+                                        <div class="stat-value text-gradient" id="swaps-completed-count"><%= userStats.swapsCompleted %></div>
+                                        <div class="stat-label">Swaps Completed</div>
+                                        <div class="stat-icon"><i class="bi bi-arrow-left-right" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="stat-item">
-                                <div class="stat-value text-gradient" id="wishlist-items-count"><%= userStats.wishlistItems %></div>
-                                <div class="stat-label">Wishlist Items</div>
-                                <div class="stat-icon"><i class="bi bi-heart" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+                        <div class="col-6 col-md-6 col-lg-3 mb-4">
+                            <div class="card card-dark h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-item">
+                                        <div class="stat-value text-gradient" id="wishlist-items-count"><%= userStats.wishlistItems %></div>
+                                        <div class="stat-label">Wishlist Items</div>
+                                        <div class="stat-icon"><i class="bi bi-heart" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div class="col-6 col-md-3 mb-3">
-                            <div class="stat-item">
-                                <div class="stat-value text-gradient" id="pending-swaps-count"><%= userStats.pendingSwaps %></div>
-                                <div class="stat-label">Pending Swaps</div>
-                                <div class="stat-icon"><i class="bi bi-clock" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+                        <div class="col-6 col-md-6 col-lg-3 mb-4">
+                            <div class="card card-dark h-100">
+                                <div class="card-body text-center">
+                                    <div class="stat-item">
+                                        <div class="stat-value text-gradient" id="pending-swaps-count"><%= userStats.pendingSwaps %></div>
+                                        <div class="stat-label">Pending Swaps</div>
+                                        <div class="stat-icon"><i class="bi bi-clock" style="color: #3BB7FB; font-size: 1.4rem;"></i></div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
-            </div>
         </div>
     </section>
 
@@ -226,41 +620,57 @@
                 <i class="bi bi-lightning"></i> Quick Actions
             </h3>
             <div class="row">
-                <div class="col-6 col-md-3 mb-3">
-                    <a href="/library" class="action-card-modern">
-                        <div class="action-icon-modern">
-                            <i class="bi bi-plus-circle"></i>
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="card card-dark h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <a href="/library" class="action-card-modern">
+                                <div class="action-icon-modern">
+                                    <i class="bi bi-plus-circle"></i>
+                                </div>
+                                <h6>Add Book</h6>
+                                <p>Add a new book to your library</p>
+                            </a>
                         </div>
-                        <h6>Add Book</h6>
-                        <p>Add a new book to your library</p>
-                    </a>
+                    </div>
                 </div>
-                <div class="col-6 col-md-3 mb-3">
-                    <a href="/swap-matcher" class="action-card-modern">
-                        <div class="action-icon-modern">
-                            <i class="bi bi-arrow-left-right"></i>
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="card card-dark h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <a href="/swap-matcher" class="action-card-modern">
+                                <div class="action-icon-modern">
+                                    <i class="bi bi-arrow-left-right"></i>
+                                </div>
+                                <h6>Find Swaps</h6>
+                                <p>Discover books to swap</p>
+                            </a>
                         </div>
-                        <h6>Find Swaps</h6>
-                        <p>Discover books to swap</p>
-                    </a>
+                    </div>
                 </div>
-                <div class="col-6 col-md-3 mb-3">
-                    <a href="/wishlist" class="action-card-modern">
-                        <div class="action-icon-modern">
-                            <i class="bi bi-heart"></i>
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="card card-dark h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <a href="/wishlist" class="action-card-modern">
+                                <div class="action-icon-modern">
+                                    <i class="bi bi-heart"></i>
+                                </div>
+                                <h6>Wishlist</h6>
+                                <p>Manage your reading list</p>
+                            </a>
                         </div>
-                        <h6>Wishlist</h6>
-                        <p>Manage your reading list</p>
-                    </a>
+                    </div>
                 </div>
-                <div class="col-6 col-md-3 mb-3">
-                    <a href="/messages" class="action-card-modern">
-                        <div class="action-icon-modern">
-                            <i class="bi bi-chat-dots"></i>
+                <div class="col-6 col-md-6 col-lg-3 mb-4">
+                    <div class="card card-dark h-100">
+                        <div class="card-body text-center d-flex flex-column justify-content-center">
+                            <a href="/messages" class="action-card-modern">
+                                <div class="action-icon-modern">
+                                    <i class="bi bi-chat-dots"></i>
+                                </div>
+                                <h6>Messages</h6>
+                                <p>Check conversations</p>
+                            </a>
                         </div>
-                        <h6>Messages</h6>
-                        <p>Check conversations</p>
-                    </a>
+                    </div>
                 </div>
             </div>
         </div>
@@ -271,7 +681,7 @@
         <div class="container">
             <div class="row">
                 <!-- Swap Insights -->
-                <div class="col-lg-6 mb-4">
+                <div class="col-12 col-md-6 col-lg-6 mb-4">
                     <div class="card card-dark h-100" id="swap-insights-section">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -325,7 +735,7 @@
                 </div>
 
                 <!-- Nearby Books -->
-                <div class="col-lg-6 mb-4">
+                <div class="col-12 col-md-6 col-lg-6 mb-4">
                     <div class="card card-dark h-100" id="nearby-books-section">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -377,7 +787,7 @@
                 </div>
 
                 <!-- Trending Genres -->
-                <div class="col-lg-6 mb-4">
+                <div class="col-12 col-md-6 col-lg-6 mb-4">
                     <div class="card card-dark h-100" id="trending-section">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -417,7 +827,7 @@
                 </div>
 
                 <!-- Top 3 Leaderboard -->
-                <div class="col-lg-6 mb-4">
+                <div class="col-12 col-md-6 col-lg-6 mb-4">
                     <div class="card card-dark h-100">
                         <div class="card-header">
                             <h5 class="card-title">
@@ -832,11 +1242,8 @@
         });
     </script>
     
-    <!-- Include Real-Time Chat System -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="/css/realTimeChat.css">
+    <!-- Include Navbar Chat System -->
     <script src="/socket.io/socket.io.js"></script>
-    <script src="/js/realTimeChat.js"></script>
+    <script src="/js/navbar-chat.js"></script>
 </body>
 </html>
-

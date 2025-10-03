@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/style.css">
+    <!-- Navbar Chat System CSS -->
+    <link rel="stylesheet" href="/css/navbar-chat.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
@@ -558,65 +560,11 @@
     </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-        <div class="container-fluid">
-          <!-- Logo on far left -->
-          <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
-            <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
-                height: 32px; 
-                width: auto; 
-                transform: scale(4);
-                filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-                transition: all 0.3s ease;
-                z-index: 10;
-                position: relative;
-            " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
-          </a>
-          
-          <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-          
-          <div class="collapse navbar-collapse" id="navbarNav">
-            <!-- Navigation options in the center with correct order -->
-            <ul class="navbar-nav mx-auto">
-                <li class="nav-item <%= activePage === 'dashboard' ? 'active' : '' %>" data-page="dashboard">
-                  <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                </li>
-                <li class="nav-item <%= activePage === 'library' ? 'active' : '' %>" data-page="library">
-                  <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
-                </li>
-                <li class="nav-item <%= activePage === 'wishlist' ? 'active' : '' %>" data-page="wishlist">
-                  <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
-                </li>
-                <li class="nav-item <%= activePage === 'swap-matcher' ? 'active' : '' %>" data-page="swap-matcher">
-                  <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
-              </li>
-              <li class="nav-item <%= activePage === 'rewards' ? 'active' : '' %>" data-page="rewards">
-                  <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
-                </li>
-              </ul>
-      
-              <!-- Profile dropdown on far right -->
-              <ul class="navbar-nav ml-auto">
-                <li class="nav-item dropdown">
-                  <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
-                     data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                    <i class="bi bi-person-circle"></i> Profile
-                  </a>
-                  <div class="dropdown-menu dropdown-menu-right" aria-labelledby="profileDropdown">
-                    <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
-                    <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-                  </div>
-              </li>
-            </ul>
-          </div>
-        </div>
-    </nav>
-      
-<!-- Swap Matcher Main Content -->
-<main class="container-fluid py-4">
+    <!-- Include Standard Navbar -->
+    <%- include('partials/navbar') %>
+
+    <!-- Swap Matcher Main Content -->
+    <main class="container-fluid py-4">
     <div class="dashboard-content">
     <!-- Swap Matcher Hero Section -->
     <section class="welcome-hero">
@@ -1071,7 +1019,10 @@
             </div>
             <div class="modal-footer border-secondary">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-success" id="simple-chat-btn" onclick="openSimpleChat()" style="display: none;">
+                <button type="button" class="btn btn-info" id="test-chat-btn" onclick="testChatSystem()" style="font-size: 12px;">
+                    <i class="bi bi-bug"></i> Test Chat
+                </button>
+                <button type="button" class="btn btn-success" id="simple-chat-btn" onclick="openSimpleChat()">
                     <i class="bi bi-chat-dots"></i> Chat Now
                 </button>
                 <button type="button" class="btn swap-action-btn" onclick="submitSwapRequest()">
@@ -1445,32 +1396,41 @@ function submitSwapRequest() {
 
 // Real-time chat integration function
 function openSimpleChat() {
+    console.log('🔵 openSimpleChat called');
+    console.log('📚 selectedUserBook:', selectedUserBook);
+    console.log('📖 targetBook:', targetBook);
+    
     if (!selectedUserBook || !targetBook) {
+        console.error('❌ Missing book selection');
         showErrorMessage('Please select books for the swap first');
         return;
     }
     
+    console.log('🔄 Loading book information...');
     // Get book information for the chat
     Promise.all([
         $.get(`/api/books/${selectedUserBook}`),
         $.get(`/api/books/${targetBook}`)
     ]).then(([offeredBookData, requestedBookData]) => {
+        console.log('📋 Book data loaded:', { offeredBookData, requestedBookData });
         const offeredBook = offeredBookData.book || offeredBookData;
         const requestedBook = requestedBookData.book || requestedBookData;
         
         // Hide the swap modal
         $('#swapRequestModal').modal('hide');
         
-        // Get the book owner's user ID
+        // Get the book owner's user ID and username
         const ownerUserId = requestedBook.owner?._id || requestedBook.owner?.id;
-        const ownerUsername = requestedBook.owner?.username || requestedBook.owner?.name || 'Book Owner';
+        const ownerUsername = requestedBook.owner?.username || requestedBook.owner?.fullname || requestedBook.owner?.name || 'Book Owner';
         
         if (!ownerUserId) {
+            console.error('❌ Missing owner user ID');
             showErrorMessage('Unable to find book owner information');
             return;
         }
         
         console.log('📋 Starting direct chat with owner:', ownerUserId, ownerUsername);
+        console.log('🔧 realTimeChat available:', !!window.realTimeChat);
         
         // Use the real-time chat widget to create and open the conversation directly
         if (window.realTimeChat) {
@@ -1481,15 +1441,13 @@ function openSimpleChat() {
                     chatWidget.classList.remove('minimized');
                 }
                 
-                // Start chat with the book owner directly without any alerts
+                // Start chat with the book owner directly
                 window.realTimeChat.startChat(ownerUserId, ownerUsername);
                 
-                // No success message - direct seamless experience
                 console.log('✅ Direct chat opened with', ownerUsername);
                 
             } catch (error) {
                 console.error('❌ Failed to start chat:', error);
-                // Only show error if something actually fails
                 showErrorMessage('Failed to start chat conversation. Please try again.');
             }
         } else {
@@ -1501,6 +1459,39 @@ function openSimpleChat() {
         console.error('❌ Failed to load book information:', error);
         showErrorMessage('Failed to load book information for chat');
     });
+}
+
+// Test chat system function
+function testChatSystem() {
+    console.log('🧪 Testing chat system...');
+    console.log('📊 Chat system status:');
+    console.log('  - realTimeChat available:', !!window.realTimeChat);
+    console.log('  - Socket available:', !!window.io);
+    console.log('  - jQuery available:', !!window.$);
+    
+    if (window.realTimeChat) {
+        console.log('  - Chat widget:', document.getElementById('real-chat-widget'));
+        console.log('  - Current room:', window.realTimeChat.currentRoom);
+        console.log('  - Current user:', window.realTimeChat.currentUser);
+        
+        // Test API endpoint
+        $.get('/api/chat/rooms')
+            .done(function(response) {
+                console.log('✅ Chat API working:', response);
+            })
+            .fail(function(xhr, status, error) {
+                console.error('❌ Chat API failed:', { status, error, response: xhr.responseText });
+            });
+    } else {
+        console.error('❌ realTimeChat not available - check if realTimeChat.js is loaded');
+    }
+    
+    // Check if books are selected
+    console.log('📚 Book selection status:');
+    console.log('  - selectedUserBook:', selectedUserBook);
+    console.log('  - targetBook:', targetBook);
+    
+    alert('Check console for chat system debug info');
 }
 
 // Test authentication function
@@ -2572,12 +2563,11 @@ $(document).on('input', '#chat-input', function() {
 }
 </style>
 
-<!-- Include Global Chat Widget -->
 <!-- Include Real-Time Chat System -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/css/realTimeChat.css">
+<!-- Include Navbar Chat System -->
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/realTimeChat.js"></script>
+<script src="/js/navbar-chat.js"></script>
 
 </body>
 </html>

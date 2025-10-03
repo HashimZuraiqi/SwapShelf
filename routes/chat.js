@@ -1,234 +1,302 @@
 const express = require('express');
-const Chat = require('../models/Chat');
-const Swap = require('../models/Swap');
-const Book = require('../models/Book');
-const User = require('../models/User');
-const { requireAuth } = require('../middleware/auth');
-
 const router = express.Router();
+const User = require('../models/User');
+const { requireAuth } = require('../middleware/auth'); // Updated to use session-based auth
 
-// Create or get direct chat between users for potential swap
-router.post('/direct', requireAuth, async (req, res) => {
-    console.log('🚀 POST /api/chat/direct hit with body:', req.body);
-    console.log('👤 User ID:', req.session.user._id || req.session.user.id);
-    
-    try {
-        const { offeredBookId, requestedBookId, message } = req.body;
-        const userId = req.session.user._id || req.session.user.id;
-        
-        if (!offeredBookId || !requestedBookId) {
-            return res.status(400).json({ message: 'Both book IDs are required' });
-        }
-        
-        // Get books and verify ownership
-        const [offeredBook, requestedBook] = await Promise.all([
-            Book.findById(offeredBookId).populate('owner', 'username fullname'),
-            Book.findById(requestedBookId).populate('owner', 'username fullname')
-        ]);
-        
-        if (!offeredBook || !requestedBook) {
-            return res.status(404).json({ message: 'Books not found' });
-        }
-        
-        if (offeredBook.owner._id.toString() !== userId.toString()) {
-            return res.status(403).json({ message: 'You can only offer your own books' });
-        }
-        
-        const otherUserId = requestedBook.owner._id;
-        const currentUser = await User.findById(userId);
-        
-        if (!currentUser) {
-            return res.status(404).json({ message: 'User not found' });
-        }
-        
-        // Check for existing swap between these books
-        let existingSwap = await Swap.findOne({
-            requester: userId,
-            'requestedBook.id': requestedBookId,
-            'offeredBooks.id': offeredBookId,
-            status: { $in: ['Pending', 'Accepted', 'In Progress'] }
-        });
-        
-        if (!existingSwap) {
-            // Create a new swap request
-            existingSwap = new Swap({
-                requester: userId,
-                requesterName: currentUser.fullname,
-                owner: otherUserId,
-                ownerName: requestedBook.owner.fullname,
-                requestedBook: {
-                    id: requestedBook._id,
-                    title: requestedBook.title,
-                    author: requestedBook.author
-                },
-                offeredBooks: [{
-                    id: offeredBook._id,
-                    title: offeredBook.title,
-                    author: offeredBook.author
-                }],
-                message: message || 'Hi! I\'m interested in swapping books with you.',
-                status: 'Pending',
-                negotiationHistory: [{
-                    from: userId,
-                    fromName: currentUser.fullname,
-                    message: message || 'Initial chat request',
-                    action: 'Message',
-                    timestamp: new Date()
-                }]
-            });
-            
-            await existingSwap.save();
-            
-            // Update book stats
-            await Book.findByIdAndUpdate(requestedBookId, {
-                $inc: { 'stats.swapRequests': 1 }
-            });
-        }
-        
-        // Return the swap ID for chat
-        res.status(201).json({
-            success: true,
-            message: 'Chat initialized successfully!',
-            swapId: existingSwap._id,
-            swap: existingSwap
-        });
-        
-    } catch (error) {
-        console.error('Create direct chat error:', error);
-        res.status(500).json({ message: 'Server error' });
-    }
-});
+// Chat room model (we'll create this)
+const ChatRoom = require('../models/ChatRoom');
+const Message = require('../models/Message');
 
-// Get chat for a specific swap
-router.get('/swap/:swapId', requireAuth, async (req, res) => {
+// Search users for chat
+router.get('/api/users/search', requireAuth, async (req, res) => {
     try {
-        const { swapId } = req.params;
-        const userId = req.session.user._id || req.session.user.id;
+        const { q } = req.query;
         
-        // Verify user is part of the swap
-        const swap = await Swap.findById(swapId)
-            .populate('requester', 'username fullname')
-            .populate('owner', 'username fullname');
-            
-        if (!swap) {
-            return res.status(404).json({ message: 'Swap not found' });
+        if (!q || q.length < 2) {
+            return res.json({ users: [] });
         }
         
-        const isParticipant = swap.requester._id.toString() === userId.toString() || 
-                             swap.owner._id.toString() === userId.toString();
-                             
-        if (!isParticipant) {
-            return res.status(403).json({ message: 'Access denied' });
-        }
+        const currentUserId = req.session.user._id || req.session.user.id;
         
-        let chat = await Chat.findOne({ swapId })
-            .populate('messages.sender', 'username fullname')
-            .populate('participants', 'username fullname');
-            
-        if (!chat) {
-            // Create chat if it doesn't exist
-            chat = new Chat({
-                swapId,
-                participants: [swap.requester._id, swap.owner._id],
-                messages: []
-            });
-            await chat.save();
-            
-            // Populate the new chat
-            chat = await Chat.findById(chat._id)
-                .populate('messages.sender', 'username fullname')
-                .populate('participants', 'username fullname');
-        }
-        
-        // Mark messages as read for current user
-        const hasUnread = chat.messages.some(msg => 
-            !msg.read && msg.sender._id.toString() !== userId.toString()
-        );
-        
-        if (hasUnread) {
-            chat.messages.forEach(msg => {
-                if (msg.sender._id.toString() !== userId.toString()) {
-                    msg.read = true;
+        const users = await User.find({
+            $and: [
+                { _id: { $ne: currentUserId } }, // Exclude current user
+                {
+                    $or: [
+                        { username: { $regex: q, $options: 'i' } },
+                        { fullname: { $regex: q, $options: 'i' } }
+                    ]
                 }
-            });
-            await chat.save();
-        }
+            ]
+        })
+        .select('username fullname profileImage')
+        .limit(10);
         
-        res.json({ 
-            chat, 
-            swap: {
-                _id: swap._id,
-                offeredBook: swap.offeredBook,
-                requestedBook: swap.requestedBook,
-                status: swap.status,
-                requester: swap.requester,
-                owner: swap.owner
-            }
-        });
+        res.json({ users });
     } catch (error) {
-        console.error('Get chat error:', error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error searching users:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 
-// Send message
-router.post('/swap/:swapId/message', requireAuth, async (req, res) => {
+// Get current user data for chat
+router.get('/api/auth/me', requireAuth, async (req, res) => {
     try {
-        const { swapId } = req.params;
-        const { content } = req.body;
         const userId = req.session.user._id || req.session.user.id;
+        const user = await User.findById(userId)
+            .select('username fullname profileImage');
+        
+        if (!user) {
+            // Return session data if DB user not found
+            return res.json({
+                _id: req.session.user._id || req.session.user.id,
+                username: req.session.user.username,
+                fullname: req.session.user.fullname,
+                profileImage: req.session.user.profileImage || '/images/default-avatar.png'
+            });
+        }
+        
+        res.json(user);
+    } catch (error) {
+        console.error('Error getting user data:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Get chat rooms for current user with pagination and search
+router.get('/api/chat/rooms', requireAuth, async (req, res) => {
+    try {
+        const currentUserId = req.session.user._id || req.session.user.id;
+        
+        // Extract pagination and search parameters
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 20;
+        const searchQuery = req.query.search || '';
+        const skip = (page - 1) * limit;
+        
+        console.log('📊 Chat rooms request:', { currentUserId, page, limit, searchQuery, skip });
+        
+        // Build the base query
+        let query = { participants: currentUserId };
+        
+        // Get total count for pagination (before search filtering)
+        const totalCount = await ChatRoom.countDocuments(query);
+        
+        // Get chat rooms with pagination
+        let chatRooms = await ChatRoom.find(query)
+            .populate({
+                path: 'participants',
+                select: 'username fullname profileImage'
+            })
+            .populate({
+                path: 'lastMessage',
+                select: 'content createdAt sender'
+            })
+            .sort({ updatedAt: -1 })
+            .skip(skip)
+            .limit(limit);
+        
+        // If searching, filter the results after population
+        if (searchQuery) {
+            console.log('🔍 Filtering chat rooms with search query:', searchQuery);
+            chatRooms = chatRooms.filter(room => {
+                const otherUser = room.participants.find(p => p._id.toString() !== currentUserId.toString());
+                if (!otherUser) return false;
+                
+                const searchLower = searchQuery.toLowerCase();
+                const matchesSearch = 
+                    (otherUser.username && otherUser.username.toLowerCase().includes(searchLower)) ||
+                    (otherUser.fullname && otherUser.fullname.toLowerCase().includes(searchLower));
+                
+                console.log(`🔍 Checking user ${otherUser.fullname || otherUser.username}: ${matchesSearch}`);
+                return matchesSearch;
+            });
+            console.log(`🔍 Search filtered results: ${chatRooms.length} rooms found`);
+        }
+        
+        // Format the response
+        const rooms = chatRooms.map(room => {
+            const otherUser = room.participants.find(p => p._id.toString() !== currentUserId.toString());
+            return {
+                _id: room._id,
+                otherUser: {
+                    id: otherUser._id,
+                    name: otherUser.fullname || otherUser.username,
+                    avatar: otherUser.profileImage || '/images/default-avatar.png'
+                },
+                lastMessage: room.lastMessage ? room.lastMessage.content : null,
+                updatedAt: room.updatedAt,
+                unreadCount: 0 // TODO: Implement unread count
+            };
+        });
+        
+        // Calculate pagination info
+        const totalPages = Math.ceil(totalCount / limit);
+        const hasMore = page < totalPages;
+        
+        // Return paginated response
+        res.json({
+            conversations: rooms,
+            currentPage: page,
+            totalPages: totalPages,
+            totalCount: totalCount,
+            hasMore: hasMore
+        });
+        
+        console.log('✅ Chat rooms response:', {
+            roomsCount: rooms.length,
+            currentPage: page,
+            totalPages: totalPages,
+            totalCount: totalCount
+        });
+    } catch (error) {
+        console.error('Error fetching chat rooms:', error);
+        res.status(500).json({
+            conversations: [],
+            currentPage: 1,
+            totalPages: 0,
+            totalCount: 0,
+            hasMore: false,
+            error: 'Failed to fetch conversations'
+        });
+    }
+});
+
+// Get messages for a specific chat room
+router.get('/api/chat/rooms/:roomId/messages', requireAuth, async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const { page = 1, limit = 50 } = req.query;
+        const currentUserId = req.session.user._id || req.session.user.id;
+        
+        // Verify user is participant in this room
+        const room = await ChatRoom.findOne({
+            _id: roomId,
+            participants: currentUserId
+        });
+        
+        if (!room) {
+            return res.status(404).json({ error: 'Chat room not found' });
+        }
+        
+        const messages = await Message.find({ chatRoom: roomId })
+            .populate('sender', 'username fullname profileImage')
+            .sort({ createdAt: -1 })
+            .limit(limit * 1)
+            .skip((page - 1) * limit);
+            
+        res.json(messages.reverse()); // Reverse to show oldest first
+    } catch (error) {
+        console.error('Error fetching messages:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Create or get chat room with another user
+router.post('/api/chat/rooms', requireAuth, async (req, res) => {
+    try {
+        const { otherUserId } = req.body;
+        const currentUserId = req.session.user._id || req.session.user.id;
+        
+        if (!otherUserId || otherUserId === currentUserId.toString()) {
+            return res.status(400).json({ error: 'Invalid user ID' });
+        }
+        
+        console.log('🔄 Creating/getting chat room between:', currentUserId, 'and', otherUserId);
+        
+        // Check if chat room already exists
+        let chatRoom = await ChatRoom.findOne({
+            participants: { $all: [currentUserId, otherUserId] }
+        }).populate('participants', 'username fullname profileImage');
+        
+        if (chatRoom) {
+            console.log('✅ Found existing chat room:', chatRoom._id);
+            return res.json(chatRoom);
+        }
+        
+        // Create new chat room
+        console.log('🆕 Creating new chat room');
+        chatRoom = new ChatRoom({
+            participants: [currentUserId, otherUserId]
+        });
+        
+        await chatRoom.save();
+        console.log('✅ Chat room created with ID:', chatRoom._id);
+        
+        // Populate the participants
+        chatRoom = await ChatRoom.findById(chatRoom._id)
+            .populate('participants', 'username fullname profileImage');
+            
+        res.json(chatRoom);
+    } catch (error) {
+        console.error('❌ Error creating/getting chat room:', error);
+        
+        // Handle duplicate key error by trying to find existing room
+        if (error.code === 11000) {
+            try {
+                console.log('🔍 Duplicate key error, searching for existing room...');
+                const { otherUserId } = req.body;
+                const currentUserId = req.session.user._id || req.session.user.id;
+                
+                const existingRoom = await ChatRoom.findOne({
+                    participants: { $all: [currentUserId, otherUserId] }
+                }).populate('participants', 'username fullname profileImage');
+                
+                if (existingRoom) {
+                    console.log('✅ Found existing room after duplicate error:', existingRoom._id);
+                    return res.json(existingRoom);
+                }
+            } catch (findError) {
+                console.error('❌ Error finding existing room:', findError);
+            }
+        }
+        
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
+
+// Send a message
+router.post('/api/chat/rooms/:roomId/messages', requireAuth, async (req, res) => {
+    try {
+        const { roomId } = req.params;
+        const { content } = req.body;
+        const currentUserId = req.session.user._id || req.session.user.id;
         
         if (!content || content.trim().length === 0) {
-            return res.status(400).json({ message: 'Message content is required' });
+            return res.status(400).json({ error: 'Message content is required' });
         }
         
-        if (content.length > 1000) {
-            return res.status(400).json({ message: 'Message too long' });
-        }
-        
-        // Verify user is part of the swap
-        const swap = await Swap.findById(swapId);
-        if (!swap) {
-            return res.status(404).json({ message: 'Swap not found' });
-        }
-        
-        const isParticipant = swap.requester.toString() === userId.toString() || 
-                             swap.owner.toString() === userId.toString();
-                             
-        if (!isParticipant) {
-            return res.status(403).json({ message: 'Access denied' });
-        }
-        
-        let chat = await Chat.findOne({ swapId });
-        if (!chat) {
-            chat = new Chat({
-                swapId,
-                participants: [swap.requester, swap.owner],
-                messages: []
-            });
-        }
-        
-        // Add message
-        chat.messages.push({
-            sender: userId,
-            content: content.trim(),
-            read: false
+        // Verify user is participant in this room
+        const room = await ChatRoom.findOne({
+            _id: roomId,
+            participants: currentUserId
         });
         
-        chat.lastActivity = new Date();
-        await chat.save();
+        if (!room) {
+            return res.status(404).json({ error: 'Chat room not found' });
+        }
         
-        // Populate the new message
-        const populatedChat = await Chat.findById(chat._id)
-            .populate('messages.sender', 'username fullname');
-            
-        const newMessage = populatedChat.messages[populatedChat.messages.length - 1];
+        // Create the message
+        const message = new Message({
+            chatRoom: roomId,
+            sender: currentUserId,
+            content: content.trim()
+        });
         
-        res.json({ message: newMessage });
+        await message.save();
         
+        // Update room's last message and updatedAt
+        room.lastMessage = message._id;
+        room.updatedAt = new Date();
+        await room.save();
+        
+        // Populate sender info for response
+        await message.populate('sender', 'username fullname profileImage');
+        
+        res.json(message);
     } catch (error) {
-        console.error('Send message error:', error);
-        res.status(500).json({ message: 'Server error' });
+        console.error('Error sending message:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
 });
 

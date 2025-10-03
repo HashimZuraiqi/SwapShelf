@@ -4,9 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Profile | BookSwap</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css">
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.0/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/style.css">
+    <!-- Navbar Chat System CSS -->
+    <link rel="stylesheet" href="/css/navbar-chat.css">
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
@@ -41,81 +43,44 @@
         .profile-avatar-wrapper {
             position: relative;
             display: inline-block;
-            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
         }
         
-        .profile-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            object-fit: cover;
-            border: 4px solid rgba(59, 183, 251, 0.2);
-            box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3);
-            transition: all 0.3s ease;
+        /* Force vertical layout for profile elements */
+        .header-content {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            text-align: center !important;
+        }
+        
+        .title-section {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 100% !important;
+        }
+        
+        .profile-avatar-wrapper:hover {
+            transform: scale(1.05);
         }
         
         .profile-avatar:hover {
-            transform: scale(1.05);
             border-color: rgba(59, 183, 251, 0.4);
             box-shadow: 0 12px 40px rgba(59, 183, 251, 0.5);
-        }
-        
-        .default-avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            border: 4px solid rgba(59, 183, 251, 0.2);
-            box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3);
-            transition: all 0.3s ease;
-            overflow: hidden;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #6B7280, #9CA3AF);
         }
         
         .default-avatar:hover {
-            transform: scale(1.05);
             border-color: rgba(59, 183, 251, 0.4);
             box-shadow: 0 12px 40px rgba(59, 183, 251, 0.5);
-        }
-        
-        .default-avatar svg {
-            transition: all 0.3s ease;
-        }
-        
-        .upload-overlay {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-            cursor: pointer;
         }
         
         .profile-avatar-wrapper:hover .upload-overlay {
             opacity: 1;
         }
         
-        /* Username Badge Animations */
+        /* Username Badge Animations - Restored Original */
         .username-badge {
-            display: inline-block;
-            background: linear-gradient(135deg, #3BB7FB, #2196F3);
-            color: white;
-            padding: 8px 20px;
-            border-radius: 25px;
-            font-size: 1.1rem;
-            font-weight: 600;
-            margin-bottom: 1.5rem;
-            box-shadow: 0 4px 15px rgba(59, 183, 251, 0.3);
-            border: 2px solid rgba(255, 255, 255, 0.2);
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             animation: fadeInUp 0.8s ease-out 0.3s both;
             cursor: pointer;
@@ -137,7 +102,7 @@
         .username-badge:hover {
             transform: translateY(-3px) scale(1.05);
             box-shadow: 0 8px 25px rgba(59, 183, 251, 0.5);
-            background: linear-gradient(135deg, #2196F3, #1976D2);
+            border-color: rgba(59, 183, 251, 0.4);
         }
         
         .username-badge:hover::before {
@@ -172,6 +137,17 @@
         .username-badge:focus {
             outline: none;
             animation: pulse 1.5s infinite;
+        }
+        
+        /* Ensure action buttons stay centered and follow vertical flow */
+        .header-action {
+            width: 100% !important;
+            display: flex !important;
+            justify-content: center !important;
+        }
+        
+        .header-action .d-flex {
+            justify-content: center !important;
         }
         
         .stats-grid {
@@ -452,6 +428,14 @@
 
         <!-- Profile dropdown on far right -->
         <ul class="navbar-nav ml-auto">
+          <!-- Chat Toggle Button -->
+          <li class="nav-item">
+            <a href="#" class="nav-link" id="chatToggle">
+              <i class="bi bi-chat-dots"></i>
+              <span class="d-none d-lg-inline">Chat</span>
+              <span class="badge badge-danger ml-1" id="chatBadge" style="display: none;">0</span>
+            </a>
+          </li>
           <li class="nav-item dropdown">
             <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button"
                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
@@ -467,9 +451,12 @@
   </div>
 </nav>
 
+<!-- Include Navbar Chat Component -->
+<%- include('partials/navbar-chat') %>
+
 <main class="main-content">
     <!-- Profile Header Section -->
-    <div class="profile-header">
+    <div class="profile-header" style="background: linear-gradient(135deg, #1a1b21 0%, #23242a 50%, #1e1f24 100%); border: 1px solid rgba(59, 183, 251, 0.1); border-radius: 20px; padding: 3rem 2rem 2.5rem; position: relative; overflow: hidden; margin: 1.5rem; box-shadow: 0 8px 32px rgba(0,0,0,0.3);">
         <!-- Subtle Background Pattern -->
         <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-image: radial-gradient(circle at 25% 25%, rgba(59, 183, 251, 0.05) 0%, transparent 50%), radial-gradient(circle at 75% 75%, rgba(246, 180, 67, 0.05) 0%, transparent 50%); pointer-events: none; border-radius: 20px;"></div>
         
@@ -477,48 +464,56 @@
             <div class="row justify-content-center">
                 <div class="col-lg-10 col-xl-8">
                     <div class="header-content text-center" style="position: relative; z-index: 2;">
-                        <!-- Profile Avatar Section -->
-                        <div class="profile-avatar-wrapper">
-                            <% if (user && user.profilePhoto && user.profilePhoto !== '/images/default-avatar.png') { %>
-                                <img src="<%= user.profilePhoto %>" alt="Profile" class="profile-avatar">
-                            <% } else { %>
-                                <div class="default-avatar">
-                                    <svg width="120" height="120" viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <circle cx="60" cy="60" r="60" fill="#6B7280"/>
-                                        <circle cx="60" cy="45" r="20" fill="#9CA3AF"/>
-                                        <path d="M30 100 C30 85, 42 75, 60 75 C78 75, 90 85, 90 100" fill="#9CA3AF"/>
-                                    </svg>
+                        <!-- Main Title Section with Profile Picture as Icon -->
+                        <div class="title-section mb-4">
+                            <!-- Profile Avatar Section (replacing icon wrapper) -->
+                            <div class="profile-avatar-wrapper" style="margin: 0 auto 1.5rem; position: relative; display: inline-block;">
+                                <% if (user && user.profilePhoto && user.profilePhoto !== '/images/default-avatar.png') { %>
+                                    <img src="<%= user.profilePhoto %>" alt="Profile" class="profile-avatar" style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 4px solid rgba(59, 183, 251, 0.2); box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3); transition: all 0.3s ease;">
+                                <% } else { %>
+                                    <div class="default-avatar" style="width: 100px; height: 100px; border-radius: 50%; border: 4px solid rgba(59, 183, 251, 0.2); box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3); transition: all 0.3s ease; overflow: hidden; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #6B7280, #9CA3AF);">
+                                        <svg width="100" height="100" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                            <circle cx="50" cy="50" r="50" fill="#6B7280"/>
+                                            <circle cx="50" cy="37.5" r="16.5" fill="#9CA3AF"/>
+                                            <path d="M25 83.5 C25 70.5, 35 62.5, 50 62.5 C65 62.5, 75 70.5, 75 83.5" fill="#9CA3AF"/>
+                                        </svg>
+                                    </div>
+                                <% } %>
+                                <div class="upload-overlay" onclick="document.getElementById('photo-upload').click();" style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: rgba(0, 0, 0, 0.7); border-radius: 50%; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s ease; cursor: pointer;">
+                                    <i class="bi bi-camera" style="color: #fff; font-size: 1.5rem;"></i>
                                 </div>
-                            <% } %>
-                            <div class="upload-overlay" onclick="document.getElementById('photo-upload').click();">
-                                <i class="bi bi-camera" style="color: #fff; font-size: 1.5rem;"></i>
+                                <input type="file" id="photo-upload" name="profilePhoto" accept="image/*" style="display: none;">
+                                <!-- Glow effect similar to library -->
+                                <div style="position: absolute; top: -6px; left: -6px; right: -6px; bottom: -6px; background: linear-gradient(135deg, #3BB7FB, #34a0e0); border-radius: 50%; opacity: 0.3; filter: blur(8px); z-index: -1;"></div>
                             </div>
-                            <input type="file" id="photo-upload" name="profilePhoto" accept="image/*" style="display: none;">
+                            
+                            <h1 class="page-title" style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 1rem; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                                <%= user ? (user.fullname || user.name) : 'Your Profile' %>
+                            </h1>
+                            
+                            <!-- Username Badge - Original Color Scheme Restored -->
+                            <div class="username-badge" style="display: inline-block; background: linear-gradient(135deg, #3BB7FB, #2196F3); color: white; padding: 8px 20px; border-radius: 25px; font-size: 1.1rem; font-weight: 600; margin-bottom: 1.5rem; box-shadow: 0 4px 15px rgba(59, 183, 251, 0.3); border: 2px solid rgba(255, 255, 255, 0.2);" tabindex="0">
+                                <i class="bi bi-person-circle mr-2"></i>
+                                @<%= user ? user.username : 'username' %>
+                            </div>
                         </div>
                         
-                        <!-- User Info -->
-                        <h1 class="page-title" style="font-size: 3rem; font-weight: 900; color: #fff; margin: 0 0 0.5rem; letter-spacing: -1px; background: linear-gradient(135deg, #fff, #e6e9ee); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-                            <%= user ? (user.fullname || user.name) : 'Your Profile' %>
-                        </h1>
-                        
-                        <div class="username-badge" tabindex="0">
-                            <i class="bi bi-person-circle mr-2"></i>
-                            @<%= user ? user.username : 'username' %>
-                        </div>
-                        
-                        <p style="color: #b0b3b8; font-size: 1.1rem; margin-bottom: 2rem; max-width: 600px; margin-left: auto; margin-right: auto;">
+                        <!-- Email Subtitle -->
+                        <p class="subtitle" style="font-size: 1.2rem; color: #b0b3b8; line-height: 1.7; margin: 0 auto 2rem; max-width: 560px; opacity: 0.9;">
                             <i class="bi bi-envelope mr-2" style="color: #3BB7FB;"></i>
                             <%= user ? user.email : 'user@example.com' %>
                         </p>
                         
-                        <!-- Quick Actions -->
-                        <div class="d-flex flex-wrap justify-content-center mb-4" style="gap: 15px;">
-                            <button class="btn btn-gradient px-4 py-2" onclick="editProfile()">
-                                <i class="bi bi-pencil mr-2"></i>Edit Profile
-                            </button>
-                            <a href="/history" class="btn btn-outline-light px-4 py-2">
-                                <i class="bi bi-clock-history mr-2"></i>Activity History
-                            </a>
+                        <!-- Action Buttons -->
+                        <div class="header-action">
+                            <div class="d-flex flex-wrap justify-content-center" style="gap: 15px;">
+                                <button class="btn btn-gradient px-4 py-2" onclick="editProfile()" style="font-weight: 700; border-radius: 50px; box-shadow: 0 6px 25px rgba(59, 183, 251, 0.4); transition: all 0.3s ease; border: none;">
+                                    <i class="bi bi-pencil mr-2"></i>Edit Profile
+                                </button>
+                                <a href="/history" class="btn btn-outline-light px-4 py-2" style="border-radius: 50px; font-weight: 600; transition: all 0.3s ease;">
+                                    <i class="bi bi-clock-history mr-2"></i>Activity History
+                                </a>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -770,9 +765,8 @@
 </main>
 
 <!-- Scripts -->
-<script src="https://code.jquery.com/jquery-3.4.1.slim.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="/js/navigation.js"></script>
 
 <script>
@@ -1007,12 +1001,9 @@
     document.head.appendChild(style);
 </script>
 
-<!-- Include Global Chat Widget -->
-<!-- Include Real-Time Chat System -->
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-<link rel="stylesheet" href="/css/realTimeChat.css">
+<!-- Include Navbar Chat System -->
 <script src="/socket.io/socket.io.js"></script>
-<script src="/js/realTimeChat.js"></script>
+<script src="/js/navbar-chat.js"></script>
 
 </body>
 </html>
