@@ -517,6 +517,54 @@
         .discovery-controls {
             display: flex;
             gap: 8px;
+            align-items: center;
+        }
+
+        /* Location Toggle Styles */
+        .location-toggle-wrapper {
+            text-align: center;
+        }
+
+        .location-toggle {
+            display: flex;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 25px;
+            padding: 2px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .toggle-btn {
+            padding: 6px 12px;
+            border: none;
+            border-radius: 20px;
+            background: transparent;
+            color: #b0b7c3;
+            font-size: 0.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .toggle-btn.active {
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            color: white;
+            box-shadow: 0 4px 15px rgba(59, 183, 251, 0.3);
+        }
+
+        .toggle-btn:hover:not(.active) {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .location-mode-info {
+            font-size: 0.7rem;
+            margin-top: 4px;
+            display: block;
+            min-height: 14px;
         }
 
         /* Modern Button Styles */
@@ -1352,6 +1400,20 @@
                                     <p class="text-muted mb-0">Find amazing books available for swap in your area</p>
                                 </div>
                                 <div class="discovery-controls">
+                                    <!-- Global/Local Toggle -->
+                                    <div class="location-toggle-wrapper mr-3">
+                                        <div class="location-toggle">
+                                            <button class="toggle-btn active" id="local-toggle" onclick="setLocationMode('local')">
+                                                <i class="bi bi-geo-alt"></i> Local
+                                            </button>
+                                            <button class="toggle-btn" id="global-toggle" onclick="setLocationMode('global')">
+                                                <i class="bi bi-globe"></i> Global
+                                            </button>
+                                        </div>
+                                        <small class="location-mode-info text-muted">
+                                            <span id="location-info">Showing books in your area • Swap available</span>
+                                        </small>
+                                    </div>
                                     <button class="btn-modern-outline btn-sm mr-2" onclick="showAdvancedFilters()">
                                         <i class="bi bi-funnel"></i> Filters
                                     </button>
@@ -1866,6 +1928,8 @@ let currentStep = 1;
 let allBooks = [];
 let filteredBooks = [];
 let discoveryState = { items: [], page: 1, pageSize: 12 };
+let currentLocationMode = 'local'; // 'local' or 'global'
+let userLocation = '<%= user.location || "" %>';
 
 // Initialize the page
 function initializeSwapMatcher() {
@@ -1926,8 +1990,8 @@ function displayAvailableBooks(books) {
     allBooks = books;
     filteredBooks = [...books];
     
-    updateBooksCount();
-    renderBooksGrid();
+    // Apply initial location filter
+    applyLocationFilter();
 }
 
 // Render the books grid
@@ -1971,9 +2035,14 @@ function renderBooksGrid() {
                     <p class="discovery-owner">
                         <i class="bi bi-person"></i> ${ownerName}
                     </p>
-                    <button class="discovery-swap-btn" onclick="event.stopPropagation(); selectBookForSwap('${book._id}')">
-                        <i class="bi bi-arrow-left-right"></i> Start Swap
-                    </button>
+                    ${currentLocationMode === 'local' ? 
+                        `<button class="discovery-swap-btn btn-primary" onclick="event.stopPropagation(); selectBookForSwap('${book._id}')">
+                            <i class="bi bi-arrow-left-right"></i> Start Swap
+                        </button>` :
+                        `<button class="discovery-swap-btn btn-secondary" disabled>
+                            <i class="bi bi-eye"></i> View Only
+                        </button>`
+                    }
                 </div>
             </div>
         `;
@@ -2055,6 +2124,12 @@ function changeBooksPage(page) {
 // Select a book for swap (opens the modal)
 function selectBookForSwap(bookId) {
     console.log('📖 Selected book for swap:', bookId);
+    
+    // Check if we're in global mode
+    if (currentLocationMode === 'global') {
+        showErrorMessage('Swapping is only available in Local mode. Switch to Local to swap books in your area.');
+        return;
+    }
     
     // Store the target book
     targetBook = bookId;
@@ -2328,6 +2403,66 @@ function refreshDiscovery() {
     loadAllAvailableBooks();
 }
 
+// Location mode functions
+function setLocationMode(mode) {
+    console.log('📍 Setting location mode to:', mode);
+    currentLocationMode = mode;
+    
+    // Update UI
+    $('.toggle-btn').removeClass('active');
+    $(`#${mode}-toggle`).addClass('active');
+    
+    // Update info text
+    const infoText = mode === 'local' 
+        ? 'Showing books in your area • Swap available' 
+        : 'Browsing all books globally • View only';
+    $('#location-info').text(infoText);
+    
+    // Apply location filtering
+    applyLocationFilter();
+}
+
+function applyLocationFilter() {
+    if (currentLocationMode === 'local') {
+        // Filter books by user's location
+        if (userLocation && userLocation.trim()) {
+            filteredBooks = allBooks.filter(book => {
+                if (!book.owner || !book.owner.location) return false;
+                return book.owner.location.toLowerCase().includes(userLocation.toLowerCase());
+            });
+        } else {
+            // If user has no location set, show all books but with warning
+            filteredBooks = [...allBooks];
+            console.warn('⚠️ User location not set, showing all books');
+        }
+        
+        // Enable swap buttons for local mode
+        $('.discovery-swap-btn').prop('disabled', false).text('Swap').removeClass('btn-secondary').addClass('btn-primary');
+    } else {
+        // Global mode - show all books but disable swap functionality
+        filteredBooks = [...allBooks];
+        
+        // Disable swap buttons for global mode
+        $('.discovery-swap-btn').prop('disabled', true).text('View Only').removeClass('btn-primary').addClass('btn-secondary');
+    }
+    
+    // Re-apply other filters
+    const currentGenre = $('#genre-filter').val();
+    const currentCondition = $('#condition-filter').val();
+    
+    if (currentGenre) {
+        filteredBooks = filteredBooks.filter(book => book.genre === currentGenre);
+    }
+    
+    if (currentCondition) {
+        filteredBooks = filteredBooks.filter(book => book.condition === currentCondition);
+    }
+    
+    // Update display
+    updateBooksCount();
+    renderBooksGrid();
+}
+
 // Setup event listeners
 function setupEventListeners() {
     // Filter change events
@@ -2450,7 +2585,7 @@ function submitSwapRequest() {
         $('#swapRequestModal').modal('hide');
         
         // Show success message with animation
-        showSuccessMessage('🎉 Swap request sent successfully! The book owner will be notified.');
+        showSuccessMessage('🎉 Swap request sent successfully! You can send additional requests with the same book to other people. If one request is accepted, all others will be automatically cancelled.');
         
         // Refresh the page to update the UI
         setTimeout(() => {

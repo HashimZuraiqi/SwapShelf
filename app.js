@@ -1486,6 +1486,15 @@ app.get('/swap-matcher', async (req, res) => {
     
     const user = await User.findById(userId);
     if (!user && req.session?.user) return res.redirect('/login');
+    
+    // Create a fallback user object if no user found (for testing)
+    const safeUser = user || {
+      _id: userId,
+      username: 'testuser',
+      fullname: 'Test User',
+      location: 'Test City',
+      email: 'test@example.com'
+    };
 
     // Get user's own books (available for swapping)
     const userBooks = await Book.find({ owner: userId, availability: 'available' }).sort({ createdAt: -1 }).lean();
@@ -1543,11 +1552,11 @@ app.get('/swap-matcher', async (req, res) => {
     console.log(`✅ Completed enhancing user books with Google Books images`);
 
     // Add enhanced books to user object for template
-    user.books = enhancedUserBooks;
+    safeUser.books = enhancedUserBooks;
 
     // Get available books for swapping (exclude user's own books)
     const availableBooks = await Book.find({ owner: { $ne: userId }, availability: 'available' })
-    .populate('owner', 'username fullname')
+    .populate('owner', 'username fullname location')
     .sort({ createdAt: -1 })
     .limit(50)
     .lean();
@@ -1591,8 +1600,8 @@ app.get('/swap-matcher', async (req, res) => {
 
     // Get user stats
     const userStats = {
-      rewardPoints: user.rewardPoints || 0,
-      swapsCompleted: user.totalSwapsCompleted || 0,
+      rewardPoints: safeUser.rewardPoints || 0,
+      swapsCompleted: safeUser.totalSwapsCompleted || 0,
       booksOwned: await Book.countDocuments({ owner: userId }),
       pendingSwaps: await Swap.countDocuments({
         $or: [
@@ -1646,9 +1655,9 @@ app.get('/swap-matcher', async (req, res) => {
     res.render('swap-matcher', { 
       userLoggedIn: true, 
       activePage: 'swap-matcher', 
-      user, 
-      userName: user.username || user.fullname || 'Reader',
-      userPhoto: user.profilePicture || '/images/default-avatar.png',
+      user: safeUser, 
+      userName: safeUser.username || safeUser.fullname || 'Reader',
+      userPhoto: safeUser.profilePicture || '/images/default-avatar.png',
       availableBooks,
       userSwaps,
       userStats,

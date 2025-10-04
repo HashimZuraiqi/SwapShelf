@@ -228,7 +228,7 @@ class BookController {
             
             const [books, totalBooks] = await Promise.all([
                 Book.find(query)
-                    .populate('owner', 'fullname location')
+                    .populate('owner', 'fullname location username')
                     .sort(sortOptions)
                     .skip(skip)
                     .limit(parseInt(limit)),

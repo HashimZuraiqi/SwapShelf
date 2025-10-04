@@ -148,10 +148,8 @@ class SwapController {
                 $inc: { 'stats.swapRequests': 1 }
             });
             
-            // Mark requested book as unavailable during negotiation
-            await Book.findByIdAndUpdate(requestedBookId, {
-                availability: 'unavailable'
-            });
+            // Keep book available for multiple requests
+            // Note: Book will only be marked unavailable when a swap is accepted
             
             res.status(201).json({
                 success: true,
@@ -259,7 +257,47 @@ class SwapController {
                     timestamp: new Date()
                 });
 
-                // Optional immediate ownership swap: mark statuses as swapped and exchange owners
+                // Auto-cancel all other pending requests for the same books
+                try {
+                    console.log('🔄 Auto-cancelling other pending requests...');
+                    
+                    // Get all book IDs involved in this swap
+                    const allBookIds = [swap.requestedBook.id];
+                    if (swap.offeredBooks && swap.offeredBooks.length > 0) {
+                        allBookIds.push(...swap.offeredBooks.map(b => b.id));
+                    }
+                    
+                    // Find all other pending swaps that involve any of these books
+                    const otherPendingSwaps = await Swap.find({
+                        _id: { $ne: swap._id }, // Exclude current swap
+                        status: 'Pending',
+                        $or: [
+                            { 'requestedBook.id': { $in: allBookIds } },
+                            { 'offeredBooks.id': { $in: allBookIds } }
+                        ]
+                    });
+                    
+                    console.log(`📋 Found ${otherPendingSwaps.length} other pending swaps to cancel`);
+                    
+                    // Cancel each swap with appropriate messaging
+                    for (const otherSwap of otherPendingSwaps) {
+                        otherSwap.status = 'Cancelled';
+                        otherSwap.negotiationHistory.push({
+                            from: null, // System action
+                            fromName: 'System',
+                            message: 'This swap request was automatically cancelled because one of the books involved was accepted in another swap.',
+                            action: 'Cancel',
+                            timestamp: new Date()
+                        });
+                        await otherSwap.save();
+                        console.log(`❌ Cancelled swap ${otherSwap._id}`);
+                    }
+                    
+                } catch (cancelError) {
+                    console.error('❌ Error auto-cancelling other swaps:', cancelError);
+                }
+
+                // Mark books as swapped
                 try {
                     const requestedBook = await Book.findById(swap.requestedBook.id);
                     if (requestedBook) {
