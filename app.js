@@ -14,6 +14,7 @@ const Book = require('./models/Book'); // Mongoose Book model
 const Swap = require('./models/Swap'); // Mongoose Swap model
 const Activity = require('./models/Activity');
 const { getDashboardData } = require('./controllers/dashboardController'); // Dashboard data controller
+const GoogleBooksHelper = require('./helpers/googleBooksHelper');
 
 /**
  * Calculate user activity score based on real platform usage
@@ -1489,8 +1490,60 @@ app.get('/swap-matcher', async (req, res) => {
     // Get user's own books (available for swapping)
     const userBooks = await Book.find({ owner: userId, availability: 'available' }).sort({ createdAt: -1 }).lean();
 
-    // Add books to user object for template
-    user.books = userBooks;
+    // Enhance user books with Google Books images
+    console.log(`Enhancing ${userBooks.length} user books with Google Books images...`);
+    const enhancedUserBooks = await Promise.all(userBooks.map(async (book) => {
+        try {
+            console.log(`Processing user book: "${book.title}" by ${book.author}`);
+            
+            // If book already has a custom image, keep it
+            if (book.image && !book.image.includes('placeholder') && !book.image.includes('default')) {
+                console.log(`  ✅ Already has custom image: ${book.image}`);
+                return book;
+            }
+
+            // Try to get image from Google Books API
+            let imageUrl = null;
+            
+            // First try with ISBN if available
+            if (book.isbn) {
+                console.log(`  🔍 Searching by ISBN: ${book.isbn}`);
+                imageUrl = await GoogleBooksHelper.getBookImageByISBN(book.isbn);
+                if (imageUrl) {
+                    console.log(`  ✅ Found image by ISBN: ${imageUrl}`);
+                }
+            }
+            
+            // If no image found with ISBN, try with title and author
+            if (!imageUrl) {
+                console.log(`  🔍 Searching by title/author: "${book.title}" by ${book.author}`);
+                imageUrl = await GoogleBooksHelper.getBookImage(book.title, book.author);
+                if (imageUrl) {
+                    console.log(`  ✅ Found image by title/author: ${imageUrl}`);
+                } else {
+                    console.log(`  ❌ No image found for "${book.title}"`);
+                }
+            }
+
+            // Return book with enhanced image
+            const result = {
+                ...book,
+                image: imageUrl || book.image || '/images/placeholder-book.jpg',
+                coverImage: imageUrl || book.coverImage || book.image || '/images/placeholder-book.jpg'
+            };
+            
+            console.log(`  📸 Final image: ${result.image}`);
+            return result;
+        } catch (error) {
+            console.error(`❌ Error enhancing user book ${book.title}:`, error);
+            return book;
+        }
+    }));
+    
+    console.log(`✅ Completed enhancing user books with Google Books images`);
+
+    // Add enhanced books to user object for template
+    user.books = enhancedUserBooks;
 
     // Get available books for swapping (exclude user's own books)
     const availableBooks = await Book.find({ owner: { $ne: userId }, availability: 'available' })
