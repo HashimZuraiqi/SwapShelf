@@ -101,19 +101,41 @@ class SwapShelfChatInterface {
     bindEvents() {
         console.log('🔄 Binding chat events...');
         
-        // Chat toggle
+        // Chat toggle for desktop - NOT USED ANYMORE (removed from navbar)
         const chatToggle = document.getElementById('chatToggle');
-        console.log('📱 Chat toggle element:', chatToggle);
-        
         if (chatToggle) {
+            console.log('📱 Chat toggle (desktop) found but should not be used');
             chatToggle.addEventListener('click', (e) => {
                 e.preventDefault();
-                console.log('🎯 Chat button clicked!');
+                console.log('🎯 Chat button (desktop) clicked!');
                 this.toggleChat();
             });
-            console.log('✅ Chat toggle event bound');
+        }
+        
+        // Chat toggle for mobile - PRIMARY CHAT TOGGLE
+        const chatToggleMobile = document.getElementById('chatToggleMobile');
+        console.log('📱 Chat toggle (mobile) element:', chatToggleMobile);
+        
+        if (chatToggleMobile) {
+            chatToggleMobile.addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('🎯 Chat button (mobile) clicked!');
+                this.toggleChat();
+                
+                // Close mobile menu after opening chat
+                const navbarCollapse = document.getElementById('navbarNav');
+                if (navbarCollapse && navbarCollapse.classList.contains('show')) {
+                    // Use Bootstrap's collapse method if available
+                    if (typeof $ !== 'undefined' && $.fn.collapse) {
+                        $('#navbarNav').collapse('hide');
+                    } else {
+                        navbarCollapse.classList.remove('show');
+                    }
+                }
+            });
+            console.log('✅ Chat toggle (mobile) event bound');
         } else {
-            console.error('❌ Chat toggle element not found!');
+            console.warn('⚠️ Chat toggle (mobile) element not found');
         }
         
         // Close chat
@@ -1418,8 +1440,31 @@ document.addEventListener('DOMContentLoaded', () => {
     // Make test function globally available for debugging
     window.testChatScroll = () => window.swapShelfChat.testScroll();
     
+    // Setup badge sync function
+    window.updateChatBadges = function(count) {
+        const badgeDesktop = document.getElementById('chatBadge');
+        const badgeMobile = document.getElementById('chatBadgeMobile');
+        
+        console.log('🔔 Updating chat badges with count:', count);
+        
+        if (count > 0) {
+            if (badgeDesktop) {
+                badgeDesktop.textContent = count;
+                badgeDesktop.style.display = 'flex';
+            }
+            if (badgeMobile) {
+                badgeMobile.textContent = count;
+                badgeMobile.style.display = 'flex';
+            }
+        } else {
+            if (badgeDesktop) badgeDesktop.style.display = 'none';
+            if (badgeMobile) badgeMobile.style.display = 'none';
+        }
+    };
+    
     console.log('✅ SwapShelfChatInterface created and assigned to window.swapShelfChat');
     console.log('✅ Test function available as window.testChatScroll()');
+    console.log('✅ Badge sync function available as window.updateChatBadges(count)');
 });
 
 // Make it globally available for debugging

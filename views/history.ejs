@@ -2,8 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>History | BookSwap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.    </div>
+  </nav>
+
+  <main class="history-main">
+    <div class="container-narrow">
+      <div class="history-hero">
+        <h1 class="history-title"><i class="bi bi-clock-history"></i> Full Activity History</h1>
+        <p class="subtle">Everything you've done since you joined — neatly organized.</p>tle>History | BookSwap</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="/css/style.css"/>
@@ -104,53 +110,8 @@
   </style>
 </head>
 <body>
-  <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-    <div class="container-fluid">
-      <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 80px;">
-        <img src="./images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
-            height: 32px; 
-            width: auto; 
-            transform: scale(4);
-            filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-            transition: all 0.3s ease;
-            z-index: 10;
-            position: relative;
-        " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
-      </a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"><span class="navbar-toggler-icon"></span></button>
-      <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav mx-auto">
-          <li class="nav-item"><a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a></li>
-          <li class="nav-item"><a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a></li>
-          <li class="nav-item"><a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a></li>
-          <li class="nav-item"><a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a></li>
-          <li class="nav-item"><a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a></li>
-        </ul>
-        <ul class="navbar-nav ml-auto">
-          <!-- Chat Toggle Button -->
-          <li class="nav-item">
-            <a href="#" class="nav-link" id="chatToggle">
-              <i class="bi bi-chat-dots"></i>
-              <span class="d-none d-lg-inline">Chat</span>
-              <span class="badge badge-danger ml-1" id="chatBadge" style="display: none;">0</span>
-            </a>
-          </li>
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle active" href="#" data-toggle="dropdown"><i class="bi bi-person-circle"></i> Profile</a>
-            <div class="dropdown-menu dropdown-menu-right">
-              <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
-              <a class="dropdown-item active" href="/history"><i class="bi bi-clock-history"></i> History</a>
-              <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-            </div>
-          </li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-
-  <!-- Include Navbar Chat Component -->
-  <%- include('partials/navbar-chat') %>
-
+  <%- include('partials/navbar') %>
+  
   <main class="history-main">
     <div class="container-narrow">
       <div class="history-hero">

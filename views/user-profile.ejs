@@ -90,68 +90,7 @@
 </head>
 <body>
     <!-- Navigation -->
-    <nav class="navbar navbar-expand-lg navbar-dark custom-navbar">
-        <div class="container-fluid">
-            <a class="navbar-brand d-flex align-items-center" href="/" style="margin-left: 100px; margin-right: 150px; margin-top: 10px;">
-                <img src="/images/Untitled design(1).png" alt="BookSwap" class="logo-image" style="
-                    height: 32px; 
-                    width: auto; 
-                    transform: scale(4);
-                    filter: drop-shadow(0 3px 6px rgba(0,0,0,0.2));
-                    transition: all 0.3s ease;
-                    z-index: 10;
-                    position: relative;
-                " onmouseover="this.style.transform='scale(4.3)'" onmouseout="this.style.transform='scale(4)'"/>
-            </a>
-
-            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="/dashboard"><i class="bi bi-speedometer2"></i> Dashboard</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/library"><i class="bi bi-book"></i> My Library</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/wishlist"><i class="bi bi-heart"></i> Wishlist</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/swap-matcher"><i class="bi bi-arrow-left-right"></i> Swap Matcher</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="/rewards"><i class="bi bi-trophy"></i> Rewards</a>
-                    </li>
-                </ul>
-                
-                <ul class="navbar-nav ml-auto">
-                    <!-- Chat Toggle Button -->
-                    <li class="nav-item">
-                        <a href="#" class="nav-link" id="chatToggle">
-                            <i class="bi bi-chat-dots"></i>
-                            <span class="d-none d-lg-inline">Chat</span>
-                            <span class="badge badge-danger ml-1" id="chatBadge" style="display: none;">0</span>
-                        </a>
-                    </li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i> Profile
-                        </a>
-                        <div class="dropdown-menu dropdown-menu-right">
-                            <a class="dropdown-item" href="/me"><i class="bi bi-person"></i> My Profile</a>
-                            <a class="dropdown-item" href="/logout"><i class="bi bi-box-arrow-right"></i> Logout</a>
-                        </div>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- Include Navbar Chat Component -->
-    <%- include('partials/navbar-chat') %>
+    <%- include('partials/navbar') %>
 
     <!-- Main Content -->
     <main class="container-fluid">
