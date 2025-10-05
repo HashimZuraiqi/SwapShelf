@@ -266,6 +266,7 @@
             margin-bottom: 0.25rem;
             display: -webkit-box;
             -webkit-line-clamp: 2;
+            line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -278,6 +279,7 @@
             margin-bottom: 0.5rem;
             display: -webkit-box;
             -webkit-line-clamp: 1;
+            line-clamp: 1;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -504,57 +506,737 @@
             color: #ffffff !important;
         }
 
+        /* ========== MODERN REDESIGN STYLES ========== */
+        
+        /* Discovery Section */
+        .discovery-section .card-header {
+            background: linear-gradient(135deg, #23242a, #1E1F23);
+            border-bottom: 1px solid rgba(59, 183, 251, 0.1);
+        }
+
+        .discovery-controls {
+            display: flex;
+            gap: 8px;
+        }
+
+        /* Modern Button Styles */
+        .btn-modern {
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            border: none;
+            color: white;
+            padding: 8px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-modern:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(59, 183, 251, 0.3);
+            color: white;
+        }
+
+        .btn-modern:disabled {
+            background: #666;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .btn-modern-outline {
+            background: transparent;
+            border: 2px solid rgba(59, 183, 251, 0.3);
+            color: #3BB7FB;
+            padding: 6px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-modern-outline:hover {
+            border-color: #3BB7FB;
+            background: rgba(59, 183, 251, 0.1);
+            color: #3BB7FB;
+        }
+
+        .btn-danger-outline {
+            background: transparent;
+            border: 2px solid rgba(220, 53, 69, 0.3);
+            color: #DC3545;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .btn-danger-outline:hover {
+            border-color: #DC3545;
+            background: rgba(220, 53, 69, 0.1);
+            color: #DC3545;
+        }
+
+        /* Filter Panel */
+        .filter-panel {
+            animation: slideDown 0.3s ease;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .filter-label {
+            color: #B0B3B8;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .form-control-modern {
+            background: rgba(30, 30, 30, 0.8);
+            border: 2px solid rgba(120, 130, 150, 0.2);
+            border-radius: 10px;
+            color: #ffffff;
+            padding: 10px 16px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control-modern:focus {
+            background: rgba(30, 30, 30, 0.95);
+            border-color: #3BB7FB;
+            box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.15);
+            color: #ffffff;
+            outline: none;
+        }
+
+        .results-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .matches-counter {
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.15), rgba(102, 126, 234, 0.15));
+            border: 1px solid rgba(59, 183, 251, 0.3);
+            color: #3BB7FB;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        /* Books Discovery Grid */
+        .books-discovery-grid {
+            margin-bottom: 30px;
+        }
+
+        .discovery-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 20px;
+            padding: 20px 0;
+            align-items: stretch;
+        }
+
+        .discovery-book-card {
+            background: linear-gradient(135deg, #23242a, #1E1F23);
+            border-radius: 16px;
+            border: 1px solid rgba(120,130,150,0.1);
+            transition: all 0.3s ease;
+            overflow: hidden;
+            cursor: pointer;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .discovery-book-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+            border-color: rgba(59, 183, 251, 0.3);
+        }
+
+        .discovery-book-cover {
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            border-radius: 10px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
+            transition: transform 0.3s ease;
+        }
+
+        .discovery-book-card:hover .discovery-book-cover {
+            transform: scale(1.05);
+        }
+
+        .discovery-book-info {
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            flex-grow: 1;
+        }
+
+        .discovery-book-title {
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 4px;
+            line-height: 1.3;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .discovery-book-author {
+            color: #B0B3B8;
+            font-size: 0.8rem;
+            margin-bottom: 8px;
+        }
+
+        .discovery-book-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .discovery-genre-badge {
+            background: rgba(59, 183, 251, 0.15);
+            color: #3BB7FB;
+            padding: 3px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .discovery-condition {
+            color: #28A745;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+
+        .discovery-owner {
+            color: #B0B3B8;
+            font-size: 0.75rem;
+            margin-bottom: 8px;
+        }
+
+        .discovery-swap-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            border: none;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            margin-top: auto;
+        }
+
+        .discovery-swap-btn:hover {
+            background: linear-gradient(135deg, #2A9FE8, #5A6DD8);
+            transform: translateY(-1px);
+            color: white;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #B0B3B8;
+        }
+
+        .loading-spinner {
+            margin-bottom: 20px;
+        }
+
+        /* Modern Swap Request Modal */
+        .modal-modern {
+            background: #1E1E1E;
+            border: 1px solid #3a3b40;
+            border-radius: 16px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+        }
+
+        .modal-header-modern {
+            background: linear-gradient(135deg, #23242a, #1E1F23);
+            border-bottom: 1px solid rgba(59, 183, 251, 0.2);
+            padding: 24px 30px;
+            border-radius: 16px 16px 0 0;
+        }
+
+        .modal-title-section h4 {
+            color: #ffffff;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        .modal-subtitle {
+            color: #B0B3B8;
+            font-size: 0.9rem;
+            margin: 0;
+        }
+
+        .btn-close-modern {
+            background: rgba(255, 255, 255, 0.1);
+            border: none;
+            color: #ffffff;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .btn-close-modern:hover {
+            background: rgba(220, 53, 69, 0.2);
+            color: #DC3545;
+        }
+
+        .modal-body-modern {
+            padding: 30px;
+        }
+
+        /* Step Indicator */
+        .swap-steps {
+            margin-bottom: 30px;
+        }
+
+        .step-indicator {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .step {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            opacity: 0.5;
+            transition: all 0.3s ease;
+        }
+
+        .step.active {
+            opacity: 1;
+        }
+
+        .step-number {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(59, 183, 251, 0.2);
+            border: 2px solid rgba(59, 183, 251, 0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            color: #3BB7FB;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .step.active .step-number {
+            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            border-color: transparent;
+            color: white;
+            box-shadow: 0 6px 20px rgba(59, 183, 251, 0.3);
+        }
+
+        .step-label {
+            font-size: 0.8rem;
+            color: #B0B3B8;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .step.active .step-label {
+            color: #ffffff;
+            font-weight: 600;
+        }
+
+        .step-line {
+            flex: 1;
+            height: 2px;
+            background: rgba(59, 183, 251, 0.2);
+            margin: 0 20px;
+            position: relative;
+            top: -16px;
+        }
+
+        /* Swap Steps */
+        .swap-step {
+            display: none;
+        }
+
+        .swap-step.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Book Display Card */
+        .book-display-card {
+            background: linear-gradient(135deg, #23242a, #1E1F23);
+            border-radius: 16px;
+            border: 1px solid rgba(59, 183, 251, 0.2);
+            padding: 20px;
+            height: 100%;
+        }
+
+        .book-display-header h6 {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        /* Library Selection */
+        .library-selection-card {
+            background: linear-gradient(135deg, #23242a, #1E1F23);
+            border-radius: 16px;
+            border: 1px solid rgba(120,130,150,0.1);
+            padding: 20px;
+            height: 100%;
+        }
+
+        .library-header h6 {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .search-input-group {
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #B0B3B8;
+        }
+
+        .search-input-group .form-control-modern {
+            padding-left: 45px;
+        }
+
+        /* User Books Grid */
+        .user-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+            gap: 16px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 16px 0;
+        }
+
+        .user-book-card {
+            background: rgba(30, 30, 30, 0.6);
+            border: 2px solid rgba(120,130,150,0.1);
+            border-radius: 12px;
+            padding: 12px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .user-book-card:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            background: rgba(30, 30, 30, 0.8);
+            transform: translateY(-2px);
+        }
+
+        .user-book-card.selected {
+            border-color: #3BB7FB;
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.15), rgba(102, 126, 234, 0.15));
+            box-shadow: 0 6px 20px rgba(59, 183, 251, 0.2);
+        }
+
+        .book-cover-container {
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .user-book-cover {
+            width: 100%;
+            max-width: 80px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .user-book-card:hover .user-book-cover {
+            transform: scale(1.05);
+        }
+
+        /* Requested Book Display (You Want section) */
+        #requested-book-display .book-cover-professional:hover {
+            transform: scale(1.05);
+        }
+
+        .book-display-content {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* Swap Preview Books Hover Effects */
+        .swap-book-preview .book-cover-professional:hover {
+            transform: scale(1.05);
+        }
+
+        .user-book-info {
+            text-align: center;
+        }
+
+        .user-book-info .book-title {
+            font-size: 0.85rem;
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 4px;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .user-book-info .book-author {
+            font-size: 0.75rem;
+            color: #B0B3B8;
+            margin-bottom: 8px;
+        }
+
+        .book-meta {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .genre-badge {
+            background: rgba(59, 183, 251, 0.15);
+            color: #3BB7FB;
+            padding: 2px 6px;
+            border-radius: 8px;
+            font-size: 0.65rem;
+            font-weight: 500;
+        }
+
+        .condition-text {
+            color: #28A745;
+            font-size: 0.7rem;
+            font-weight: 500;
+        }
+
+        .selection-indicator {
+            position: absolute;
+            top: -8px;
+            right: -8px;
+            width: 24px;
+            height: 24px;
+            background: #3BB7FB;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.7rem;
+            opacity: 0;
+            transform: scale(0.8);
+            transition: all 0.3s ease;
+        }
+
+        .user-book-card.selected .selection-indicator {
+            opacity: 1;
+            transform: scale(1);
+        }
+
+        /* Step 2 Styles */
+        .swap-preview-section {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .swap-book-preview {
+            text-align: center;
+        }
+
+        .preview-label {
+            color: #B0B3B8;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+
+        .swap-arrow {
+            font-size: 2rem;
+            color: #3BB7FB;
+        }
+
+        .message-section {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .form-label {
+            color: #ffffff;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Modal Footer */
+        .modal-footer-modern {
+            background: rgba(30, 30, 30, 0.5);
+            border-top: 1px solid rgba(59, 183, 251, 0.2);
+            padding: 24px 30px;
+            border-radius: 0 0 16px 16px;
+        }
+
+        .footer-actions {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+
+        .primary-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .btn-outline-modern {
+            background: transparent;
+            border: 2px solid rgba(120,130,150,0.3);
+            color: #B0B3B8;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-outline-modern:hover {
+            border-color: rgba(59, 183, 251, 0.5);
+            color: #3BB7FB;
+        }
+
+        .btn-chat-modern {
+            background: linear-gradient(135deg, #28A745, #20C997);
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 10px;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-chat-modern:hover {
+            background: linear-gradient(135deg, #218838, #1FA085);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
+            color: white;
+        }
+
+        .btn-success-modern {
+            background: linear-gradient(135deg, #28A745, #20C997);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-success-modern:hover {
+            background: linear-gradient(135deg, #218838, #1FA085);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
+            color: white;
+        }
+
+        /* Empty States */
+        .empty-library {
+            text-align: center;
+            padding: 60px 20px;
+            color: #B0B3B8;
+        }
+
+        .empty-library i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        /* Responsive Design */
         @media (max-width: 768px) {
-            .swap-hero {
+            .discovery-books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+                gap: 16px;
+            }
+            
+            .user-books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+                gap: 12px;
+            }
+            
+            .modal-header-modern,
+            .modal-body-modern,
+            .modal-footer-modern {
                 padding: 20px;
-                text-align: center;
             }
             
-            .matches-grid {
-                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-                gap: 15px;
+            .step-indicator {
+                flex-direction: column;
+                gap: 16px;
             }
             
-            /* Filter Bar Responsive Styles */
-            #matches-filter-bar {
-                padding: 0;
-                margin-bottom: 16px;
+            .step-line {
+                display: none;
             }
             
-            #matches-filter-bar .form-control {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-                border-radius: 6px;
+            .footer-actions {
+                flex-direction: column;
+                gap: 16px;
             }
             
-            #matches-filter-bar label {
-                font-size: 0.7rem;
-                margin-bottom: 3px;
-            }
-            
-            #clear-filters {
-                padding: 6px 10px;
-                font-size: 0.8rem;
-                border-radius: 6px;
-            }
-            
-            #matches-count {
-                font-size: 0.75rem;
-                padding: 3px 8px;
-            }
-            
-            .filter-section-header {
-                font-size: 0.85rem;
-                margin-bottom: 8px;
-            }
-            
-            /* Stack filter controls vertically on mobile */
-            #matches-filter-bar .row > [class*="col-"] {
-                margin-bottom: 12px;
-            }
-            
-            #matches-filter-bar .row > [class*="col-"]:last-child {
-                margin-bottom: 0;
+            .primary-actions {
+                width: 100%;
+                justify-content: space-between;
             }
         }
     </style>
@@ -658,117 +1340,100 @@
         <div class="tab-content" id="swapTabsContent">
             <!-- Find Matches Tab -->
             <div class="tab-pane fade show active" id="find-matches" role="tabpanel">
-                <div class="row">
-                    <!-- Your Books Section -->
-                    <div class="col-lg-4 mb-4">
-                        <div class="card-dark h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0 text-white">
-                                    <i class="bi bi-book-half text-primary"></i> Your Available Books
-                                </h5>
-                                <small class="text-muted">Select a book to find matches</small>
-                            </div>
-                            <div class="card-body" style="max-height: 600px; overflow-y: auto;">
-                                <% if (user.books && user.books.length > 0) { %>
-                                    <% user.books.forEach(book => { %>
-                                        <div class="book-swap-item" data-book-id="<%= book._id %>" onclick="selectBook('<%= book._id %>')">
-                                            <div class="d-flex align-items-center">
-                                                <img src="<%= book.coverImage || '/images/placeholder-book.jpg' %>" 
-                                                     alt="<%= book.title %>" class="book-cover-small mr-3">
-                                                <div class="flex-grow-1">
-                                                    <h6 class="mb-1 text-white"><%= book.title %></h6>
-                                                    <small class="text-muted">by <%= book.author %></small>
-                                                    <br>
-                                                    <small class="badge badge-secondary"><%= book.genre %></small>
-                                                </div>
-                                                <button class="btn btn-gradient btn-sm" onclick="event.stopPropagation(); quickMatch('<%= book._id %>')">Find Matches</button>
-                                            </div>
-                                        </div>
-                                    <% }); %>
-                                <% } else { %>
-                                    <div class="empty-state">
-                                        <i class="bi bi-book"></i>
-                                        <h6>No Books Available</h6>
-                                        <p class="text-muted">Add books to your library to start swapping</p>
-                                        <a href="/library" class="btn btn-gradient">Add Books</a>
-                                    </div>
-                                <% } %>
+                <!-- Available Books Discovery Section -->
+                <div class="discovery-section mb-4">
+                    <div class="card-dark">
+                        <div class="card-header border-0">
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div>
+                                    <h5 class="mb-1 text-white">
+                                        <i class="bi bi-compass text-primary"></i> Discover Books to Swap
+                                    </h5>
+                                    <p class="text-muted mb-0">Find amazing books available for swap in your area</p>
+                                </div>
+                                <div class="discovery-controls">
+                                    <button class="btn-modern-outline btn-sm mr-2" onclick="showAdvancedFilters()">
+                                        <i class="bi bi-funnel"></i> Filters
+                                    </button>
+                                    <button class="btn-modern btn-sm" onclick="refreshDiscovery()">
+                                        <i class="bi bi-arrow-clockwise"></i> Refresh
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- Matches Section -->
-                    <div class="col-lg-8 mb-4">
-                        <div class="card-dark h-100">
-                            <div class="card-header">
-                                <h5 class="mb-0 text-white">
-                                    <i class="bi bi-bullseye text-success"></i> Potential Matches
-                                </h5>
-                                <small class="text-muted">Smart matches based on your preferences</small>
+                <!-- Advanced Filter Panel -->
+                <div id="advanced-filters" class="filter-panel mb-4" style="display: none;">
+                    <div class="card-dark">
+                        <div class="card-body">
+                            <div class="row">
+                                <div class="col-md-3 mb-3">
+                                    <label class="filter-label">Genre</label>
+                                    <select id="genre-filter" class="form-control-modern">
+                                        <option value="">All Genres</option>
+                                        <option value="Fiction">Fiction</option>
+                                        <option value="Science Fiction">Science Fiction</option>
+                                        <option value="Romance">Romance</option>
+                                        <option value="Mystery">Mystery</option>
+                                        <option value="Fantasy">Fantasy</option>
+                                        <option value="Biography">Biography</option>
+                                        <option value="History">History</option>
+                                        <option value="Non-Fiction">Non-Fiction</option>
+                                        <option value="Thriller">Thriller</option>
+                                        <option value="Self-Help">Self-Help</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="filter-label">Condition</label>
+                                    <select id="condition-filter" class="form-control-modern">
+                                        <option value="">All Conditions</option>
+                                        <option value="New">New</option>
+                                        <option value="Like New">Like New</option>
+                                        <option value="Very Good">Very Good</option>
+                                        <option value="Good">Good</option>
+                                        <option value="Fair">Fair</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="filter-label">Sort by</label>
+                                    <select id="sort-filter" class="form-control-modern">
+                                        <option value="title">Title A-Z</option>
+                                        <option value="author">Author A-Z</option>
+                                        <option value="condition">Best Condition First</option>
+                                        <option value="newest">Recently Added</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3 mb-3">
+                                    <label class="filter-label">&nbsp;</label>
+                                    <button id="clear-filters" class="btn-danger-outline form-control-modern" style="height: auto; padding: 10px 16px;">
+                                        <i class="bi bi-x-circle"></i> Clear Filters
+                                    </button>
+                                </div>
                             </div>
-                            <div class="card-body">
-                                <!-- Filter Bar -->
-                                <div id="matches-filter-bar" class="mb-3" style="display: none;">
-                                    <div class="filter-section-header">
-                                        <i class="bi bi-funnel"></i>
-                                        Filter & Sort Matches
-                                    </div>
-                                    <div class="row align-items-end">
-                                        <div class="col-md-3 col-sm-6">
-                                            <label>Filter by Genre</label>
-                                            <select id="genre-filter" class="form-control">
-                                                <option value="">All Genres</option>
-                                                <option value="Fiction">Fiction</option>
-                                                <option value="Science Fiction">Science Fiction</option>
-                                                <option value="Romance">Romance</option>
-                                                <option value="Mystery">Mystery</option>
-                                                <option value="Fantasy">Fantasy</option>
-                                                <option value="Biography">Biography</option>
-                                                <option value="History">History</option>
-                                                <option value="Non-Fiction">Non-Fiction</option>
-                                                <option value="Thriller">Thriller</option>
-                                                <option value="Self-Help">Self-Help</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <label>Filter by Condition</label>
-                                            <select id="condition-filter" class="form-control">
-                                                <option value="">All Conditions</option>
-                                                <option value="New">New</option>
-                                                <option value="Like New">Like New</option>
-                                                <option value="Very Good">Very Good</option>
-                                                <option value="Good">Good</option>
-                                                <option value="Fair">Fair</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <label>Sort by</label>
-                                            <select id="sort-filter" class="form-control">
-                                                <option value="title">Title A-Z</option>
-                                                <option value="author">Author A-Z</option>
-                                                <option value="condition">Condition</option>
-                                            </select>
-                                        </div>
-                                        <div class="col-md-3 col-sm-6">
-                                            <label>&nbsp;</label>
-                                            <button id="clear-filters" class="btn btn-block">
-                                                <i class="bi bi-x-circle"></i> Clear
-                                            </button>
-                                        </div>
-                                    </div>
-                                    <div class="row mt-2">
-                                        <div class="col-12">
-                                            <small class="text-muted" id="matches-count">0 matches found</small>
-                                        </div>
+                            <div class="row mt-3">
+                                <div class="col-12">
+                                    <div class="results-info">
+                                        <span id="matches-count" class="matches-counter">Loading books...</span>
                                     </div>
                                 </div>
-                                
-                                <div id="matches-container">
-                                    <div class="empty-state" id="matches-empty">
-                                        <i class="bi bi-arrow-left"></i>
-                                        <h6>Select a Book</h6>
-                                        <p class="text-muted">Choose a book from your library to discover amazing swap opportunities</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Books Discovery Grid -->
+                <div class="books-discovery-grid">
+                    <div class="card-dark">
+                        <div class="card-body p-4">
+                            <div id="books-container">
+                                <div class="loading-state">
+                                    <div class="loading-spinner">
+                                        <div class="spinner-border text-primary" role="status"></div>
                                     </div>
+                                    <h6 class="mt-3">Discovering Amazing Books...</h6>
+                                    <p class="text-muted">Finding the perfect books for you to swap</p>
                                 </div>
                             </div>
                         </div>
@@ -983,51 +1648,166 @@
 </div>
 </main>
 
-<!-- Swap Request Modal -->
+<!-- Modern Swap Request Modal -->
 <div class="modal fade" id="swapRequestModal" tabindex="-1">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content bg-dark text-white">
-            <div class="modal-header border-secondary">
-                <h5 class="modal-title">
-                    <i class="bi bi-arrow-left-right text-primary"></i> Propose Book Swap
-                </h5>
-                <button type="button" class="close text-white" data-dismiss="modal">&times;</button>
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content modal-modern">
+            <div class="modal-header modal-header-modern">
+                <div class="modal-title-section">
+                    <h4 class="modal-title mb-1">
+                        <i class="bi bi-arrow-left-right text-primary"></i> Complete Your Swap
+                    </h4>
+                    <p class="modal-subtitle">Choose a book from your library to offer in exchange</p>
+                </div>
+                <button type="button" class="btn-close-modern" data-dismiss="modal">
+                    <i class="bi bi-x"></i>
+                </button>
             </div>
-            <div class="modal-body">
-                <div class="row">
-                    <div class="col-6 text-center">
-                        <h6 class="text-success">You Offer:</h6>
-                        <div id="offered-book-preview" class="p-3 bg-secondary rounded"></div>
-                    </div>
-                    <div class="col-6 text-center">
-                        <h6 class="text-warning">You Want:</h6>
-                        <div id="requested-book-preview" class="p-3 bg-secondary rounded"></div>
+            
+            <div class="modal-body modal-body-modern">
+                <!-- Step Indicator -->
+                <div class="swap-steps mb-4">
+                    <div class="step-indicator">
+                        <div class="step active" data-step="1">
+                            <div class="step-number">1</div>
+                            <div class="step-label">Select Your Book</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="2">
+                            <div class="step-number">2</div>
+                            <div class="step-label">Review & Send</div>
+                        </div>
+                        <div class="step-line"></div>
+                        <div class="step" data-step="3">
+                            <div class="step-number">3</div>
+                            <div class="step-label">Chat & Arrange</div>
+                        </div>
                     </div>
                 </div>
-                <hr class="bg-secondary">
-                <div class="form-group">
-                    <label class="text-white">Personal Message (optional):</label>
-                    <textarea class="form-control bg-dark text-white border-secondary" id="swap-message" rows="3" 
-                              placeholder="Add a personal touch to your swap request..."></textarea>
+
+                <!-- Step 1: Book Selection -->
+                <div id="step-1" class="swap-step active">
+                    <div class="row">
+                        <!-- Requested Book Display -->
+                        <div class="col-lg-4">
+                            <div class="book-display-card">
+                                <div class="book-display-header">
+                                    <h6><i class="bi bi-star text-warning"></i> You Want</h6>
+                                </div>
+                                <div id="requested-book-display" class="book-display-content">
+                                    <!-- Will be populated by JavaScript -->
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Your Library -->
+                        <div class="col-lg-8">
+                            <div class="library-selection-card">
+                                <div class="library-header">
+                                    <h6><i class="bi bi-book text-primary"></i> Choose from Your Library</h6>
+                                    <p class="text-muted mb-0">Select a book to offer in exchange</p>
+                                </div>
+                                <div class="library-search mb-3">
+                                    <div class="search-input-group">
+                                        <i class="bi bi-search search-icon"></i>
+                                        <input type="text" id="library-search" class="form-control-modern" placeholder="Search your books...">
+                                    </div>
+                                </div>
+                                <div id="user-books-grid" class="user-books-grid">
+                                    <% if (user.books && user.books.length > 0) { %>
+                                        <% user.books.forEach(book => { %>
+                                            <div class="user-book-card" data-book-id="<%= book._id %>" onclick="selectUserBook('<%= book._id %>')">
+                                                <div class="book-cover-container">
+                                                    <img src="<%= book.image || book.coverImage || '/images/placeholder-book.jpg' %>" 
+                                                         alt="<%= book.title %>" class="book-cover-professional user-book-cover"
+                                                         style="width: 100%; height: 120px; object-fit: cover; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.3); transition: transform 0.3s ease;"
+                                                         onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                                                    <div class="user-book-cover" style="display: none; align-items: center; justify-content: center; height: 120px; background: linear-gradient(135deg, #3BB7FB, #667eea); border-radius: 8px;">
+                                                        <i class="bi bi-book text-white" style="font-size: 1.5rem;"></i>
+                                                    </div>
+                                                </div>
+                                                <div class="user-book-info">
+                                                    <h6 class="book-title"><%= book.title %></h6>
+                                                    <p class="book-author">by <%= book.author %></p>
+                                                    <div class="book-meta">
+                                                        <span class="genre-badge"><%= book.genre %></span>
+                                                        <span class="condition-text"><%= book.condition || 'Good' %></span>
+                                                    </div>
+                                                </div>
+                                                <div class="selection-indicator">
+                                                    <i class="bi bi-check-circle"></i>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    <% } else { %>
+                                        <div class="empty-library">
+                                            <i class="bi bi-book"></i>
+                                            <h6>No Books Available</h6>
+                                            <p class="text-muted">Add books to your library to start swapping</p>
+                                            <a href="/library" class="btn-modern">Add Books</a>
+                                        </div>
+                                    <% } %>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="row">
-                    <div class="col-md-12">
-                        <h6 class="text-info">Swap Timeline</h6>
-                        <small class="text-muted">Typical completion: 5-7 days</small>
+
+                <!-- Step 2: Review & Message -->
+                <div id="step-2" class="swap-step">
+                    <div class="swap-preview-section">
+                        <div class="row">
+                            <div class="col-md-5">
+                                <div class="swap-book-preview">
+                                    <h6 class="preview-label">You're Offering</h6>
+                                    <div id="selected-book-preview"></div>
+                                </div>
+                            </div>
+                            <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
+                                <div class="swap-arrow">
+                                    <i class="bi bi-arrow-left-right text-primary"></i>
+                                </div>
+                            </div>
+                            <div class="col-md-5">
+                                <div class="swap-book-preview">
+                                    <h6 class="preview-label">You're Getting</h6>
+                                    <div id="target-book-preview"></div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="message-section mt-4">
+                            <label class="form-label">Personal Message (Optional)</label>
+                            <textarea id="swap-message" class="form-control-modern" rows="4" 
+                                      placeholder="Introduce yourself and let them know why you're interested in this book..."></textarea>
+                            <small class="text-muted">A friendly message increases your chances of a successful swap!</small>
+                        </div>
                     </div>
                 </div>
             </div>
-            <div class="modal-footer border-secondary">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-info" id="test-chat-btn" onclick="testChatSystem()" style="font-size: 12px;">
-                    <i class="bi bi-bug"></i> Test Chat
-                </button>
-                <button type="button" class="btn btn-success" id="simple-chat-btn" onclick="openSimpleChat()">
-                    <i class="bi bi-chat-dots"></i> Chat Now
-                </button>
-                <button type="button" class="btn swap-action-btn" onclick="submitSwapRequest()">
-                    <i class="bi bi-send"></i> Send Swap Request
-                </button>
+            
+            <div class="modal-footer modal-footer-modern">
+                <div class="footer-actions">
+                    <button type="button" class="btn-outline-modern" data-dismiss="modal">Cancel</button>
+                    
+                    <div class="primary-actions">
+                        <button type="button" id="chat-before-swap" class="btn-chat-modern" onclick="startChatConversation()" style="display: none;">
+                            <i class="bi bi-chat-dots"></i> Chat First
+                        </button>
+                        
+                        <button type="button" id="prev-step-btn" class="btn-outline-modern" onclick="previousStep()" style="display: none;">
+                            <i class="bi bi-arrow-left"></i> Previous
+                        </button>
+                        
+                        <button type="button" id="next-step-btn" class="btn-modern" onclick="nextStep()" disabled>
+                            Next <i class="bi bi-arrow-right"></i>
+                        </button>
+                        
+                        <button type="button" id="send-request-btn" class="btn-success-modern" onclick="submitSwapRequest()" style="display: none;">
+                            <i class="bi bi-send"></i> Send Swap Request
+                        </button>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -1077,166 +1857,287 @@
 <!-- JavaScript -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+// ========== MODERN SWAP MATCHER JAVASCRIPT ==========
+
 let selectedUserBook = null;
 let targetBook = null;
-let currentMatchData = null;
-let matchPrefs = null;
-let matchesState = { items: [], page: 1, pageSize: 6 };
-let allMatches = []; // Store all unfiltered matches
-let filteredMatches = []; // Store filtered matches
+let targetBookData = null;
+let currentStep = 1;
+let allBooks = [];
+let filteredBooks = [];
+let discoveryState = { items: [], page: 1, pageSize: 12 };
 
-// Select a book from user's library
-function selectBook(bookId) {
-    selectedUserBook = bookId;
-    
-    // Visual feedback
-    $('.book-swap-item').removeClass('selected');
-    $(`.book-swap-item[data-book-id="${bookId}"]`).addClass('selected');
-    
-    // Auto-trigger quick match
-    quickMatch(bookId);
+// Initialize the page
+function initializeSwapMatcher() {
+    console.log('🚀 Initializing Modern Swap Matcher');
+    loadAllAvailableBooks();
+    setupEventListeners();
 }
 
-// Quick match for a specific book
-function quickMatch(bookId) {
-    selectedUserBook = bookId;
-    // ensure prefs loaded
-    loadMatchPreferences();
+// Load all available books for swapping
+function loadAllAvailableBooks() {
+    showBooksLoadingState();
     
-    // Show loading state
-    $('#matches-container').html(`
-        <div class="empty-state">
-            <div class="spinner-border text-primary mb-3" role="status"></div>
-            <h6>Finding Perfect Matches...</h6>
-            <p class="text-muted">Our AI is analyzing compatibility...</p>
-        </div>
-    `);
-    
-    // Fallback to API call if server-side data fails
-    $.get(`/api/books/${bookId}/matches`)
-        .done(function(data) {
-            console.log('API response:', data);
-            let matches = data.matches || [];
-            console.log('Matches from API:', matches);
-            
-            // Apply client-side filtering
-            if (matchPrefs && matchPrefs.condition && matchPrefs.condition !== 'Any') {
-                matches = matches.filter(m => (m.condition || '') === matchPrefs.condition);
-            }
-            
-            displayMatches(matches);
+    // Load all available books using the search endpoint
+    $.get('/api/books/search', {
+        limit: 100, // Get more books initially
+        sortBy: 'createdAt'
+    })
+        .done(function(response) {
+            console.log('📚 Available books loaded:', response);
+            const books = response.books || response || [];
+            displayAvailableBooks(books);
         })
         .fail(function(xhr) {
-            console.error('API call failed:', xhr);
-            $('#matches-container').html(`
-                <div class="empty-state">
-                    <i class="bi bi-exclamation-triangle text-warning"></i>
-                    <h6>Match Search Failed</h6>
-                    <p class="text-muted">Unable to find matches. Please try again.</p>
-                    <button class="btn btn-outline-primary" onclick="quickMatch('${bookId}')">Retry</button>
-                </div>
-            `);
+            console.error('❌ Failed to load books:', xhr);
+            showBooksErrorState();
         });
 }
 
-// Display potential matches
-function displayMatches(matches) {
-    // Store all matches for filtering
-    allMatches = matches;
-    filteredMatches = [...matches];
+// Show loading state for books
+function showBooksLoadingState() {
+    $('#books-container').html(`
+        <div class="loading-state">
+            <div class="loading-spinner">
+                <div class="spinner-border text-primary" role="status"></div>
+            </div>
+            <h6 class="mt-3">Discovering Amazing Books...</h6>
+            <p class="text-muted">Finding the perfect books for you to swap</p>
+        </div>
+    `);
+}
+
+// Show error state for books
+function showBooksErrorState() {
+    $('#books-container').html(`
+        <div class="loading-state">
+            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 3rem; margin-bottom: 20px;"></i>
+            <h6>Unable to Load Books</h6>
+            <p class="text-muted">Please check your connection and try again</p>
+            <button class="btn-modern" onclick="loadAllAvailableBooks()">
+                <i class="bi bi-arrow-clockwise"></i> Retry
+            </button>
+        </div>
+    `);
+}
+
+// Display available books in the discovery grid
+function displayAvailableBooks(books) {
+    allBooks = books;
+    filteredBooks = [...books];
     
-    // Show filter bar when we have matches
-    if (matches.length > 0) {
-        $('#matches-filter-bar').show();
-        updateMatchesCount();
-        
-        // Save and render first page
-        matchesState.items = filteredMatches;
-        matchesState.page = 1;
-        renderMatchesPage();
-    } else {
-        $('#matches-filter-bar').hide();
-        $('#matches-container').html(`
-            <div class="empty-state">
-                <i class="bi bi-search text-muted"></i>
-                <h6>No Matches Found</h6>
-                <p class="text-muted">Try selecting a different book or adjusting your preferences</p>
-                <button class="btn btn-outline-primary" onclick="showMatchPreferences()">Adjust Preferences</button>
+    updateBooksCount();
+    renderBooksGrid();
+}
+
+// Render the books grid
+function renderBooksGrid() {
+    const start = (discoveryState.page - 1) * discoveryState.pageSize;
+    const end = start + discoveryState.pageSize;
+    const pageBooks = filteredBooks.slice(start, end);
+    
+    if (pageBooks.length === 0) {
+        $('#books-container').html(`
+            <div class="loading-state">
+                <i class="bi bi-search text-muted" style="font-size: 3rem; margin-bottom: 20px;"></i>
+                <h6>No Books Found</h6>
+                <p class="text-muted">Try adjusting your filters or check back later for new books</p>
             </div>
         `);
+        return;
     }
-}
-
-function renderMatchesPage() {
-    const start = (matchesState.page - 1) * matchesState.pageSize;
-    const end = start + matchesState.pageSize;
-    const pageItems = matchesState.items.slice(start, end);
-
-    let html = '<div class="matches-grid">';
-    pageItems.forEach(match => {
-        // Debug: Log the match data to see what image fields are available
-        console.log('Rendering match:', match.title, 'Image fields:', {
-            coverImage: match.coverImage,
-            image: match.image,
-            imageUrl: match.imageUrl,
-            coverUrl: match.coverUrl,
-            hasImage: match.coverImage || match.image || match.imageUrl || match.coverUrl
-        });
-        
-        // Try multiple image field sources
-        const hasImage = match.coverImage || match.image || match.imageUrl || match.coverUrl;
-        let imageSrc = '/images/placeholder-book.jpg'; // Default fallback
-        
-        if (hasImage) {
-            // If it's a full URL, use it directly
-            if (hasImage.startsWith('http')) {
-                imageSrc = hasImage;
-            } 
-            // If it's a relative path, ensure it starts with /
-            else if (hasImage.startsWith('/')) {
-                imageSrc = hasImage;
-            } 
-            // If it doesn't start with /, add it
-            else {
-                imageSrc = '/' + hasImage;
-            }
-        }
-        
-        console.log('Final image source for', match.title, ':', imageSrc);
+    
+    let html = '<div class="discovery-books-grid">';
+    
+    pageBooks.forEach(book => {
+        const imageSrc = getBookImageSrc(book);
+        const ownerName = book.owner?.username || book.owner?.fullname || 'Unknown User';
         
         html += `
-            <div class="match-card" onclick="proposeSwap('${match._id}', '${match.owner._id}')">
-                <div class="book-cover-container">
-                    <img src="${imageSrc}" class="book-cover-professional" alt="${match.title}" 
-                         onerror="console.log('Image failed to load:', this.src); this.style.display='none'; this.nextElementSibling.style.display='flex';">
-                    <div class="book-cover-placeholder" style="display: none;">
-                        <i class="bi bi-book text-white" style="font-size: 2rem;"></i>
-                    </div>
+            <div class="discovery-book-card" onclick="selectBookForSwap('${book._id}')">
+                <img src="${imageSrc}" class="book-cover-professional discovery-book-cover" alt="${book.title}" 
+                     style="width: 100%; height: 160px; object-fit: cover; border-radius: 10px; box-shadow: 0 6px 20px rgba(0,0,0,0.4); transition: transform 0.3s ease;"
+                     onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                <div class="discovery-book-cover" style="display: none; align-items: center; justify-content: center; height: 160px; background: linear-gradient(135deg, #3BB7FB, #667eea); border-radius: 10px;">
+                    <i class="bi bi-book text-white" style="font-size: 2rem;"></i>
                 </div>
-                <div class="match-card-content">
-                    <div>
-                        <h6 class="book-title">${match.title}</h6>
-                        <small class="book-author">by ${match.author}</small>
-                        <div class="book-owner mb-1">
-                            <small class="text-muted" style="font-size: 0.7rem;">
-                                <i class="bi bi-person"></i> ${match.owner?.username || match.owner?.fullname || 'Unknown User'}
-                            </small>
-                        </div>
-                        <div class="book-badges d-flex justify-content-between align-items-center">
-                            <small class="badge badge-info" style="font-size: 0.65rem;">${match.genre}</small>
-                            <small class="text-muted" style="font-size: 0.7rem;">${match.condition}</small>
-                        </div>
+                <div class="discovery-book-info">
+                    <h6 class="discovery-book-title">${book.title}</h6>
+                    <p class="discovery-book-author">by ${book.author}</p>
+                    <div class="discovery-book-meta">
+                        <span class="discovery-genre-badge">${book.genre}</span>
+                        <span class="discovery-condition">${book.condition || 'Good'}</span>
                     </div>
-                    <div class="book-actions d-flex align-items-center justify-content-center">
-                        <button class="btn btn-professional btn-sm" style="font-size: 0.7rem; padding: 0.25rem 0.5rem;" onclick="event.stopPropagation(); proposeSwap('${match._id}', '${match.owner._id}')"><i class="bi bi-arrow-left-right"></i> Swap</button>
-                    </div>
+                    <p class="discovery-owner">
+                        <i class="bi bi-person"></i> ${ownerName}
+                    </p>
+                    <button class="discovery-swap-btn" onclick="event.stopPropagation(); selectBookForSwap('${book._id}')">
+                        <i class="bi bi-arrow-left-right"></i> Start Swap
+                    </button>
                 </div>
-            </div>`;
+            </div>
+        `;
     });
+    
     html += '</div>';
+    html += renderBooksPagination();
+    
+    $('#books-container').html(html);
+}
 
-    html += renderPagination();
-    $('#matches-container').html(html);
+// Get book image source with fallback
+function getBookImageSrc(book) {
+    // Priority order: Google Books API image, custom image, cover image, fallback
+    const hasImage = book.image || book.coverImage || book.imageUrl || book.coverUrl;
+    let imageSrc = '/images/placeholder-book.jpg';
+    
+    if (hasImage) {
+        if (hasImage.startsWith('http')) {
+            // Google Books API URLs or other external images
+            imageSrc = hasImage;
+        } else if (hasImage.startsWith('/')) {
+            // Local server images
+            imageSrc = hasImage;
+        } else {
+            // Relative paths
+            imageSrc = '/' + hasImage;
+        }
+    }
+    
+    return imageSrc;
+}
+
+// Render pagination for books
+function renderBooksPagination() {
+    const total = filteredBooks.length;
+    const totalPages = Math.max(1, Math.ceil(total / discoveryState.pageSize));
+    
+    if (totalPages <= 1) return '';
+    
+    let html = '<div class="d-flex justify-content-center mt-4">';
+    html += '<nav aria-label="Books pagination"><ul class="pagination pagination-custom">';
+    
+    const prevDisabled = discoveryState.page === 1 ? 'disabled' : '';
+    const nextDisabled = discoveryState.page === totalPages ? 'disabled' : '';
+    
+    html += `<li class="page-item ${prevDisabled}">
+                <a class="page-link" href="#" onclick="changeBooksPage(${discoveryState.page - 1}); return false;">
+                    <i class="bi bi-chevron-left"></i> Prev
+                </a>
+             </li>`;
+    
+    for (let p = 1; p <= totalPages; p++) {
+        const active = discoveryState.page === p ? 'active' : '';
+        html += `<li class="page-item ${active}">
+                    <a class="page-link" href="#" onclick="changeBooksPage(${p}); return false;">${p}</a>
+                 </li>`;
+    }
+    
+    html += `<li class="page-item ${nextDisabled}">
+                <a class="page-link" href="#" onclick="changeBooksPage(${discoveryState.page + 1}); return false;">
+                    Next <i class="bi bi-chevron-right"></i>
+                </a>
+             </li>`;
+    
+    html += '</ul></nav></div>';
+    return html;
+}
+
+// Change books page
+function changeBooksPage(page) {
+    const totalPages = Math.max(1, Math.ceil(filteredBooks.length / discoveryState.pageSize));
+    if (page < 1 || page > totalPages) return;
+    
+    discoveryState.page = page;
+    renderBooksGrid();
+}
+
+// Select a book for swap (opens the modal)
+function selectBookForSwap(bookId) {
+    console.log('📖 Selected book for swap:', bookId);
+    
+    // Store the target book
+    targetBook = bookId;
+    
+    // Get book details
+    $.get(`/api/books/${bookId}`)
+        .done(function(response) {
+            targetBookData = response.book || response;
+            console.log('📚 Target book data:', targetBookData);
+            
+            // Reset modal state
+            currentStep = 1;
+            selectedUserBook = null;
+            
+            // Show the swap modal
+            showSwapModal();
+        })
+        .fail(function(xhr) {
+            console.error('❌ Failed to load book details:', xhr);
+            showErrorMessage('Failed to load book details. Please try again.');
+        });
+}
+
+// Show the modern swap modal
+function showSwapModal() {
+    // Reset step state
+    updateStepIndicator(1);
+    showStep(1);
+    
+    // Display the requested book
+    displayRequestedBook();
+    
+    // Reset user book selection
+    $('.user-book-card').removeClass('selected');
+    $('#next-step-btn').prop('disabled', true);
+    
+    // Show the modal
+    $('#swapRequestModal').modal('show');
+}
+
+// Display the requested book in the modal
+function displayRequestedBook() {
+    if (!targetBookData) return;
+    
+    const imageSrc = getBookImageSrc(targetBookData);
+    const ownerName = targetBookData.owner?.username || targetBookData.owner?.fullname || 'Unknown User';
+    
+    const bookHtml = `
+        <div class="text-center">
+            <img src="${imageSrc}" class="book-cover-professional img-fluid mb-3" 
+                 alt="${targetBookData.title}" 
+                 style="max-height: 180px; width: 100%; max-width: 140px; object-fit: cover; border-radius: 12px; box-shadow: 0 8px 25px rgba(0,0,0,0.3); transition: transform 0.3s ease;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="display: none; align-items: center; justify-content: center; height: 180px; width: 100%; max-width: 140px; background: linear-gradient(135deg, #3BB7FB, #667eea); border-radius: 12px; margin: 0 auto 1rem; box-shadow: 0 8px 25px rgba(0,0,0,0.3);">
+                <i class="bi bi-book text-white" style="font-size: 2rem;"></i>
+            </div>
+            <h5 class="text-white mb-2">${targetBookData.title}</h5>
+            <p class="text-muted mb-2">by ${targetBookData.author}</p>
+            <div class="d-flex justify-content-center gap-2 mb-2">
+                <span class="badge badge-info">${targetBookData.genre}</span>
+                <span class="badge badge-success">${targetBookData.condition || 'Good'}</span>
+            </div>
+            <small class="text-muted">
+                <i class="bi bi-person"></i> Available from ${ownerName}
+            </small>
+        </div>
+    `;
+    
+    $('#requested-book-display').html(bookHtml);
+}
+
+// Select user book in the modal
+function selectUserBook(bookId) {
+    selectedUserBook = bookId;
+    
+    // Update visual selection
+    $('.user-book-card').removeClass('selected');
+    $(`.user-book-card[data-book-id="${bookId}"]`).addClass('selected');
+    
+    // Enable next button
+    $('#next-step-btn').prop('disabled', false);
+    
+    console.log('✅ Selected user book:', bookId);
 }
 
 function renderPagination() {
@@ -1265,101 +2166,149 @@ function changeMatchesPage(p) {
     renderMatchesPage();
 }
 
-// Propose a swap
-function proposeSwap(requestedBookId, ownerId) {
-    if (!selectedUserBook) {
-        alert('Please select a book from your library first');
-        return;
+// Step navigation functions
+function nextStep() {
+    if (currentStep === 1) {
+        if (!selectedUserBook) {
+            showErrorMessage('Please select a book from your library first');
+            return;
+        }
+        
+        // Load selected book data and move to step 2
+        $.get(`/api/books/${selectedUserBook}`)
+            .done(function(response) {
+                const selectedBookData = response.book || response;
+                displaySwapPreview(selectedBookData, targetBookData);
+                
+                currentStep = 2;
+                updateStepIndicator(2);
+                showStep(2);
+            })
+            .fail(function() {
+                showErrorMessage('Failed to load book details');
+            });
     }
-    
-    targetBook = requestedBookId;
-    
-    // Get book details for modal
-    Promise.all([
-        $.get(`/api/books/${selectedUserBook}`),
-        $.get(`/api/books/${requestedBookId}`)
-    ]).then(([offeredBook, requestedBook]) => {
-        showSwapModal(offeredBook.book, requestedBook.book);
-    }).catch(() => {
-        alert('Failed to load book details');
-    });
 }
 
-// Show swap proposal modal
-function showSwapModal(offeredBook, requestedBook) {
-    $('#offered-book-preview').html(`
-        <img src="${offeredBook.coverImage || '/images/placeholder-book.jpg'}" 
-             class="img-fluid mb-2" style="max-height: 120px;">
-        <h6 class="text-white">${offeredBook.title}</h6>
-        <small class="text-muted">${offeredBook.author}</small>
-        <br>
-        <small class="badge badge-secondary">${offeredBook.genre}</small>
-    `);
-    
-    $('#requested-book-preview').html(`
-        <img src="${requestedBook.coverImage || '/images/placeholder-book.jpg'}" 
-             class="img-fluid mb-2" style="max-height: 120px;">
-        <h6 class="text-white">${requestedBook.title}</h6>
-        <small class="text-muted">${requestedBook.author}</small>
-        <br>
-        <small class="badge badge-secondary">${requestedBook.genre}</small>
-    `);
-    
-    // Show the simple chat button
-    $('#simple-chat-btn').show();
-    
-    $('#swapRequestModal').modal('show');
+function previousStep() {
+    if (currentStep === 2) {
+        currentStep = 1;
+        updateStepIndicator(1);
+        showStep(1);
+    }
 }
 
-// Filter and sort functionality
+// Update step indicator
+function updateStepIndicator(step) {
+    $('.step').removeClass('active');
+    $(`.step[data-step="${step}"]`).addClass('active');
+}
+
+// Show specific step
+function showStep(step) {
+    $('.swap-step').removeClass('active');
+    $(`#step-${step}`).addClass('active');
+    
+    // Update button visibility
+    $('#prev-step-btn').toggle(step > 1);
+    $('#next-step-btn').toggle(step === 1);
+    $('#send-request-btn').toggle(step === 2);
+    $('#chat-before-swap').toggle(step === 2);
+}
+
+// Display swap preview in step 2
+function displaySwapPreview(offeredBook, requestedBook) {
+    const offeredImageSrc = getBookImageSrc(offeredBook);
+    const requestedImageSrc = getBookImageSrc(requestedBook);
+    
+    $('#selected-book-preview').html(`
+        <div class="text-center">
+            <img src="${offeredImageSrc}" class="book-cover-professional img-fluid mb-3" 
+                 alt="${offeredBook.title}"
+                 style="max-height: 150px; width: 100%; max-width: 120px; object-fit: cover; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); transition: transform 0.3s ease;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="display: none; align-items: center; justify-content: center; height: 150px; width: 100%; max-width: 120px; background: linear-gradient(135deg, #3BB7FB, #667eea); border-radius: 12px; margin: 0 auto 1rem; box-shadow: 0 6px 20px rgba(0,0,0,0.3);">
+                <i class="bi bi-book text-white" style="font-size: 1.5rem;"></i>
+            </div>
+            <h6 class="text-white mb-2">${offeredBook.title}</h6>
+            <p class="text-muted mb-2">by ${offeredBook.author}</p>
+            <div class="d-flex justify-content-center gap-2">
+                <span class="badge badge-info">${offeredBook.genre}</span>
+                <span class="badge badge-success">${offeredBook.condition || 'Good'}</span>
+            </div>
+        </div>
+    `);
+    
+    $('#target-book-preview').html(`
+        <div class="text-center">
+            <img src="${requestedImageSrc}" class="book-cover-professional img-fluid mb-3" 
+                 alt="${requestedBook.title}"
+                 style="max-height: 150px; width: 100%; max-width: 120px; object-fit: cover; border-radius: 12px; box-shadow: 0 6px 20px rgba(0,0,0,0.3); transition: transform 0.3s ease;"
+                 onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+            <div style="display: none; align-items: center; justify-content: center; height: 150px; width: 100%; max-width: 120px; background: linear-gradient(135deg, #3BB7FB, #667eea); border-radius: 12px; margin: 0 auto 1rem; box-shadow: 0 6px 20px rgba(0,0,0,0.3);">
+                <i class="bi bi-book text-white" style="font-size: 1.5rem;"></i>
+            </div>
+            <h6 class="text-white mb-2">${requestedBook.title}</h6>
+            <p class="text-muted mb-2">by ${requestedBook.author}</p>
+            <div class="d-flex justify-content-center gap-2">
+                <span class="badge badge-info">${requestedBook.genre}</span>
+                <span class="badge badge-success">${requestedBook.condition || 'Good'}</span>
+            </div>
+        </div>
+    `);
+}
+
+// Filter and search functionality
+function showAdvancedFilters() {
+    $('#advanced-filters').slideToggle(300);
+}
+
 function applyFilters() {
     const genreFilter = $('#genre-filter').val();
     const conditionFilter = $('#condition-filter').val();
     const sortBy = $('#sort-filter').val();
     
-    // Start with all matches
-    filteredMatches = [...allMatches];
+    // Start with all books
+    filteredBooks = [...allBooks];
     
     // Apply genre filter
     if (genreFilter) {
-        filteredMatches = filteredMatches.filter(match => {
-            const matchGenres = Array.isArray(match.genre) ? match.genre : [match.genre];
-            return matchGenres.includes(genreFilter);
-        });
+        filteredBooks = filteredBooks.filter(book => book.genre === genreFilter);
     }
     
     // Apply condition filter
     if (conditionFilter) {
-        filteredMatches = filteredMatches.filter(match => match.condition === conditionFilter);
+        filteredBooks = filteredBooks.filter(book => book.condition === conditionFilter);
     }
     
     // Apply sorting
     switch (sortBy) {
         case 'title':
-            filteredMatches.sort((a, b) => a.title.localeCompare(b.title));
+            filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
             break;
         case 'author':
-            filteredMatches.sort((a, b) => a.author.localeCompare(b.author));
+            filteredBooks.sort((a, b) => a.author.localeCompare(b.author));
             break;
         case 'condition':
             const conditionOrder = ['New', 'Like New', 'Very Good', 'Good', 'Fair'];
-            filteredMatches.sort((a, b) => {
-                const aIndex = conditionOrder.indexOf(a.condition);
-                const bIndex = conditionOrder.indexOf(b.condition);
+            filteredBooks.sort((a, b) => {
+                const aIndex = conditionOrder.indexOf(a.condition || 'Good');
+                const bIndex = conditionOrder.indexOf(b.condition || 'Good');
                 return aIndex - bIndex;
             });
             break;
-        case 'match':
+        case 'newest':
+            filteredBooks.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+            break;
         default:
-            filteredMatches.sort((a, b) => a.title.localeCompare(b.title));
+            filteredBooks.sort((a, b) => a.title.localeCompare(b.title));
             break;
     }
     
-    // Update matches state and re-render
-    matchesState.items = filteredMatches;
-    matchesState.page = 1;
-    updateMatchesCount();
-    renderMatchesPage();
+    // Reset page and re-render
+    discoveryState.page = 1;
+    updateBooksCount();
+    renderBooksGrid();
 }
 
 function clearFilters() {
@@ -1369,15 +2318,127 @@ function clearFilters() {
     applyFilters();
 }
 
-function updateMatchesCount() {
-    const count = filteredMatches.length;
-    const total = allMatches.length;
-    $('#matches-count').text(`${count} of ${total} matches found`);
+function updateBooksCount() {
+    const count = filteredBooks.length;
+    const total = allBooks.length;
+    $('#matches-count').text(`${count} of ${total} books available`);
+}
+
+function refreshDiscovery() {
+    loadAllAvailableBooks();
+}
+
+// Setup event listeners
+function setupEventListeners() {
+    // Filter change events
+    $('#genre-filter, #condition-filter, #sort-filter').on('change', applyFilters);
+    $('#clear-filters').on('click', clearFilters);
+    
+    // Library search
+    $('#library-search').on('input', function() {
+        const searchTerm = $(this).val().toLowerCase();
+        $('.user-book-card').each(function() {
+            const title = $(this).find('.book-title').text().toLowerCase();
+            const author = $(this).find('.book-author').text().toLowerCase();
+            const isVisible = title.includes(searchTerm) || author.includes(searchTerm);
+            $(this).toggle(isVisible);
+        });
+    });
+}
+
+// Start chat conversation before sending swap request
+function startChatConversation() {
+    if (!targetBookData || !targetBookData.owner) {
+        showErrorMessage('Unable to find book owner information');
+        return;
+    }
+    
+    console.log('💬 Starting chat conversation with book owner');
+    
+    // Close the swap modal first
+    $('#swapRequestModal').modal('hide');
+    
+    // Get owner information
+    const ownerUserId = targetBookData.owner._id || targetBookData.owner.id;
+    const ownerUsername = targetBookData.owner.username || targetBookData.owner.fullname || targetBookData.owner.email || 'Book Owner';
+    
+    // First try to use the real-time chat system from navbar
+    if (window.realTimeChat) {
+        try {
+            // Expand chat widget if minimized
+            const chatWidget = document.getElementById('real-chat-widget');
+            if (chatWidget && chatWidget.classList.contains('minimized')) {
+                chatWidget.classList.remove('minimized');
+            }
+            
+            // Start the chat
+            window.realTimeChat.startChat(ownerUserId, ownerUsername);
+            
+            showSuccessMessage('Chat started! You can now discuss the book swap.');
+            return;
+            
+        } catch (error) {
+            console.error('❌ Real-time chat failed:', error);
+        }
+    }
+    
+    // Fallback: Use the navbar chat system directly
+    if (typeof openUserChat === 'function') {
+        try {
+            openUserChat(ownerUserId, ownerUsername);
+            showSuccessMessage('Chat opened! You can now discuss the book swap.');
+            return;
+        } catch (error) {
+            console.error('❌ Navbar chat failed:', error);
+        }
+    }
+    
+    // Final fallback: Show the built-in chat modal with book context
+    try {
+        $('#chat-title').text(`Chat with ${ownerUsername}`);
+        $('#chat-swap-summary').html(`
+            <div class="d-flex align-items-center">
+                <img src="${getBookImageSrc(targetBookData)}" style="width: 40px; height: 40px; object-fit: cover; border-radius: 8px;" class="me-3">
+                <div>
+                    <h6 class="mb-1">About: ${targetBookData.title}</h6>
+                    <small class="text-muted">by ${targetBookData.author}</small>
+                </div>
+            </div>
+        `);
+        $('#chat-messages').html(`
+            <div class="text-center text-muted py-4">
+                <i class="bi bi-chat-dots text-primary" style="font-size: 2rem;"></i>
+                <h6 class="mt-2">Start Your Conversation</h6>
+                <p>Discuss the book swap with ${ownerUsername}</p>
+            </div>
+        `);
+        $('#chatModal').modal('show');
+        
+        // Focus on input
+        setTimeout(() => {
+            $('#chat-message-input').focus();
+        }, 500);
+        
+        showSuccessMessage('Chat opened! Start the conversation below.');
+        
+    } catch (error) {
+        console.error('❌ All chat methods failed:', error);
+        showErrorMessage('Chat system temporarily unavailable. Please try sending a swap request with a message instead.');
+    }
 }
 
 // Submit swap request
 function submitSwapRequest() {
+    if (!selectedUserBook || !targetBook) {
+        showErrorMessage('Please complete all steps before sending the request');
+        return;
+    }
+    
     const message = $('#swap-message').val();
+    const sendButton = $('#send-request-btn');
+    
+    // Show loading state
+    sendButton.prop('disabled', true).html('<div class="spinner-border spinner-border-sm me-2"></div>Sending...');
     
     $.post('/api/swaps', {
         offeredBookId: selectedUserBook,
@@ -1385,13 +2446,110 @@ function submitSwapRequest() {
         message: message
     })
     .done(function(response) {
+        console.log('✅ Swap request sent successfully:', response);
         $('#swapRequestModal').modal('hide');
-        showSuccessMessage('Swap request sent successfully!');
-        setTimeout(() => location.reload(), 1500);
+        
+        // Show success message with animation
+        showSuccessMessage('🎉 Swap request sent successfully! The book owner will be notified.');
+        
+        // Refresh the page to update the UI
+        setTimeout(() => {
+            location.reload();
+        }, 2000);
     })
     .fail(function(xhr) {
-        showErrorMessage('Failed to send swap request: ' + (xhr.responseJSON?.message || 'Unknown error'));
+        console.error('❌ Failed to send swap request:', xhr);
+        const errorMessage = xhr.responseJSON?.message || xhr.responseText || 'Unknown error';
+        showErrorMessage('Failed to send swap request: ' + errorMessage);
+    })
+    .always(function() {
+        // Reset button state
+        sendButton.prop('disabled', false).html('<i class="bi bi-send"></i> Send Swap Request');
     });
+}
+
+// Utility functions for success/error messages
+function showSuccessMessage(message) {
+    // Create a modern toast notification
+    const toast = $(`
+        <div class="success-toast">
+            <div class="toast-content">
+                <i class="bi bi-check-circle-fill text-success"></i>
+                <span>${message}</span>
+            </div>
+        </div>
+    `);
+    
+    // Add toast styles if not already added
+    if (!$('#toast-styles').length) {
+        $('head').append(`
+            <style id="toast-styles">
+                .success-toast, .error-toast {
+                    position: fixed;
+                    top: 20px;
+                    right: 20px;
+                    background: #1E1E1E;
+                    border: 1px solid #28A745;
+                    border-left: 4px solid #28A745;
+                    border-radius: 12px;
+                    padding: 16px 20px;
+                    z-index: 10000;
+                    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+                    transform: translateX(400px);
+                    transition: all 0.4s ease;
+                    max-width: 400px;
+                }
+                .error-toast {
+                    border-color: #DC3545;
+                    border-left-color: #DC3545;
+                }
+                .toast-content {
+                    display: flex;
+                    align-items: center;
+                    gap: 12px;
+                    color: white;
+                    font-weight: 500;
+                }
+                .success-toast.show, .error-toast.show {
+                    transform: translateX(0);
+                }
+            </style>
+        `);
+    }
+    
+    $('body').append(toast);
+    
+    // Animate in
+    setTimeout(() => toast.addClass('show'), 100);
+    
+    // Remove after delay
+    setTimeout(() => {
+        toast.removeClass('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
+function showErrorMessage(message) {
+    // Create error toast
+    const toast = $(`
+        <div class="error-toast">
+            <div class="toast-content">
+                <i class="bi bi-exclamation-triangle-fill text-danger"></i>
+                <span>${message}</span>
+            </div>
+        </div>
+    `);
+    
+    $('body').append(toast);
+    
+    // Animate in
+    setTimeout(() => toast.addClass('show'), 100);
+    
+    // Remove after delay
+    setTimeout(() => {
+        toast.removeClass('show');
+        setTimeout(() => toast.remove(), 400);
+    }, 5000);
 }
 
 // Real-time chat integration function
@@ -1510,59 +2668,24 @@ function testAuth() {
         });
 }
 
-// Quick match all books
+// Legacy functions for compatibility (some might be referenced elsewhere)
 function quickMatchAll() {
-    alert('Finding matches for all your books... This feature is coming soon!');
+    showSuccessMessage('🔍 Smart discovery is already active! All available books are shown above.');
 }
 
-// Show match preferences modal
 function showMatchPreferences() {
-    loadMatchPreferences();
-    // build chips
-    const allGenres = ['Fiction','Science Fiction','Romance','Mystery','Fantasy','Biography','History','Non-Fiction','Thriller','Self-Help'];
-    const chipWrap = $('#genre-chips');
-    chipWrap.empty();
-    allGenres.forEach(g => {
-        const active = matchPrefs.genres.includes(g) ? 'active' : '';
-        const el = $(`<span class="pref-chip ${active}" data-genre="${g}"><i class="bi bi-book"></i>${g}</span>`);
-        el.on('click', () => { el.toggleClass('active'); });
-        chipWrap.append(el);
-    });
-    // distance
-    const range = $('#match-distance-range');
-    range.val(matchPrefs.distance || 10);
-    $('#distanceValue').text(`${range.val()} km`);
-    range.on('input', function(){ $('#distanceValue').text(`${this.value} km`); });
-    // condition buttons
-    $('#condition-group .btn').removeClass('btn-professional').addClass('btn-outline-professional');
-    const current = matchPrefs.condition || 'Any';
-    const btn = $(`#condition-group .btn[data-cond="${current}"]`);
-    btn.removeClass('btn-outline-professional').addClass('btn-professional');
-    $('#condition-group .btn').off('click').on('click', function(){
-        $('#condition-group .btn').removeClass('btn-professional').addClass('btn-outline-professional');
-        $(this).removeClass('btn-outline-professional').addClass('btn-professional');
-    });
-    $('#matchPreferencesModal').modal('show');
-}
-
-// Save match preferences
-function saveMatchPreferences() {
-    const genres = [];
-    $('#genre-chips .pref-chip.active').each(function(){ genres.push($(this).data('genre')); });
-    const distance = parseInt($('#match-distance-range').val(), 10) || 10;
-    const condBtn = $('#condition-group .btn.btn-professional').data('cond') || 'Any';
-    matchPrefs = { genres, distance, condition: condBtn };
-    localStorage.setItem('swapMatchPrefs', JSON.stringify(matchPrefs));
-    $('#matchPreferencesModal').modal('hide');
-    if (selectedUserBook) { quickMatch(selectedUserBook); }
+    // Toggle the advanced filters instead
+    showAdvancedFilters();
 }
 
 function loadMatchPreferences() {
-    try {
-        matchPrefs = JSON.parse(localStorage.getItem('swapMatchPrefs') || 'null') || { genres: [], distance: 10, condition: 'Any' };
-    } catch(e) {
-        matchPrefs = { genres: [], distance: 10, condition: 'Any' };
-    }
+    // Legacy compatibility - no longer needed with new design
+    return { genres: [], distance: 10, condition: 'Any' };
+}
+
+// Legacy function for old modal system - redirect to new flow
+function proposeSwap(bookId, ownerId) {
+    selectBookForSwap(bookId);
 }
 
 // Accept swap request
@@ -1645,13 +2768,27 @@ function showErrorMessage(message) {
     alert('❌ ' + message);
 }
 
-// Auto-select first book on page load if available
+// Initialize when document is ready
 $(document).ready(function() {
-    console.log('🚀 PAGE LOADED - Swap Matcher Ready');
+    console.log('🚀 Modern Swap Matcher - Page Ready');
     console.log('jQuery version:', $.fn.jquery);
-    console.log('Current URL:', window.location.href);
     
-    loadMatchPreferences();
+    // Initialize the swap matcher
+    initializeSwapMatcher();
+    
+    // Initialize tooltips
+    $('[data-toggle="tooltip"]').tooltip();
+    
+    // Modal event handlers
+    $('#swapRequestModal').on('hidden.bs.modal', function() {
+        // Reset modal state when closed
+        currentStep = 1;
+        selectedUserBook = null;
+        targetBook = null;
+        targetBookData = null;
+        $('.user-book-card').removeClass('selected');
+        $('#swap-message').val('');
+    });
     
     // Debug: Test authentication
     console.log('🔐 Testing user authentication...');
@@ -1662,42 +2799,10 @@ $(document).ready(function() {
         .fail(function(xhr) {
             console.error('❌ Authentication failed:', xhr.status, xhr.responseText);
             if (xhr.status === 401) {
-                console.log('🚨 User not logged in!');
+                console.log('🚨 User not logged in - redirecting to login');
+                window.location.href = '/login';
             }
         });
-    
-    // Debug: Test API call
-    console.log('Testing API call...');
-    $.get('/api/books/test/matches')
-        .done(function(data) {
-            console.log('API test successful:', data);
-        })
-        .fail(function(xhr) {
-            console.log('API test failed:', xhr.status, xhr.responseText);
-        });
-    
-    const firstBook = $('.book-swap-item').first();
-    if (firstBook.length > 0) {
-        const bookId = firstBook.data('book-id');
-        if (bookId) {
-            console.log('Auto-selecting first book:', bookId);
-            setTimeout(() => selectBook(bookId), 1000);
-        }
-    }
-    
-    // Initialize filter event listeners
-    $('#genre-filter, #condition-filter, #sort-filter').on('change', applyFilters);
-    $('#clear-filters').on('click', clearFilters);
-    
-    // Hide chat button when swap modal is closed
-    $('#swapRequestModal').on('hidden.bs.modal', function () {
-        $('#chat-before-swap-btn').hide();
-    });
-    
-    // Initialize tooltips
-    $('[data-toggle="tooltip"]').tooltip();
-    
-
 });
 
 // Chat functionality
@@ -1826,16 +2931,23 @@ $(document).on('keypress', '#chat-input', function(e) {
                 
                 <!-- Message Input -->
                 <div class="p-3 border-top border-secondary">
-                    <div class="input-group">
-                        <textarea id="chat-input" class="form-control bg-dark text-white border-secondary" 
-                                  placeholder="Type your message..." rows="2" maxlength="1000"></textarea>
-                        <div class="input-group-append">
-                            <button id="send-message-btn" class="btn btn-primary" type="button" onclick="sendMessage()">
+                    <div class="message-input-container">
+                        <div class="message-input-wrapper">
+                            <button class="attach-btn">
+                                <i class="bi bi-paperclip"></i>
+                            </button>
+                            <div class="message-input-field">
+                                <input type="text" id="chat-input" placeholder="Type your message..." autocomplete="off" maxlength="1000">
+                                <button class="emoji-btn">
+                                    <i class="bi bi-emoji-smile"></i>
+                                </button>
+                            </div>
+                            <button id="send-message-btn" class="send-btn" type="button" onclick="sendMessage()">
                                 <i class="bi bi-send"></i>
                             </button>
                         </div>
                     </div>
-                    <small class="text-muted">Press Enter to send • Shift+Enter for new line</small>
+                    <small class="text-muted">Press Enter to send</small>
                 </div>
             </div>
         </div>
@@ -1916,12 +3028,19 @@ $(document).on('keypress', '#chat-input', function(e) {
                 
                 <!-- Message Input -->
                 <div class="p-3 border-top border-secondary">
-                    <div class="input-group">
-                        <input type="text" id="chat-message-input" class="form-control bg-dark text-white border-secondary" 
-                               placeholder="Type your message..." maxlength="1000">
-                        <div class="input-group-append">
-                            <button class="btn btn-primary" id="send-message-btn" type="button">
-                                <i class="bi bi-send"></i> Send
+                    <div class="message-input-container">
+                        <div class="message-input-wrapper">
+                            <button class="attach-btn">
+                                <i class="bi bi-paperclip"></i>
+                            </button>
+                            <div class="message-input-field">
+                                <input type="text" id="chat-message-input" placeholder="Type your message..." autocomplete="off" maxlength="1000">
+                                <button class="emoji-btn">
+                                    <i class="bi bi-emoji-smile"></i>
+                                </button>
+                            </div>
+                            <button id="send-message-btn" class="send-btn" type="button">
+                                <i class="bi bi-send"></i>
                             </button>
                         </div>
                     </div>

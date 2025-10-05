@@ -4,6 +4,7 @@ const User = require('../models/User');
 const Swap = require('../models/Swap');
 const path = require('path');
 const Activity = require('../models/Activity');
+const GoogleBooksHelper = require('../helpers/googleBooksHelper');
 /**
  * Book Management Controller
  * Handles all book-related operations: CRUD, search, filtering
@@ -244,8 +245,59 @@ class BookController {
             
             const totalPages = Math.ceil(totalBooks / limit);
             
+            // Enhance books with Google Books images
+            console.log(`Enhancing ${books.length} books with Google Books images...`);
+            const enhancedBooks = await Promise.all(books.map(async (book) => {
+                try {
+                    console.log(`Processing: "${book.title}" by ${book.author}`);
+                    
+                    // If book already has a custom image, keep it
+                    if (book.image && !book.image.includes('placeholder') && !book.image.includes('default')) {
+                        console.log(`  ✅ Already has custom image: ${book.image}`);
+                        return book;
+                    }
+
+                    // Try to get image from Google Books API
+                    let imageUrl = null;
+                    
+                    // First try with ISBN if available
+                    if (book.isbn) {
+                        console.log(`  🔍 Searching by ISBN: ${book.isbn}`);
+                        imageUrl = await GoogleBooksHelper.getBookImageByISBN(book.isbn);
+                        if (imageUrl) {
+                            console.log(`  ✅ Found image by ISBN: ${imageUrl}`);
+                        }
+                    }
+                    
+                    // If no image found with ISBN, try with title and author
+                    if (!imageUrl) {
+                        console.log(`  🔍 Searching by title/author: "${book.title}" by ${book.author}`);
+                        imageUrl = await GoogleBooksHelper.getBookImage(book.title, book.author);
+                        if (imageUrl) {
+                            console.log(`  ✅ Found image by title/author: ${imageUrl}`);
+                        } else {
+                            console.log(`  ❌ No image found for "${book.title}"`);
+                        }
+                    }
+
+                    // Return book with enhanced image
+                    const result = {
+                        ...book.toObject(),
+                        image: imageUrl || book.image || '/images/placeholder-book.jpg'
+                    };
+                    
+                    console.log(`  📸 Final image: ${result.image}`);
+                    return result;
+                } catch (error) {
+                    console.error(`❌ Error enhancing book ${book.title}:`, error);
+                    return book;
+                }
+            }));
+            
+            console.log(`✅ Completed enhancing books with Google Books images`);
+            
             res.json({
-                books,
+                books: enhancedBooks,
                 pagination: {
                     currentPage: parseInt(page),
                     totalPages,

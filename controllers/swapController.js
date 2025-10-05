@@ -28,23 +28,20 @@ class SwapController {
                 return res.status(404).json({ error: 'User not found' });
             }
             
-            // Get requested book
+            // Get requested book with owner info
             const requestedBook = await Book.findById(requestedBookId)
-                .populate('owner', 'fullname');
+                .populate('owner', 'fullname username email');
                 
             console.log('🔍 Requested book check:', {
                 bookId: requestedBookId,
                 found: !!requestedBook,
                 availability: requestedBook?.availability,
-                owner: requestedBook?.owner?.fullname
-            });
-            
-            // Additional debugging - check if book exists with any availability
-            const anyBookCheck = await Book.findById(requestedBookId);
-            console.log('🔍 Any book check (without filters):', {
-                exists: !!anyBookCheck,
-                availability: anyBookCheck?.availability,
-                owner: anyBookCheck?.owner?.toString()
+                owner: requestedBook?.owner,
+                ownerDetails: {
+                    fullname: requestedBook?.owner?.fullname,
+                    username: requestedBook?.owner?.username,
+                    email: requestedBook?.owner?.email
+                }
             });
                 
             if (!requestedBook || requestedBook.availability !== 'available') {
@@ -103,11 +100,30 @@ class SwapController {
                 }));
             }
             
+            // Get proper names with fallbacks
+            const requesterName = requester.fullname || requester.username || requester.email || 'Unknown User';
+            const ownerName = requestedBook.owner.fullname || requestedBook.owner.username || requestedBook.owner.email || 'Unknown Owner';
+            
+            console.log('👥 User names:', {
+                requesterName,
+                ownerName,
+                requesterData: {
+                    fullname: requester.fullname,
+                    username: requester.username,
+                    email: requester.email
+                },
+                ownerData: {
+                    fullname: requestedBook.owner.fullname,
+                    username: requestedBook.owner.username,
+                    email: requestedBook.owner.email
+                }
+            });
+
             const newSwap = new Swap({
                 requester: requesterId,
-                requesterName: requester.fullname,
+                requesterName: requesterName,
                 owner: requestedBook.owner._id,
-                ownerName: requestedBook.owner.fullname,
+                ownerName: ownerName,
                 requestedBook: {
                     id: requestedBook._id,
                     title: requestedBook.title,
@@ -118,7 +134,7 @@ class SwapController {
                 status: 'Pending',
                 negotiationHistory: [{
                     from: requesterId,
-                    fromName: requester.fullname,
+                    fromName: requesterName,
                     message: message || 'Initial swap request',
                     action: 'Message',
                     timestamp: new Date()
