@@ -1,6 +1,7 @@
 const Swap = require('../models/Swap');
 const Book = require('../models/Book');
 const User = require('../models/User');
+const Activity = require('../models/Activity');
 
 /**
  * Swap Management Controller
@@ -57,7 +58,7 @@ class SwapController {
                 return res.status(400).json({ error: 'Cannot request your own book' });
             }
             
-            // Check for existing active request
+            // Check for existing active request from this user to book owner
             const existingRequest = await Swap.findOne({
                 requester: requesterId,
                 'requestedBook.id': requestedBookId,
@@ -66,6 +67,19 @@ class SwapController {
             
             if (existingRequest) {
                 return res.status(400).json({ error: 'You already have an active request for this book' });
+            }
+            
+            // Check for reverse swap request (prevent duplicate swaps between same users)
+            const reverseSwapRequest = await Swap.findOne({
+                requester: requestedBook.owner._id,
+                owner: requesterId,
+                status: { $in: ['Pending', 'Accepted', 'In Progress'] }
+            });
+            
+            if (reverseSwapRequest) {
+                return res.status(400).json({ 
+                    error: 'There is already an active swap between you and this user. Please check your incoming requests or active swaps.' 
+                });
             }
             
             // Get offered books
@@ -196,8 +210,10 @@ class SwapController {
             
             const [swaps, totalSwaps] = await Promise.all([
                 Swap.find(query)
-                    .populate('requester', 'fullname photo')
-                    .populate('owner', 'fullname photo')
+                    .populate('requester', 'fullname username photo profilePicture')
+                    .populate('owner', 'fullname username photo profilePicture')
+                    .populate('requestedBook.id', 'title author coverImage image')
+                    .populate('offeredBooks.id', 'title author coverImage image')
                     .sort({ createdAt: -1 })
                     .skip(skip)
                     .limit(parseInt(limit)),
@@ -440,7 +456,7 @@ class SwapController {
     static async cancelSwap(req, res) {
         try {
             const { swapId } = req.params;
-            const { reason } = req.body;
+            const reason = req.body?.reason || 'Swap cancelled by user';
             const userId = req.session.user._id || req.session.user.id;
             
             const swap = await Swap.findById(swapId);
@@ -565,6 +581,530 @@ class SwapController {
         } catch (error) {
             console.error('Get swap details error:', error);
             return res.status(500).json({ error: 'Failed to fetch swap details' });
+        }
+    }
+
+    /**
+     * Schedule a meeting for book exchange
+     */
+    static async scheduleMeeting(req, res) {
+        console.log('📅 SCHEDULE MEETING STARTED');
+        console.log('Request body:', req.body);
+        
+        try {
+            const { swapId } = req.params;
+            const { location, datetime, notes } = req.body;
+            const userId = req.session.user._id || req.session.user.id;
+
+            // Validate required fields
+            if (!location || !datetime) {
+                return res.status(400).json({ 
+                    error: 'Location and datetime are required' 
+                });
+            }
+
+            // Find the swap
+            const swap = await Swap.findById(swapId)
+                .populate('requester', 'fullname username email')
+                .populate('owner', 'fullname username email')
+                .populate('requestedBook.id', 'title author');
+
+            if (!swap) {
+                return res.status(404).json({ error: 'Swap not found' });
+            }
+
+            // Verify user is part of this swap
+            const isRequester = String(swap.requester._id || swap.requester) === String(userId);
+            const isOwner = String(swap.owner._id || swap.owner) === String(userId);
+
+            if (!isRequester && !isOwner) {
+                return res.status(403).json({ error: 'Unauthorized - You are not part of this swap' });
+            }
+
+            // Verify swap is in accepted or in-progress status (can schedule meetings for active swaps)
+            const allowedStatuses = ['Accepted', 'In Progress'];
+            if (!allowedStatuses.includes(swap.status)) {
+                return res.status(400).json({ 
+                    error: 'Can only schedule meetings for accepted or in-progress swaps',
+                    currentStatus: swap.status
+                });
+            }
+
+            // Validate datetime is in the future
+            const meetingDate = new Date(datetime);
+            if (meetingDate <= new Date()) {
+                return res.status(400).json({ 
+                    error: 'Meeting time must be in the future' 
+                });
+            }
+
+            // Update swap with meeting details
+            swap.meetingDetails = {
+                location: location.trim(),
+                datetime: meetingDate,
+                notes: notes ? notes.trim() : '',
+                confirmed: false
+            };
+
+            // Optionally update status to "in progress"
+            // swap.status = 'In Progress';
+
+            await swap.save();
+
+            console.log('✅ Meeting scheduled successfully:', swap.meetingDetails);
+
+            // Determine who is the other party for notification
+            const otherParty = isRequester ? swap.owner : swap.requester;
+            const currentUser = isRequester ? swap.requester : swap.owner;
+            const bookTitle = swap.requestedBook?.id?.title || swap.requestedBook?.title || 'the book';
+
+            console.log('📧 Sending notification to:', {
+                otherPartyName: otherParty.fullname || otherParty.username,
+                otherPartyEmail: otherParty.email,
+                scheduledBy: currentUser.fullname || currentUser.username
+            });
+
+            // Create activity notification for the other party
+            try {
+                const formattedDateTime = meetingDate.toLocaleDateString('en-US', { 
+                    weekday: 'short',
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                await Activity.create({
+                    user: otherParty._id,
+                    action: 'MATCH_SWAP',
+                    message: `${currentUser.fullname || currentUser.username} scheduled a meeting for "${bookTitle}" on ${formattedDateTime} at ${location.trim()}`,
+                    entityType: 'Swap',
+                    entityId: swap._id,
+                    meta: {
+                        swapId: swap._id,
+                        scheduledBy: userId,
+                        location: location.trim(),
+                        datetime: meetingDate,
+                        bookTitle
+                    }
+                });
+
+                console.log('✅ Activity notification created for', otherParty.username);
+            } catch (activityError) {
+                console.error('⚠️ Failed to create activity notification:', activityError);
+                // Don't fail the whole request if activity logging fails
+            }
+
+            // TODO: Send email notification to the other party
+            // You can implement email/push notification here
+            // Example:
+            // await sendMeetingNotification({
+            //     to: otherParty.email,
+            //     swapId: swap._id,
+            //     bookTitle,
+            //     location: swap.meetingDetails.location,
+            //     datetime: swap.meetingDetails.datetime,
+            //     scheduledBy: currentUser.fullname || currentUser.username
+            // });
+
+            // Format the response with user-friendly date
+            const formattedDate = meetingDate.toLocaleDateString('en-US', { 
+                weekday: 'long', 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+
+            res.json({
+                success: true,
+                message: `Meeting scheduled successfully! ${otherParty.fullname || otherParty.username} will be notified.`,
+                swap: {
+                    _id: swap._id,
+                    status: swap.status,
+                    meetingDetails: swap.meetingDetails,
+                    formattedDate
+                },
+                notification: {
+                    sent: true,
+                    recipient: otherParty.fullname || otherParty.username,
+                    message: `${currentUser.fullname || currentUser.username} scheduled a meeting for exchanging "${bookTitle}" on ${formattedDate} at ${location}`
+                }
+            });
+
+        } catch (error) {
+            console.error('❌ Schedule meeting error:', error);
+            res.status(500).json({ 
+                error: 'Failed to schedule meeting',
+                details: error.message 
+            });
+        }
+    }
+
+    /**
+     * Confirm meeting attendance
+     */
+    static async confirmMeeting(req, res) {
+        console.log('✅ CONFIRM MEETING STARTED');
+        
+        try {
+            const { swapId } = req.params;
+            const userId = req.session.user._id || req.session.user.id;
+
+            // Find the swap
+            const swap = await Swap.findById(swapId)
+                .populate('requester', 'fullname username email')
+                .populate('owner', 'fullname username email')
+                .populate('requestedBook.id', 'title author');
+
+            if (!swap) {
+                return res.status(404).json({ error: 'Swap not found' });
+            }
+
+            // Verify user is part of this swap
+            const isRequester = String(swap.requester._id || swap.requester) === String(userId);
+            const isOwner = String(swap.owner._id || swap.owner) === String(userId);
+
+            if (!isRequester && !isOwner) {
+                return res.status(403).json({ error: 'Unauthorized - You are not part of this swap' });
+            }
+
+            // Check if meeting exists
+            if (!swap.meetingDetails || !swap.meetingDetails.datetime) {
+                return res.status(400).json({ 
+                    error: 'No meeting scheduled for this swap' 
+                });
+            }
+
+            // Check if already confirmed
+            if (swap.meetingDetails.confirmed) {
+                return res.json({
+                    success: true,
+                    message: 'Meeting already confirmed',
+                    swap: {
+                        _id: swap._id,
+                        meetingDetails: swap.meetingDetails
+                    }
+                });
+            }
+
+            // Confirm the meeting
+            swap.meetingDetails.confirmed = true;
+            await swap.save();
+
+            console.log('✅ Meeting confirmed:', swap.meetingDetails);
+
+            // Notify the other party
+            const otherParty = isRequester ? swap.owner : swap.requester;
+            const currentUser = isRequester ? swap.requester : swap.owner;
+            const bookTitle = swap.requestedBook?.id?.title || swap.requestedBook?.title || 'the book';
+
+            // Create activity notification
+            try {
+                const formattedDateTime = new Date(swap.meetingDetails.datetime).toLocaleDateString('en-US', { 
+                    weekday: 'short',
+                    month: 'short', 
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+
+                await Activity.create({
+                    user: otherParty._id,
+                    action: 'MATCH_SWAP',
+                    message: `${currentUser.fullname || currentUser.username} confirmed the meeting for "${bookTitle}" on ${formattedDateTime}`,
+                    entityType: 'Swap',
+                    entityId: swap._id,
+                    meta: {
+                        swapId: swap._id,
+                        confirmedBy: userId,
+                        meetingConfirmed: true,
+                        bookTitle
+                    }
+                });
+
+                console.log('✅ Confirmation notification created for', otherParty.username);
+            } catch (activityError) {
+                console.error('⚠️ Failed to create activity notification:', activityError);
+            }
+
+            res.json({
+                success: true,
+                message: `Meeting confirmed! ${otherParty.fullname || otherParty.username} has been notified.`,
+                swap: {
+                    _id: swap._id,
+                    status: swap.status,
+                    meetingDetails: swap.meetingDetails
+                }
+            });
+
+        } catch (error) {
+            console.error('❌ Confirm meeting error:', error);
+            res.status(500).json({ 
+                error: 'Failed to confirm meeting',
+                details: error.message 
+            });
+        }
+    }
+
+    /**
+     * Confirm book received - User confirms they received their book from the swap
+     */
+    static async confirmBookReceived(req, res) {
+        console.log('📦 CONFIRM BOOK RECEIVED STARTED');
+        
+        try {
+            const { swapId } = req.params;
+            const userId = req.session.user._id || req.session.user.id;
+
+            // Find the swap
+            const swap = await Swap.findById(swapId)
+                .populate('requester', 'fullname username email')
+                .populate('owner', 'fullname username email')
+                .populate('requestedBook.id', 'title author')
+                .populate('offeredBooks.id', 'title author');
+
+            if (!swap) {
+                return res.status(404).json({ error: 'Swap not found' });
+            }
+
+            // Verify user is part of this swap
+            const isRequester = String(swap.requester._id || swap.requester) === String(userId);
+            const isOwner = String(swap.owner._id || swap.owner) === String(userId);
+
+            if (!isRequester && !isOwner) {
+                return res.status(403).json({ error: 'Unauthorized - You are not part of this swap' });
+            }
+
+            // Check if swap is in the right status
+            if (swap.status !== 'In Progress') {
+                return res.status(400).json({ 
+                    error: 'Can only confirm receipt for swaps in progress',
+                    currentStatus: swap.status
+                });
+            }
+
+            // Initialize receivedConfirmation if it doesn't exist
+            if (!swap.receivedConfirmation) {
+                swap.receivedConfirmation = {
+                    requesterConfirmed: false,
+                    ownerConfirmed: false
+                };
+            }
+
+            // Check if user already confirmed
+            if (isRequester && swap.receivedConfirmation.requesterConfirmed) {
+                return res.json({
+                    success: true,
+                    message: 'You have already confirmed receipt',
+                    bothConfirmed: swap.receivedConfirmation.ownerConfirmed,
+                    swap: {
+                        _id: swap._id,
+                        status: swap.status,
+                        receivedConfirmation: swap.receivedConfirmation
+                    }
+                });
+            }
+
+            if (isOwner && swap.receivedConfirmation.ownerConfirmed) {
+                return res.json({
+                    success: true,
+                    message: 'You have already confirmed receipt',
+                    bothConfirmed: swap.receivedConfirmation.requesterConfirmed,
+                    swap: {
+                        _id: swap._id,
+                        status: swap.status,
+                        receivedConfirmation: swap.receivedConfirmation
+                    }
+                });
+            }
+
+            // Confirm receipt for this user
+            if (isRequester) {
+                swap.receivedConfirmation.requesterConfirmed = true;
+                swap.receivedConfirmation.requesterConfirmedAt = new Date();
+            } else {
+                swap.receivedConfirmation.ownerConfirmed = true;
+                swap.receivedConfirmation.ownerConfirmedAt = new Date();
+            }
+
+            // Check if both parties have confirmed
+            const bothConfirmed = swap.receivedConfirmation.requesterConfirmed && 
+                                  swap.receivedConfirmation.ownerConfirmed;
+
+            // If both confirmed, move to verification/completion stage
+            if (bothConfirmed) {
+                swap.status = 'Completed';
+                swap.completedAt = new Date();
+                
+                // Update book statuses
+                await Book.findByIdAndUpdate(swap.requestedBook.id, { availability: 'swapped' });
+                
+                if (swap.offeredBooks && swap.offeredBooks.length > 0) {
+                    await Book.updateMany(
+                        { _id: { $in: swap.offeredBooks.map(b => b.id) } }, 
+                        { availability: 'swapped' }
+                    );
+                }
+            }
+
+            await swap.save();
+
+            console.log('📦 Receipt confirmed:', {
+                swapId,
+                userId,
+                isRequester,
+                bothConfirmed
+            });
+
+            // Notify the other party
+            const otherParty = isRequester ? swap.owner : swap.requester;
+            const currentUser = isRequester ? swap.requester : swap.owner;
+            const bookTitle = swap.requestedBook?.id?.title || swap.requestedBook?.title || 'the book';
+
+            // Create activity notification
+            try {
+                const message = bothConfirmed 
+                    ? `Swap completed! Both parties confirmed receiving their books for "${bookTitle}". You earned 10 reward points! 🎉`
+                    : `${currentUser.fullname || currentUser.username} confirmed receiving their book for "${bookTitle}". Waiting for your confirmation.`;
+
+                await Activity.create({
+                    user: otherParty._id,
+                    action: bothConfirmed ? 'COMPLETE_SWAP' : 'MATCH_SWAP',
+                    message: message,
+                    entityType: 'Swap',
+                    entityId: swap._id,
+                    meta: {
+                        swapId: swap._id,
+                        confirmedBy: userId,
+                        bookReceived: true,
+                        bothConfirmed,
+                        bookTitle
+                    }
+                });
+
+                console.log('✅ Receipt notification created for', otherParty.username);
+
+                // Award points if completed
+                if (bothConfirmed) {
+                    await User.findByIdAndUpdate(swap.requester._id, { $inc: { points: 10 } });
+                    await User.findByIdAndUpdate(swap.owner._id, { $inc: { points: 10 } });
+                    console.log('🎁 10 points awarded to both parties');
+                }
+
+            } catch (activityError) {
+                console.error('⚠️ Failed to create activity notification:', activityError);
+            }
+
+            res.json({
+                success: true,
+                message: bothConfirmed 
+                    ? '🎉 Swap completed! Both parties have confirmed. You earned 10 reward points!'
+                    : `Receipt confirmed! Waiting for ${otherParty.fullname || otherParty.username} to confirm their receipt.`,
+                bothConfirmed,
+                completed: bothConfirmed,
+                swap: {
+                    _id: swap._id,
+                    status: swap.status,
+                    receivedConfirmation: swap.receivedConfirmation,
+                    completedAt: swap.completedAt
+                }
+            });
+
+        } catch (error) {
+            console.error('❌ Confirm book received error:', error);
+            res.status(500).json({ 
+                error: 'Failed to confirm book receipt',
+                details: error.message 
+            });
+        }
+    }
+
+    /**
+     * Mark swap as In Progress - Allows user to manually mark swap as in progress after exchanging books
+     */
+    static async markAsInProgress(req, res) {
+        console.log('📦 MARK AS IN PROGRESS STARTED');
+        
+        try {
+            const { swapId } = req.params;
+            const userId = req.session.user._id || req.session.user.id;
+
+            // Find the swap
+            const swap = await Swap.findById(swapId)
+                .populate('requester', 'fullname username email')
+                .populate('owner', 'fullname username email')
+                .populate('requestedBook.id', 'title author');
+
+            if (!swap) {
+                return res.status(404).json({ error: 'Swap not found' });
+            }
+
+            // Verify user is part of this swap
+            const isRequester = String(swap.requester._id || swap.requester) === String(userId);
+            const isOwner = String(swap.owner._id || swap.owner) === String(userId);
+
+            if (!isRequester && !isOwner) {
+                return res.status(403).json({ error: 'Unauthorized - You are not part of this swap' });
+            }
+
+            // Can only mark as "In Progress" if currently "Accepted"
+            if (swap.status !== 'Accepted') {
+                return res.status(400).json({ 
+                    error: `Cannot mark as In Progress. Current status is "${swap.status}". Only "Accepted" swaps can be marked as In Progress.` 
+                });
+            }
+
+            // Update status
+            swap.status = 'In Progress';
+            await swap.save();
+
+            console.log('📦 Swap marked as In Progress:', {
+                swapId,
+                userId,
+                previousStatus: 'Accepted',
+                newStatus: 'In Progress'
+            });
+
+            // Notify the other party
+            const otherParty = isRequester ? swap.owner : swap.requester;
+            const currentUser = isRequester ? swap.requester : swap.owner;
+            const bookTitle = swap.requestedBook?.id?.title || swap.requestedBook?.title || 'the book';
+
+            // Create activity notification
+            try {
+                await Activity.create({
+                    user: otherParty._id,
+                    action: 'MATCH_SWAP',
+                    message: `${currentUser.fullname || currentUser.username} marked your swap for "${bookTitle}" as In Progress. You can now confirm when you receive your book! 📦`,
+                    entityType: 'Swap',
+                    entityId: swap._id,
+                    meta: {
+                        swapId: swap._id,
+                        markedBy: userId,
+                        bookTitle
+                    }
+                });
+
+                console.log('✅ In Progress notification created for', otherParty.username);
+
+            } catch (activityError) {
+                console.error('⚠️ Failed to create activity notification:', activityError);
+            }
+
+            res.json({
+                success: true,
+                status: 'In Progress',
+                message: 'Swap marked as In Progress! You can now confirm when you receive your book. 📦'
+            });
+
+        } catch (error) {
+            console.error('❌ MARK AS IN PROGRESS ERROR:', error);
+            res.status(500).json({ 
+                error: 'Failed to mark swap as In Progress',
+                details: error.message 
+            });
         }
     }
 }

@@ -1,53 +1,72 @@
 # SwapShelf Backend Architecture Guide
 
-## 📁 Backend Logic Organization
+## 📁 Advanced Backend Organization
 
-The SwapShelf backend is organized using the **MVC (Model-View-Controller)** pattern with additional layers for better separation of concerns. Here's where each piece of backend logic is located:
+The SwapShelf backend follows a sophisticated **MVC (Model-View-Controller)** architecture with real-time capabilities, enhanced security, and comprehensive data management. Here's the complete backend structure:
 
 ## 🗄️ **Models** (`/models/`)
-**Purpose**: Database schemas, data validation, and business rules
+**Purpose**: Advanced database schemas with real-time features and data validation
 
 ### `User.js`
-- User authentication and profile management
-- Wishlist functionality
-- User statistics and preferences
-- Password hashing and validation
+- **Authentication System**: Secure user registration and login
+- **Profile Management**: Photo uploads, bio, and preferences
+- **Real-time Features**: Online status, last seen tracking
+- **Activity Tracking**: Reading history, swap statistics
+- **Wishlist System**: Advanced book wishlist with priorities
+- **Achievement System**: Badge tracking and progress
 
 ### `Book.js`
-- Book information and metadata
-- Availability status and condition tracking
-- Owner relationships and statistics
-- Search indexing and categorization
+- **Comprehensive Data**: ISBN, author, genre, condition, description
+- **Image Management**: Book cover uploads with validation
+- **Availability System**: Real-time availability status
+- **Search Optimization**: Indexed fields for fast searching
+- **Rating System**: User ratings and review aggregation
+- **Location Tracking**: Geographic availability for local swaps
 
 ### `Swap.js`
-- Swap request lifecycle management
-- Status tracking (pending, accepted, completed, etc.)
-- Negotiation history and communication
-- Rating and feedback system
+- **Advanced Lifecycle**: Multi-stage swap process management
+- **Real-time Updates**: Live status changes and notifications
+- **Communication Hub**: Integrated messaging for negotiations
+- **Rating & Feedback**: Post-swap review system
+- **History Tracking**: Complete audit trail of swap activities
+- **Smart Matching**: Algorithm-based swap recommendations
+
+### `Activity.js`
+- **Real-time Activity Feed**: Live user activities across platform
+- **Notification System**: In-app and email notifications
+- **Analytics Tracking**: User engagement and platform metrics
+- **Event Logging**: Comprehensive audit trail for all actions
 
 ## 🎛️ **Controllers** (`/controllers/`)
-**Purpose**: Business logic, data processing, and API response handling
+**Purpose**: Advanced business logic with real-time processing and comprehensive APIs
 
 ### `bookController.js`
-- **Book Management**: Add, update, delete books
-- **Search Logic**: Advanced book search and filtering
-- **Availability**: Toggle book availability status
-- **Statistics**: Book performance and engagement metrics
+- **CRUD Operations**: Complete book management with validation
+- **Image Upload**: Multer integration for book cover uploads
+- **Advanced Search**: Multi-field search with filters and sorting
+- **Availability Management**: Real-time availability updates
+- **Analytics**: Book performance metrics and engagement tracking
+- **Recommendation Engine**: Suggest books based on user preferences
 
 ### `swapController.js`
-- **Swap Lifecycle**: Create, respond to, complete swaps
-- **Status Management**: Handle all swap status transitions
-- **Communication**: Message handling between users
-- **Rating System**: Post-swap rating and feedback
+- **Swap Lifecycle Management**: Complete swap process automation
+- **Real-time Notifications**: Socket.IO integration for live updates
+- **Status Tracking**: Advanced state management with history
+- **Communication**: Integrated chat for swap negotiations
+- **Smart Matching**: AI-powered swap partner recommendations
+- **Performance Analytics**: Swap success rates and user satisfaction
 
 ### `userController.js`
-- **Profile Management**: Update user information and photos
-- **Wishlist Operations**: Add, remove, update wishlist items
-- **Activity Tracking**: User reading history and statistics
-- **Matching**: Find wishlist matches with available books
+- **Profile Management**: Comprehensive user data handling
+- **Photo Upload System**: Secure image upload with validation
+- **Authentication**: JWT token management and session handling
+- **Wishlist Operations**: Advanced wishlist with smart recommendations
+- **Activity Feed**: Real-time user activity aggregation
+- **Privacy Controls**: User privacy settings and data management
 
 ### `dashboardController.js`
-- **Data Aggregation**: Combine data from multiple sources
+- **Real-time Analytics**: Live dashboard data with Socket.IO updates
+- **Data Aggregation**: Multi-source data combination and processing
 - **Statistics**: Real-time user and platform statistics
 - **Recommendations**: Generate personalized book suggestions
 - **Analytics**: Performance metrics and insights

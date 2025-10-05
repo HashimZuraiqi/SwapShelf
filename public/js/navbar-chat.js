@@ -10,7 +10,9 @@ class SwapShelfChatInterface {
         this.isOpen = false;
         this.currentRoomId = null;
         this.searchTimeout = null;
+        this.contactSearchTimeout = null;
         this.handleSearchInput = null;
+        this.handleContactSearchInput = null;
         this.init();
     }
     
@@ -159,6 +161,24 @@ class SwapShelfChatInterface {
                 }
             });
         }
+        
+        // Contact search functionality
+        const contactSearch = document.getElementById('contactSearch');
+        if (contactSearch) {
+            console.log('🔍 Setting up contact search event listener');
+            let contactSearchTimeout;
+            contactSearch.addEventListener('input', (e) => {
+                console.log('🔍 Contact search input:', e.target.value);
+                clearTimeout(contactSearchTimeout);
+                contactSearchTimeout = setTimeout(() => {
+                    const query = e.target.value.trim();
+                    this.searchUsers(query);
+                }, 300);
+            });
+            console.log('✅ Contact search event listener bound');
+        } else {
+            console.log('⚠️ Contact search element not found during initial binding');
+        }
     }
     
     toggleChat() {
@@ -189,6 +209,7 @@ class SwapShelfChatInterface {
             // Setup search functionality with a small delay to ensure DOM is ready
             setTimeout(() => {
                 this.setupSearchFunctionality();
+                this.setupContactSearchFunctionality();
             }, 100);
         } else {
             console.error('❌ Chat modal element not found!');
@@ -1406,6 +1427,73 @@ class SwapShelfChatInterface {
         };
         
         trySetupSearch();
+    }
+    
+    setupContactSearchFunctionality() {
+        // Try multiple times to find the contact search input
+        let attempts = 0;
+        const maxAttempts = 5;
+        
+        const trySetupContactSearch = () => {
+            const contactSearchInput = document.getElementById('contactSearch');
+            console.log(`🔍 Attempt ${attempts + 1}: Setting up contact search functionality, input found:`, contactSearchInput);
+            
+            if (contactSearchInput) {
+                // Remove any existing event listeners to prevent duplicates
+                if (this.handleContactSearchInput) {
+                    contactSearchInput.removeEventListener('input', this.handleContactSearchInput);
+                }
+                
+                // Create bound function for proper this context
+                this.handleContactSearchInput = (e) => {
+                    console.log('🔍 Contact search input event triggered! Input value:', e.target.value);
+                    clearTimeout(this.contactSearchTimeout);
+                    this.contactSearchTimeout = setTimeout(() => {
+                        const query = e.target.value.trim();
+                        console.log('🔍 Searching users with query:', query);
+                        this.searchUsers(query);
+                    }, 300); // Debounce for 300ms
+                };
+                
+                // Add the event listener
+                contactSearchInput.addEventListener('input', this.handleContactSearchInput);
+                console.log('✅ Contact search event listener attached successfully');
+                
+                // Test the search functionality immediately
+                console.log('🧪 Testing contact search input element:', {
+                    id: contactSearchInput.id,
+                    placeholder: contactSearchInput.placeholder,
+                    value: contactSearchInput.value,
+                    classList: contactSearchInput.classList.toString(),
+                    parentElement: contactSearchInput.parentElement
+                });
+                
+                // Add a focus test
+                contactSearchInput.addEventListener('focus', () => {
+                    console.log('🔍 Contact search input focused!');
+                });
+                
+                // Test manual search
+                window.testContactSearch = (query) => {
+                    console.log('🧪 Manual contact search test with query:', query);
+                    this.searchUsers(query);
+                };
+                console.log('🧪 Manual contact search test available: window.testContactSearch("test")');
+                
+                return true; // Success
+            } else {
+                attempts++;
+                if (attempts < maxAttempts) {
+                    console.log(`❌ Contact search input not found, retrying in 100ms (attempt ${attempts}/${maxAttempts})`);
+                    setTimeout(trySetupContactSearch, 100);
+                } else {
+                    console.error('❌ Contact search input element not found after multiple attempts!');
+                }
+                return false;
+            }
+        };
+        
+        trySetupContactSearch();
     }
 }
 

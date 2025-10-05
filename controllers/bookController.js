@@ -201,9 +201,34 @@ class BookController {
                 query.condition = condition;
             }
             
-            // Filter by location (basic text match - can be enhanced with geolocation)
-            if (location) {
-                query.ownerLocation = { $regex: location, $options: 'i' };
+            // Enhanced location-based filtering
+            if (location || req.query.enableLocationFilter === 'true') {
+                // Get current user's location for default filtering
+                const currentUser = await User.findById(userId).select('location');
+                const userLocation = location || currentUser?.location;
+                
+                if (userLocation) {
+                    // First, try to match the city/region from user location
+                    const locationParts = userLocation.split(',').map(part => part.trim());
+                    const city = locationParts[0];
+                    const region = locationParts[1] || locationParts[0];
+                    
+                    // Create location query to match city or region
+                    const locationQuery = {
+                        $or: [
+                            { ownerLocation: { $regex: city, $options: 'i' } },
+                            { ownerLocation: { $regex: region, $options: 'i' } }
+                        ]
+                    };
+                    
+                    // If user has specific location preference, add it to the main query
+                    if (req.query.enableLocationFilter === 'true') {
+                        query = { ...query, ...locationQuery };
+                    } else if (location) {
+                        // Manual location filter
+                        query.ownerLocation = { $regex: location, $options: 'i' };
+                    }
+                }
             }
             
             const sortOptions = {};

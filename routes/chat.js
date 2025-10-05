@@ -300,4 +300,156 @@ router.post('/api/chat/rooms/:roomId/messages', requireAuth, async (req, res) =>
     }
 });
 
+// ===== SWAP-SPECIFIC CHAT ENDPOINTS =====
+
+// Get or create chat for a specific swap
+router.get('/api/chat/swap/:swapId', requireAuth, async (req, res) => {
+    try {
+        const { swapId } = req.params;
+        const currentUserId = req.session.user._id || req.session.user.id;
+        
+        console.log('📋 Getting chat for swap:', swapId);
+        
+        // Get the swap details
+        const Swap = require('../models/Swap');
+        const swap = await Swap.findById(swapId)
+            .populate('requester', 'username fullname profileImage')
+            .populate('owner', 'username fullname profileImage')
+            .populate('requestedBook.id', 'title author coverImage image')
+            .populate('offeredBooks.id', 'title author coverImage image');
+        
+        if (!swap) {
+            return res.status(404).json({ error: 'Swap not found' });
+        }
+        
+        // Verify user is part of this swap
+        if (swap.requester._id.toString() !== currentUserId.toString() && 
+            swap.owner._id.toString() !== currentUserId.toString()) {
+            return res.status(403).json({ error: 'Unauthorized access to this swap chat' });
+        }
+        
+        // Determine the other user
+        const otherUserId = swap.requester._id.toString() === currentUserId.toString() 
+            ? swap.owner._id 
+            : swap.requester._id;
+        
+        console.log('👥 Chat participants:', { currentUserId, otherUserId });
+        
+        // Find or create chat room between these users
+        let chatRoom = await ChatRoom.findOne({
+            participants: { $all: [currentUserId, otherUserId] }
+        });
+        
+        if (!chatRoom) {
+            console.log('🆕 Creating new chat room for swap');
+            chatRoom = new ChatRoom({
+                participants: [currentUserId, otherUserId]
+            });
+            await chatRoom.save();
+        }
+        
+        // Get messages for this chat room
+        const messages = await Message.find({ chatRoom: chatRoom._id })
+            .populate('sender', 'username fullname profileImage')
+            .sort({ createdAt: 1 })
+            .limit(100);
+        
+        console.log('✅ Found', messages.length, 'messages for swap chat');
+        
+        // Return chat data with swap context
+        res.json({
+            chat: {
+                _id: chatRoom._id,
+                messages: messages
+            },
+            swap: {
+                _id: swap._id,
+                status: swap.status,
+                requester: swap.requester,
+                owner: swap.owner,
+                requestedBook: swap.requestedBook,
+                offeredBooks: swap.offeredBooks
+            }
+        });
+        
+    } catch (error) {
+        console.error('❌ Error getting swap chat:', error);
+        res.status(500).json({ error: 'Failed to load chat' });
+    }
+});
+
+// Send a message in swap chat
+router.post('/api/chat/swap/:swapId/message', requireAuth, async (req, res) => {
+    try {
+        const { swapId } = req.params;
+        const { content } = req.body;
+        const currentUserId = req.session.user._id || req.session.user.id;
+        
+        if (!content || content.trim().length === 0) {
+            return res.status(400).json({ error: 'Message content is required' });
+        }
+        
+        console.log('💬 Sending message in swap chat:', swapId);
+        
+        // Get the swap details
+        const Swap = require('../models/Swap');
+        const swap = await Swap.findById(swapId);
+        
+        if (!swap) {
+            return res.status(404).json({ error: 'Swap not found' });
+        }
+        
+        // Verify user is part of this swap
+        if (swap.requester.toString() !== currentUserId.toString() && 
+            swap.owner.toString() !== currentUserId.toString()) {
+            return res.status(403).json({ error: 'Unauthorized' });
+        }
+        
+        // Determine the other user
+        const otherUserId = swap.requester.toString() === currentUserId.toString() 
+            ? swap.owner 
+            : swap.requester;
+        
+        // Find or create chat room
+        let chatRoom = await ChatRoom.findOne({
+            participants: { $all: [currentUserId, otherUserId] }
+        });
+        
+        if (!chatRoom) {
+            chatRoom = new ChatRoom({
+                participants: [currentUserId, otherUserId]
+            });
+            await chatRoom.save();
+        }
+        
+        // Create the message
+        const message = new Message({
+            chatRoom: chatRoom._id,
+            sender: currentUserId,
+            content: content.trim()
+        });
+        
+        await message.save();
+        
+        // Update room's last message
+        chatRoom.lastMessage = message._id;
+        chatRoom.updatedAt = new Date();
+        await chatRoom.save();
+        
+        // Populate sender info
+        await message.populate('sender', 'username fullname profileImage');
+        
+        console.log('✅ Message sent successfully');
+        
+        res.json({
+            success: true,
+            message: message
+        });
+        
+    } catch (error) {
+        console.error('❌ Error sending swap message:', error);
+        res.status(500).json({ error: 'Failed to send message' });
+    }
+});
+
 module.exports = router;
