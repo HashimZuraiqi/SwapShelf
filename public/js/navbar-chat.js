@@ -102,6 +102,12 @@ class SwapShelfChatInterface {
                 this.handleIncomingMessage(messageData);
             });
             
+            // Listen for message events in current room
+            this.socket.on('receiveMessage', (messageData) => {
+                console.log('📨 Received message via receiveMessage event:', messageData);
+                this.handleIncomingMessage(messageData);
+            });
+            
             this.socket.on('error', (error) => {
                 console.error('❌ Socket error:', error);
             });
@@ -1500,9 +1506,14 @@ class SwapShelfChatInterface {
     
     handleIncomingMessage(messageData) {
         console.log('💬 Handling incoming message:', messageData);
+        console.log('  🔍 Message roomId:', messageData.roomId);
+        console.log('  🔍 Message room:', messageData.room);
+        console.log('  🔍 Message chatRoom:', messageData.chatRoom);
+        console.log('  🔍 Current roomId:', this.currentRoomId);
         
         // If we're in the correct chat room, append the message immediately
-        if (messageData.roomId === this.currentRoomId || messageData.room === this.currentRoomId) {
+        if (messageData.roomId === this.currentRoomId || messageData.room === this.currentRoomId || messageData.chatRoom === this.currentRoomId) {
+            console.log('  ✅ Room match! Appending message to UI');
             const messagesContainer = document.getElementById('chatMessages');
             if (messagesContainer) {
                 // Check if message already exists to avoid duplicates
@@ -1519,7 +1530,11 @@ class SwapShelfChatInterface {
                 setTimeout(() => {
                     this.scrollToBottom(false);
                 }, 100);
+            } else {
+                console.warn('⚠️ Messages container not found!');
             }
+        } else {
+            console.log('  ❌ Room mismatch - message not for this conversation');
         }
         
         // Update conversation list to show new message preview
