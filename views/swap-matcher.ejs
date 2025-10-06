@@ -18,15 +18,15 @@
         :root {
             --primary-color: #3BB7FB;
             --primary-dark: #2A9FE8;
-            --secondary-color: #667eea;
-            --background-dark: #1a1a1a;
+            --secondary-color: #F6B443;
+            --background-dark: #18191E;
             --card-background: #232529;
             --border-color: rgba(59, 183, 251, 0.15);
             --text-primary: #ffffff;
             --text-secondary: #b0b3b8;
             --text-muted: #8a8e94;
             --success-color: #28a745;
-            --warning-color: #ffc107;
+            --warning-color: #F6B443;
             --danger-color: #dc3545;
             --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
             --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
@@ -42,25 +42,37 @@
         }
 
         body {
-            background: var(--background-dark);
+            background: linear-gradient(135deg, #18191E, #15181D, #0D0E10);
+            background-repeat: no-repeat;
+            background-attachment: fixed;
             color: var(--text-primary);
             font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             line-height: 1.6;
+            margin: 0;
+            padding: 0;
         }
 
-        /* Main Container */
+        /* Main Container - Only for main content, not navbar */
         .swap-matcher-main {
             min-height: 100vh;
             padding: 1rem 0;
         }
 
+        main.container-fluid {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding-left: 1rem;
+            padding-right: 1rem;
+        }
+
         /* Hero Section */
         .welcome-hero {
-            background: linear-gradient(135deg, var(--secondary-color) 0%, #764ba2 100%);
+            background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%);
+            border: 1px solid rgba(59, 183, 251, 0.15);
             border-radius: var(--border-radius-lg);
-            padding: 2rem;
-            margin-bottom: 1.5rem;
-            box-shadow: var(--shadow-medium);
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
             position: relative;
             overflow: hidden;
         }
@@ -72,7 +84,8 @@
             left: 0;
             right: 0;
             bottom: 0;
-            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.08) 0%, rgba(246, 180, 67, 0.05) 100%);
+            opacity: 1;
             pointer-events: none;
         }
 
@@ -81,12 +94,32 @@
             z-index: 1;
         }
 
+        .hero-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #ffffff;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.125rem;
+            color: rgba(255, 255, 255, 0.9);
+            line-height: 1.6;
+        }
+
+        .gradient-text {
+            background: linear-gradient(135deg, var(--primary-color) 0%, rgba(59, 183, 251, 0.8) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
         .swap-stats {
-            background: rgba(255,255,255,0.15);
+            background: rgba(35, 37, 41, 0.6);
             border-radius: var(--border-radius);
             padding: 1.5rem;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(255,255,255,0.1);
+            border: 1px solid rgba(59, 183, 251, 0.2);
         }
 
         /* Navigation Tabs */
@@ -95,7 +128,8 @@
             padding: 0;
         }
 
-        .nav-pills {
+        /* Swap Tabs Styling - Scoped to swap tabs only */
+        .swap-tabs-container .nav-pills {
             background: var(--card-background);
             border-radius: var(--border-radius);
             padding: 0.5rem;
@@ -104,7 +138,7 @@
             border: 1px solid var(--border-color);
         }
         
-        .nav-pills .nav-link {
+        .swap-tabs-container .nav-pills .nav-link {
             border-radius: var(--border-radius) !important;
             margin: 0 0.25rem !important;
             padding: 0.75rem 1.25rem !important;
@@ -117,14 +151,14 @@
             white-space: nowrap;
         }
         
-        .nav-pills .nav-link:hover {
+        .swap-tabs-container .nav-pills .nav-link:hover {
             background: rgba(59, 183, 251, 0.1) !important;
             color: var(--primary-color) !important;
             transform: translateY(-1px);
             border-color: rgba(59, 183, 251, 0.2) !important;
         }
         
-        .nav-pills .nav-link.active {
+        .swap-tabs-container .nav-pills .nav-link.active {
             background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
             border-color: var(--primary-color) !important;
             color: white !important;
@@ -132,8 +166,8 @@
             transform: translateY(-1px);
         }
 
-        .nav-pills .nav-link .badge {
-            background: rgba(255, 255, 255, 0.2);
+        .swap-tabs-container .nav-pills .nav-link .badge {
+            background: rgba(59, 183, 251, 0.2);
             color: inherit;
             padding: 0.2rem 0.5rem;
             border-radius: 10px;
@@ -142,8 +176,8 @@
             margin-left: 0.5rem;
         }
         
-        .nav-pills .nav-link.active .badge {
-            background: rgba(255, 255, 255, 0.3);
+        .swap-tabs-container .nav-pills .nav-link.active .badge {
+            background: rgba(59, 183, 251, 0.4);
         }
 
         /* Tab Content */
@@ -173,7 +207,7 @@
 
         /* Sub Tabs (My Requests) */
         .sub-tabs-nav {
-            background: rgba(255, 255, 255, 0.03);
+            background: rgba(35, 37, 41, 0.6);
             border-radius: var(--border-radius);
             padding: 0.5rem;
             margin-bottom: 1.5rem;
@@ -207,10 +241,11 @@
 
         /* Cards and Sections */
         .card-modern {
-            background: var(--card-background);
+            background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%);
+            backdrop-filter: blur(10px);
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            box-shadow: var(--shadow-light);
+            border: 1px solid rgba(59, 183, 251, 0.15);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             transition: var(--transition-smooth);
             overflow: hidden;
             margin-bottom: 1rem;
@@ -218,13 +253,13 @@
 
         .card-modern:hover {
             border-color: rgba(59, 183, 251, 0.3);
-            box-shadow: var(--shadow-medium);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
             transform: translateY(-2px);
         }
 
         .card-modern .card-header {
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.05), rgba(102, 126, 234, 0.05));
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(59, 183, 251, 0.05);
+            border-bottom: 1px solid rgba(59, 183, 251, 0.15);
             padding: 1.25rem 1.5rem;
         }
 
@@ -260,6 +295,35 @@
             outline: none;
         }
 
+        .btn-modern-outline {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--border-radius);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+        }
+
+        .btn-modern-outline:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(59, 183, 251, 0.4);
+            text-decoration: none;
+        }
+
+        .btn-modern-outline:focus {
+            box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.25);
+            outline: none;
+        }
+
         .btn-outline-modern {
             background: transparent;
             border: 2px solid var(--primary-color);
@@ -280,11 +344,98 @@
             transform: translateY(-1px);
         }
 
+        /* Search and Form Controls */
+        .search-input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            color: var(--text-muted);
+            z-index: 2;
+            font-size: 1rem;
+        }
+
+        .form-control-modern {
+            background: rgba(35, 37, 41, 0.6);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius);
+            color: var(--text-primary);
+            padding: 0.75rem 1rem 0.75rem 2.5rem;
+            font-size: 0.875rem;
+            transition: var(--transition-smooth);
+            width: 100%;
+        }
+
+        .form-control-modern::placeholder {
+            color: var(--text-muted);
+        }
+
+        .form-control-modern:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: rgba(35, 37, 41, 0.8);
+            box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.15);
+        }
+
+        .form-control-modern:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            background: rgba(35, 37, 41, 0.7);
+        }
+
+        /* Tab Content Layout */
+        .tab-content {
+            margin-top: 1.5rem;
+            padding-top: 0;
+        }
+
+        .tab-pane {
+            padding: 0;
+            margin: 0;
+        }
+
+        .discovery-section {
+            margin-bottom: 2rem;
+        }
+
+        /* Enhanced spacing for sections */
+        .card-modern + .card-modern {
+            margin-top: 1.5rem;
+        }
+
+        .section-spacing {
+            margin-bottom: 2rem;
+        }
+
+        /* Prevent unwanted gaps */
+        .swap-tabs-container .nav-tabs {
+            margin-bottom: 0;
+        }
+
+        .swap-tabs-container .nav-pills {
+            margin-bottom: 1rem;
+        }
+
+        /* Grid improvements */
+        .books-grid, .swap-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem 0;
+        }
+
+        .row.align-items-center {
+            margin-bottom: 1rem;
+        }
+
         /* Swap Cards */
         .swap-card {
-            background: var(--card-background);
+            background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%);
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(59, 183, 251, 0.15);
             transition: var(--transition-smooth);
             overflow: hidden;
             margin-bottom: 1rem;
@@ -293,13 +444,13 @@
         .swap-card:hover {
             border-color: rgba(59, 183, 251, 0.3);
             transform: translateY(-3px);
-            box-shadow: var(--shadow-medium);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .swap-card-header {
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.05), rgba(102, 126, 234, 0.05));
+            background: rgba(59, 183, 251, 0.05);
             padding: 1rem 1.25rem;
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid rgba(59, 183, 251, 0.15);
         }
 
         .swap-card-body {
@@ -344,18 +495,18 @@
 
         /* Book Swap Cards */
         .book-swap-card {
-            background: var(--card-background);
+            background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%);
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(59, 183, 251, 0.15);
             transition: var(--transition-smooth);
             overflow: hidden;
-            box-shadow: var(--shadow-light);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .book-swap-card:hover {
             border-color: rgba(59, 183, 251, 0.3);
             transform: translateY(-3px);
-            box-shadow: var(--shadow-medium);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .book-swap-card.canceled {
@@ -368,8 +519,8 @@
             align-items: center;
             justify-content: space-between;
             padding: 1.5rem;
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.03), rgba(102, 126, 234, 0.03));
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(59, 183, 251, 0.03);
+            border-bottom: 1px solid rgba(59, 183, 251, 0.15);
         }
 
         .book-image-wrapper {
@@ -461,12 +612,12 @@
         }
 
         .discovery-book-card {
-            background: var(--card-background);
+            background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%);
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(59, 183, 251, 0.15);
             transition: var(--transition-smooth);
             overflow: hidden;
-            box-shadow: var(--shadow-light);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
             display: flex;
             flex-direction: column;
             height: 100%;
@@ -475,14 +626,14 @@
         .discovery-book-card:hover {
             border-color: rgba(59, 183, 251, 0.3);
             transform: translateY(-5px);
-            box-shadow: var(--shadow-medium);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
         }
 
         .discovery-book-image {
             position: relative;
             padding: 1rem;
             text-align: center;
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.03), rgba(102, 126, 234, 0.03));
+            background: rgba(59, 183, 251, 0.03);
         }
 
         .discovery-book-cover {
@@ -558,22 +709,36 @@
 
         .discovery-swap-btn {
             width: 100%;
-            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
+            background: linear-gradient(135deg, #3BB7FB, #2A9FE8);
             border: none;
-            color: white;
+            color: white !important;
             padding: 0.75rem;
             border-radius: var(--border-radius);
             font-weight: 600;
             font-size: 0.85rem;
             transition: var(--transition-smooth);
             margin-top: auto;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .discovery-swap-btn:hover {
-            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-color));
-            transform: translateY(-1px);
-            color: white;
-            box-shadow: 0 4px 15px rgba(59, 183, 251, 0.3);
+            background: linear-gradient(135deg, #2A9FE8, #F6B443);
+            transform: translateY(-2px);
+            color: white !important;
+            box-shadow: 0 4px 15px rgba(59, 183, 251, 0.4);
+        }
+
+        .discovery-swap-btn.btn-secondary {
+            background: rgba(108, 117, 125, 0.6);
+            cursor: not-allowed;
+        }
+
+        .discovery-swap-btn.btn-secondary:hover {
+            background: rgba(108, 117, 125, 0.6);
+            transform: none;
+            box-shadow: none;
         }
 
         /* Empty States */
@@ -593,6 +758,57 @@
         .empty-state h6 {
             color: var(--text-secondary);
             margin-bottom: 0.5rem;
+        }
+
+        /* Empty Library State in Modal */
+        .empty-library {
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 3rem 2rem;
+        }
+
+        .empty-state-modern {
+            text-align: center;
+            max-width: 450px;
+            margin: 0 auto;
+        }
+
+        .empty-state-modern .empty-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1.5rem;
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.15) 0%, rgba(59, 183, 251, 0.05) 100%);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            animation: pulse 2s infinite;
+        }
+
+        .empty-state-modern .empty-icon i {
+            font-size: 3rem;
+            color: var(--primary-color);
+        }
+
+        .empty-state-modern .empty-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .empty-state-modern .empty-description {
+            color: var(--text-muted);
+            font-size: 1rem;
+            line-height: 1.6;
+            margin-bottom: 2rem;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
         }
 
         /* Loading States */
@@ -716,21 +932,21 @@
 
         .toast-close:hover {
             color: var(--text-primary);
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(59, 183, 251, 0.2);
         }
 
         /* Modern Modal Styles */
         .modal-modern {
-            background: var(--card-background);
-            border: 1px solid var(--border-color);
+            background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%);
+            border: 1px solid rgba(59, 183, 251, 0.2);
             border-radius: var(--border-radius-lg);
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
             overflow: hidden;
         }
 
         .modal-header-modern {
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.08), rgba(102, 126, 234, 0.08));
-            border-bottom: 1px solid var(--border-color);
+            background: rgba(59, 183, 251, 0.05);
+            border-bottom: 1px solid rgba(59, 183, 251, 0.2);
             padding: 2rem 2.5rem;
             display: flex;
             justify-content: space-between;
@@ -755,7 +971,7 @@
         }
 
         .btn-close-modern {
-            background: rgba(255, 255, 255, 0.1);
+            background: rgba(35, 37, 41, 0.8);
             border: none;
             color: var(--text-secondary);
             width: 44px;
@@ -780,8 +996,8 @@
         }
 
         .modal-footer-modern {
-            background: rgba(255, 255, 255, 0.02);
-            border-top: 1px solid var(--border-color);
+            background: rgba(35, 37, 41, 0.5);
+            border-top: 1px solid rgba(59, 183, 251, 0.2);
             padding: 2rem 2.5rem;
             display: flex;
             justify-content: space-between;
@@ -868,9 +1084,9 @@
         /* Book Display Cards */
         .book-display-card,
         .library-selection-card {
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.03), rgba(102, 126, 234, 0.03));
+            background: rgba(30, 31, 35, 0.6);
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
+            border: 1px solid rgba(59, 183, 251, 0.15);
             padding: 1.5rem;
             height: 100%;
         }
@@ -904,8 +1120,8 @@
         }
 
         .user-book-card {
-            background: rgba(255, 255, 255, 0.05);
-            border: 2px solid transparent;
+            background: rgba(30, 31, 35, 0.6);
+            border: 2px solid rgba(59, 183, 251, 0.15);
             border-radius: var(--border-radius);
             padding: 1rem;
             cursor: pointer;
@@ -915,14 +1131,14 @@
         }
 
         .user-book-card:hover {
-            border-color: rgba(59, 183, 251, 0.3);
+            border-color: rgba(59, 183, 251, 0.4);
             background: rgba(59, 183, 251, 0.08);
             transform: translateY(-3px);
         }
 
         .user-book-card.selected {
             border-color: var(--primary-color);
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.15), rgba(102, 126, 234, 0.15));
+            background: rgba(59, 183, 251, 0.15);
             box-shadow: 0 8px 25px rgba(59, 183, 251, 0.25);
         }
 
@@ -995,8 +1211,8 @@
         }
 
         #active-swaps-container .active-swap-item {
-            background: rgba(255, 255, 255, 0.03);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%);
+            border: 1px solid rgba(59, 183, 251, 0.15);
             border-radius: 15px;
             padding: 1.5rem;
             transition: var(--transition-smooth);
@@ -1005,7 +1221,7 @@
 
         #active-swaps-container .active-swap-item:hover {
             transform: translateY(-5px);
-            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
             border-color: rgba(59, 183, 251, 0.3);
         }
 
@@ -1069,7 +1285,7 @@
         .swap-progress-tracker .progress-step {
             margin-bottom: 1rem;
             padding: 0.75rem;
-            background: rgba(255, 255, 255, 0.02);
+            background: rgba(35, 37, 41, 0.4);
             border-radius: 8px;
         }
 
@@ -1095,24 +1311,24 @@
             font-size: 0.75rem;
         }
 
-        /* Micro-interactions and Hover Effects */
-        .nav-link {
+        /* Micro-interactions and Hover Effects - Only for Swap Tabs */
+        .swap-tabs-container .nav-link {
             position: relative;
             overflow: hidden;
         }
 
-        .nav-link::before {
+        .swap-tabs-container .nav-link::before {
             content: '';
             position: absolute;
             top: 0;
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(59, 183, 251, 0.2), transparent);
             transition: left 0.5s;
         }
 
-        .nav-link:hover::before {
+        .swap-tabs-container .nav-link:hover::before {
             left: 100%;
         }
 
@@ -1171,19 +1387,19 @@
             margin-bottom: 1.5rem;
             padding: 1rem;
             border-radius: var(--border-radius);
-            border: 1px solid var(--border-color);
-            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(59, 183, 251, 0.15);
+            background: rgba(30, 31, 35, 0.5);
             transition: var(--transition-smooth);
         }
 
         .progress-step.active {
             border-color: var(--primary-color);
-            background: rgba(59, 183, 251, 0.05);
+            background: rgba(59, 183, 251, 0.08);
         }
 
         .progress-step.completed {
             border-color: var(--success-color);
-            background: rgba(40, 167, 69, 0.05);
+            background: rgba(40, 167, 69, 0.08);
         }
 
         /* Responsive Design */
@@ -1194,18 +1410,27 @@
             
             .welcome-hero {
                 padding: 1.5rem;
-                margin-bottom: 1rem;
+                margin-bottom: 1.5rem !important;
+            }
+
+            .hero-title {
+                font-size: 1.75rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
             }
             
-            .nav-pills {
+            .swap-tabs-container .nav-pills {
                 flex-direction: column;
                 padding: 0.75rem;
             }
             
-            .nav-pills .nav-link {
+            .swap-tabs-container .nav-pills .nav-link {
                 margin: 0.25rem 0 !important;
                 text-align: center;
                 justify-content: center;
+                width: 100%;
             }
             
             .sub-tabs-nav {
@@ -1229,21 +1454,38 @@
                 justify-content: center;
                 margin-bottom: 0.5rem;
             }
+
+            .discovery-books-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+                gap: 1rem;
+            }
         }
 
         @media (max-width: 576px) {
             .welcome-hero {
                 padding: 1rem;
             }
+
+            .hero-title {
+                font-size: 1.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 0.95rem;
+            }
             
             .nav-pills .nav-link {
-                font-size: 0.8rem;
+                font-size: 0.85rem;
                 padding: 0.6rem 1rem !important;
             }
             
             .sub-tabs-nav .nav-link {
                 font-size: 0.75rem;
                 padding: 0.5rem 0.8rem !important;
+            }
+
+            .discovery-books-grid {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -1323,25 +1565,25 @@
     <%- include('partials/navbar') %>
 
     <!-- Swap Matcher Main Content -->
-    <main class="container-fluid py-2">
+    <main class="container-fluid py-4">
     <div class="dashboard-content">
     <!-- Swap Matcher Hero Section -->
-    <section class="welcome-hero">
+    <section class="welcome-hero mb-5">
         <div class="container">
             <div class="row align-items-center">
                 <div class="col-lg-8">
-                    <h1 class="display-4 font-weight-bold mb-3">
-                        <i class="bi bi-arrow-left-right"></i> Smart Book Swap Matcher
+                    <h1 class="hero-title mb-3">
+                        <i class="bi bi-arrow-left-right me-2"></i> <span class="gradient-text">Smart Book Swap Matcher</span>
                     </h1>
-                    <p class="lead mb-4">
+                    <p class="hero-subtitle mb-4">
                         Discover perfect matches for your books using our intelligent algorithm. 
                         Connect with readers in your area and expand your literary horizons.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
-                        <button class="btn-modern" onclick="quickMatchAll()">
+                        <button class="btn btn-gradient" onclick="quickMatchAll()">
                             <i class="bi bi-lightning-charge"></i> Quick Match All
                         </button>
-                        <button class="btn-modern-outline" onclick="showMatchPreferences()">
+                        <button class="btn btn-outline-light" onclick="showMatchPreferences()">
                             <i class="bi bi-sliders"></i> Match Preferences
                         </button>
                     </div>
@@ -1378,7 +1620,7 @@
     <!-- Swap Navigation Tabs -->
     <div class="container">
         <!-- Modern tab navigation with proper styling -->
-        <div class="swap-tabs-container">
+        <div class="swap-tabs-container mb-4">
             <ul class="nav nav-pills justify-content-center" id="swapTabs" role="tablist">
                 <li class="nav-item">
                     <a class="nav-link active" id="find-matches-tab" data-toggle="tab" href="#find-matches" role="tab" aria-controls="find-matches" aria-selected="true">
@@ -1686,7 +1928,6 @@
                                             </div>
                                         <% }); %>
                                     </div>
-                                    </div>
                                     <!-- Pagination for Completed -->
                                     <% if (completedRequests.length > 9) { %>
                                         <nav aria-label="Completed requests pagination">
@@ -1931,7 +2172,7 @@
                         
                         <!-- Status Summary -->
                         <% if (activeSwapsFiltered && activeSwapsFiltered.length > 0) { %>
-                            <div class="mb-2 p-2" style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                            <div class="mb-2 p-2" style="background: rgba(35, 37, 41, 0.6); border-radius: 8px; border: 1px solid rgba(59, 183, 251, 0.15);">
                                 <h6 class="text-white mb-2" style="font-size: 0.9rem;">
                                     <i class="bi bi-pie-chart"></i> Your Active Swaps Summary
                                 </h6>
@@ -1964,7 +2205,7 @@
                         <% if (activeSwapsFiltered && activeSwapsFiltered.length > 0) { %>
                             <div id="active-swaps-container">
                             <% activeSwapsFiltered.forEach(swap => { %>
-                                <div class="swap-tracker-card mb-4 active-swap-item" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 20px;">
+                                <div class="swap-tracker-card mb-4 active-swap-item" style="background: linear-gradient(135deg, #1E1F23 0%, #2A2D35 100%); border: 1px solid rgba(59, 183, 251, 0.15); border-radius: 15px; padding: 20px;">
                                     <!-- Swap Header with Books -->
                                     <div class="swap-header mb-3">
                                         <div class="row align-items-center">
@@ -2005,7 +2246,9 @@
                                             currentStep = 2;
                                             if (swap.meetingDetails.confirmed) {
                                                 currentStep = 3;
-                                                if (swap.status === 'In Progress') {
+                                                // Step 4: Confirm Receipt - ONLY for 'In Progress' or 'Pending Confirmation'
+                                                // Don't skip Step 3 for 'Accepted' status - they need to click "We Have Met"
+                                                if (['In Progress', 'Pending Confirmation'].includes(swap.status)) {
                                                     currentStep = 4;
                                                 }
                                             }
@@ -2058,22 +2301,65 @@
                                             </div>
                                             <% if (currentStep === 2) { %>
                                                 <div class="step-actions mt-3">
-                                                    <% if (swap.meetingDetails && !swap.meetingDetails.confirmed) { %>
+                                                    <% if (swap.meetingDetails) { %>
                                                         <div class="meeting-details mb-3 p-3" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 8px;">
                                                             <p class="mb-2"><strong>Scheduled Meeting:</strong></p>
                                                             <p class="mb-1"><i class="bi bi-calendar"></i> <%= new Date(swap.meetingDetails.datetime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
                                                             <p class="mb-1"><i class="bi bi-clock"></i> <%= new Date(swap.meetingDetails.datetime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></p>
                                                             <p class="mb-0"><i class="bi bi-geo-alt"></i> <%= swap.meetingDetails.location || 'Location not specified' %></p>
+                                                            
+                                                            <% 
+                                                            // Check confirmation status
+                                                            const currentUserId = user._id.toString();
+                                                            const isRequester = swap.requester._id.toString() === currentUserId;
+                                                            const userConfirmed = swap.meetingDetails && (
+                                                                (isRequester && swap.meetingDetails.requesterConfirmed) ||
+                                                                (!isRequester && swap.meetingDetails.ownerConfirmed)
+                                                            );
+                                                            const otherConfirmed = swap.meetingDetails && (
+                                                                (isRequester && swap.meetingDetails.ownerConfirmed) ||
+                                                                (!isRequester && swap.meetingDetails.requesterConfirmed)
+                                                            );
+                                                            const bothConfirmed = swap.meetingDetails && swap.meetingDetails.requesterConfirmed && swap.meetingDetails.ownerConfirmed;
+                                                            %>
+                                                            
+                                                            <!-- Confirmation Status -->
+                                                            <div class="mt-3 pt-2" style="border-top: 1px solid rgba(255, 193, 7, 0.2);">
+                                                                <p class="mb-2 text-white" style="font-size: 0.85rem;"><strong>Confirmation Status:</strong></p>
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <div>
+                                                                        <% if (userConfirmed) { %>
+                                                                            <i class="bi bi-check-circle-fill text-success"></i> <span class="text-success">You confirmed</span>
+                                                                        <% } else { %>
+                                                                            <i class="bi bi-circle text-muted"></i> <span class="text-muted">You - Pending</span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                    <div>
+                                                                        <% if (otherConfirmed) { %>
+                                                                            <i class="bi bi-check-circle-fill text-success"></i> <span class="text-success">Partner confirmed</span>
+                                                                        <% } else { %>
+                                                                            <i class="bi bi-circle text-muted"></i> <span class="text-muted">Partner - Pending</span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
-                                                        <button class="btn btn-success btn-sm animate__animated animate__pulse animate__infinite" onclick="confirmMeeting('<%= swap._id %>')">
-                                                            <i class="bi bi-check-circle"></i> Confirm This Meeting
-                                                        </button>
-                                                        <button class="btn btn-outline-secondary btn-sm ml-2" onclick="rescheduleMeeting('<%= swap._id %>')">
-                                                            <i class="bi bi-calendar-x"></i> Request Changes
-                                                        </button>
-                                                        <p class="text-warning mt-2 mb-0" style="font-size: 0.8rem;">
-                                                            <i class="bi bi-exclamation-triangle"></i> Waiting for your confirmation to proceed.
-                                                        </p>
+                                                        
+                                                        <% if (!userConfirmed) { %>
+                                                            <button class="btn btn-success btn-sm animate__animated animate__pulse animate__infinite" onclick="confirmMeeting('<%= swap._id %>')">
+                                                                <i class="bi bi-check-circle"></i> Confirm This Meeting
+                                                            </button>
+                                                            <button class="btn btn-outline-secondary btn-sm ml-2" onclick="rescheduleMeeting('<%= swap._id %>')">
+                                                                <i class="bi bi-calendar-x"></i> Request Changes
+                                                            </button>
+                                                            <p class="text-warning mt-2 mb-0" style="font-size: 0.8rem;">
+                                                                <i class="bi bi-exclamation-triangle"></i> Waiting for your confirmation to proceed.
+                                                            </p>
+                                                        <% } else if (!bothConfirmed) { %>
+                                                            <div class="alert alert-info" style="background: rgba(0, 123, 255, 0.1); border: 1px solid rgba(0, 123, 255, 0.3); margin-bottom: 0;">
+                                                                <i class="bi bi-info-circle"></i> You confirmed! Waiting for your partner to confirm as well.
+                                                            </div>
+                                                        <% } %>
                                                     <% } %>
                                                 </div>
                                             <% } %>
@@ -2130,11 +2416,33 @@
                                                         (isRequester && swap.receivedConfirmation.requesterConfirmed) ||
                                                         (!isRequester && swap.receivedConfirmation.ownerConfirmed)
                                                     );
+                                                    const otherConfirmedReceipt = swap.receivedConfirmation && (
+                                                        (isRequester && swap.receivedConfirmation.ownerConfirmed) ||
+                                                        (!isRequester && swap.receivedConfirmation.requesterConfirmed)
+                                                    );
+                                                    const bothConfirmedReceipt = swap.receivedConfirmation && swap.receivedConfirmation.requesterConfirmed && swap.receivedConfirmation.ownerConfirmed;
                                                     %>
                                                     <% if (!userConfirmed) { %>
                                                         <div class="book-verification mb-3 p-3" style="background: rgba(0, 123, 255, 0.1); border: 1px solid rgba(0, 123, 255, 0.3); border-radius: 8px;">
                                                             <p class="mb-2"><strong>Please verify your book:</strong></p>
                                                             <p class="mb-2">Did you receive "<%= swap.requestedBook ? swap.requestedBook.title : 'the book' %>" in good condition?</p>
+                                                            
+                                                            <!-- Receipt Confirmation Status -->
+                                                            <div class="mt-3 pt-2" style="border-top: 1px solid rgba(0, 123, 255, 0.2);">
+                                                                <p class="mb-2 text-white" style="font-size: 0.85rem;"><strong>Receipt Status:</strong></p>
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <div>
+                                                                        <i class="bi bi-circle text-muted"></i> <span class="text-muted">You - Pending</span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <% if (otherConfirmedReceipt) { %>
+                                                                            <i class="bi bi-check-circle-fill text-success"></i> <span class="text-success">Partner confirmed</span>
+                                                                        <% } else { %>
+                                                                            <i class="bi bi-circle text-muted"></i> <span class="text-muted">Partner - Pending</span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
                                                         </div>
                                                         <button class="btn btn-success btn-sm animate__animated animate__heartBeat animate__infinite" onclick="confirmBookReceipt('<%= swap._id %>')">
                                                             <i class="bi bi-book-check"></i> Yes, I Received My Book!
@@ -2147,8 +2455,28 @@
                                                         </p>
                                                     <% } else { %>
                                                         <div class="receipt-confirmed mb-3 p-3" style="background: rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 8px;">
-                                                            <p class="mb-0"><strong><i class="bi bi-check-circle-fill text-success"></i> You have confirmed receipt!</strong></p>
-                                                            <small class="text-muted">Waiting for the other party to confirm as well.</small>
+                                                            <p class="mb-2"><strong><i class="bi bi-check-circle-fill text-success"></i> You have confirmed receipt!</strong></p>
+                                                            
+                                                            <!-- Receipt Confirmation Status -->
+                                                            <div class="mt-2 pt-2" style="border-top: 1px solid rgba(40, 167, 69, 0.2);">
+                                                                <p class="mb-2 text-white" style="font-size: 0.85rem;"><strong>Receipt Status:</strong></p>
+                                                                <div class="d-flex justify-content-between align-items-center">
+                                                                    <div>
+                                                                        <i class="bi bi-check-circle-fill text-success"></i> <span class="text-success">You confirmed</span>
+                                                                    </div>
+                                                                    <div>
+                                                                        <% if (otherConfirmedReceipt) { %>
+                                                                            <i class="bi bi-check-circle-fill text-success"></i> <span class="text-success">Partner confirmed</span>
+                                                                        <% } else { %>
+                                                                            <i class="bi bi-circle text-warning"></i> <span class="text-warning">Partner - Pending</span>
+                                                                        <% } %>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            
+                                                            <% if (!bothConfirmedReceipt) { %>
+                                                                <small class="text-muted d-block mt-2">Waiting for your partner to confirm. The swap will complete automatically when both confirm.</small>
+                                                            <% } %>
                                                         </div>
                                                     <% } %>
                                                 </div>
@@ -2275,10 +2603,19 @@
                                         <% }); %>
                                     <% } else { %>
                                         <div class="empty-library">
-                                            <i class="bi bi-book"></i>
-                                            <h6>No Books Available</h6>
-                                            <p class="text-muted">Add books to your library to start swapping</p>
-                                            <a href="/library" class="btn-modern">Add Books</a>
+                                            <div class="empty-state-modern">
+                                                <div class="empty-icon">
+                                                    <i class="bi bi-book"></i>
+                                                </div>
+                                                <h5 class="empty-title">No Books in Your Library</h5>
+                                                <p class="empty-description">
+                                                    You need to add books to your library before you can create swap requests.
+                                                    Start building your collection now!
+                                                </p>
+                                                <a href="/library" class="btn btn-gradient mt-3" data-dismiss="modal">
+                                                    <i class="bi bi-plus-circle me-2"></i> Add Books to Library
+                                                </a>
+                                            </div>
                                         </div>
                                     <% } %>
                                 </div>
@@ -2291,62 +2628,76 @@
                 <div id="step-2" class="swap-step">
                     <div class="swap-preview-section">
                         <div class="row">
-                            <div class="col-md-5">
-                                <div class="swap-book-preview">
-                                    <h6 class="preview-label">You're Offering</h6>
-                                    <div id="selected-book-preview"></div>
+                            <!-- Swap Preview: What You're Getting -->
+                            <div class="col-md-6">
+                                <div class="book-display-card">
+                                    <div class="book-display-header">
+                                        <h6><i class="bi bi-star text-warning"></i> You're Requesting</h6>
+                                    </div>
+                                    <div id="requested-book-preview" class="book-display-content">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
                                 </div>
                             </div>
-                            <div class="col-md-2 text-center d-flex align-items-center justify-content-center">
-                                <div class="swap-arrow">
-                                    <i class="bi bi-arrow-left-right text-primary"></i>
-                                </div>
-                            </div>
-                            <div class="col-md-5">
-                                <div class="swap-book-preview">
-                                    <h6 class="preview-label">You're Getting</h6>
-                                    <div id="target-book-preview"></div>
+
+                            <!-- Swap Preview: What You're Offering -->
+                            <div class="col-md-6">
+                                <div class="book-display-card">
+                                    <div class="book-display-header">
+                                        <h6><i class="bi bi-book text-primary"></i> You're Offering</h6>
+                                    </div>
+                                    <div id="selected-book-preview" class="book-display-content">
+                                        <!-- Populated by JavaScript -->
+                                    </div>
                                 </div>
                             </div>
                         </div>
-                        
-                        <div class="message-section mt-4">
-                            <label class="form-label">Personal Message <span class="text-danger">*</span></label>
-                            <textarea id="swap-message" class="form-control-modern" rows="4" 
-                                      placeholder="Introduce yourself and let them know why you're interested in this book..."
-                                      maxlength="500" required></textarea>
-                            <div class="form-text-wrapper">
-                                <small class="text-muted">A friendly message is required and increases your chances of a successful swap!</small>
-                                <small id="message-counter" class="text-muted float-right">0/500</small>
+
+                        <!-- Swap Message -->
+                        <div class="mt-4">
+                            <div class="message-section">
+                                <label for="swap-message" class="form-label text-white mb-2">
+                                    <i class="bi bi-chat-dots text-primary me-2"></i>Your Message <span class="text-danger">*</span>
+                                </label>
+                                <p class="text-muted small mb-3">
+                                    <i class="bi bi-info-circle me-1"></i>
+                                    Tell them why you're interested in this book and make a great first impression!
+                                </p>
+                                <textarea 
+                                    id="swap-message" 
+                                    class="form-control-modern" 
+                                    rows="5" 
+                                    placeholder="Hi! I'm really interested in your book because..."
+                                    style="resize: vertical; min-height: 120px;"
+                                ></textarea>
+                                <div class="d-flex justify-content-between align-items-center mt-2">
+                                    <small class="text-muted">
+                                        <span id="message-char-count">0</span>/500 characters
+                                    </small>
+                                    <small class="text-muted">
+                                        <i class="bi bi-lightbulb"></i> Tip: Be friendly and specific!
+                                    </small>
+                                </div>
                             </div>
-                            <div id="message-validation" class="invalid-feedback d-none"></div>
                         </div>
                     </div>
                 </div>
             </div>
-            
+
+            <!-- Modal Footer with Navigation Buttons -->
             <div class="modal-footer modal-footer-modern">
-                <div class="footer-actions">
-                    <button type="button" class="btn-outline-modern" data-dismiss="modal">Cancel</button>
-                    
-                    <div class="primary-actions">
-                        <button type="button" id="chat-before-swap" class="btn-chat-modern" onclick="startChatConversation()" style="display: none;">
-                            <i class="bi bi-chat-dots"></i> Chat First
-                        </button>
-                        
-                        <button type="button" id="prev-step-btn" class="btn-outline-modern" onclick="previousStep()" style="display: none;">
-                            <i class="bi bi-arrow-left"></i> Previous
-                        </button>
-                        
-                        <button type="button" id="next-step-btn" class="btn-modern" onclick="nextStep()" disabled>
-                            Next <i class="bi bi-arrow-right"></i>
-                        </button>
-                        
-                        <button type="button" id="send-request-btn" class="btn-success-modern" onclick="submitSwapRequest()" style="display: none;">
-                            <i class="bi bi-send"></i> Send Swap Request
-                        </button>
-                    </div>
-                </div>
+                <button type="button" class="btn btn-outline-light" data-dismiss="modal">
+                    <i class="bi bi-x-circle me-1"></i> Cancel
+                </button>
+                <button type="button" id="back-step-btn" class="btn btn-outline-light" onclick="prevStep()" style="display: none;">
+                    <i class="bi bi-arrow-left me-1"></i> Back
+                </button>
+                <button type="button" id="next-step-btn" class="btn btn-gradient" onclick="nextStep()" disabled>
+                    Next Step <i class="bi bi-arrow-right ms-1"></i>
+                </button>
+                <button type="button" id="send-request-btn" class="btn btn-success" onclick="submitSwapRequest()" style="display: none;">
+                    <i class="bi bi-send me-1"></i> Send Swap Request
+                </button>
             </div>
         </div>
     </div>
@@ -2442,6 +2793,23 @@ function showNotification(title, message, type = 'info', duration = 5000) {
             setTimeout(() => toast.remove(), 400);
         }, duration);
     }
+}
+
+// Helper functions for common notifications
+function showSuccessMessage(message, title = 'Success') {
+    showNotification(title, message, 'success', 4000);
+}
+
+function showErrorMessage(message, title = 'Error') {
+    showNotification(title, message, 'error', 5000);
+}
+
+function showWarningMessage(message, title = 'Warning') {
+    showNotification(title, message, 'warning', 4500);
+}
+
+function showInfoMessage(message, title = 'Info') {
+    showNotification(title, message, 'info', 4000);
 }
 
 // Button Loading State Management
@@ -2861,6 +3229,11 @@ function previousStep() {
     }
 }
 
+// Add prevStep alias for the onclick handler
+function prevStep() {
+    previousStep();
+}
+
 // Update step indicator
 function updateStepIndicator(step) {
     $('.step').removeClass('active');
@@ -2873,10 +3246,9 @@ function showStep(step) {
     $(`#step-${step}`).addClass('active');
     
     // Update button visibility
-    $('#prev-step-btn').toggle(step > 1);
+    $('#back-step-btn').toggle(step > 1);
     $('#next-step-btn').toggle(step === 1);
     $('#send-request-btn').toggle(step === 2);
-    $('#chat-before-swap').toggle(step === 2);
 }
 
 // Display swap preview in step 2
@@ -2884,6 +3256,7 @@ function displaySwapPreview(offeredBook, requestedBook) {
     const offeredImageSrc = getBookImageSrc(offeredBook);
     const requestedImageSrc = getBookImageSrc(requestedBook);
     
+    // Display the book you're offering
     $('#selected-book-preview').html(`
         <div class="text-center">
             <img src="${offeredImageSrc}" class="book-cover-professional img-fluid mb-3" 
@@ -2902,7 +3275,8 @@ function displaySwapPreview(offeredBook, requestedBook) {
         </div>
     `);
     
-    $('#target-book-preview').html(`
+    // Display the book you're requesting
+    $('#requested-book-preview').html(`
         <div class="text-center">
             <img src="${requestedImageSrc}" class="book-cover-professional img-fluid mb-3" 
                  alt="${requestedBook.title}"
@@ -3152,12 +3526,18 @@ function startChatConversation() {
 
 // Submit swap request
 function submitSwapRequest() {
+    console.log('🔄 Submitting swap request...');
+    console.log('Selected User Book:', selectedUserBook);
+    console.log('Target Book:', targetBook);
+    
     if (!selectedUserBook || !targetBook) {
+        console.error('❌ Missing book selection:', { selectedUserBook, targetBook });
         showNotification('Incomplete Request', 'Please complete all steps before sending the request', 'warning');
         return;
     }
     
     const message = $('#swap-message').val().trim();
+    console.log('Message length:', message.length);
     
     // Validate that a message is provided (make it required)
     if (!message) {
@@ -3184,11 +3564,15 @@ function submitSwapRequest() {
     setButtonLoading('#send-request-btn', true);
     sendButton.html('<span class="spinner-border spinner-border-sm me-2"></span>Sending...');
     
-    $.post('/api/swaps', {
+    const requestData = {
         offeredBookId: selectedUserBook,
         requestedBookId: targetBook,
         message: message
-    })
+    };
+    
+    console.log('📤 Sending swap request with data:', requestData);
+    
+    $.post('/api/swaps', requestData)
     .done(function(response) {
         console.log('✅ Swap request sent successfully:', response);
         
@@ -3208,9 +3592,25 @@ function submitSwapRequest() {
             window.location.reload(); // Or update specific sections
         }, 1500);
     })
-    .fail(function(xhr) {
-        console.error('❌ Failed to send swap request:', xhr);
-        const errorMessage = xhr.responseJSON?.message || xhr.responseText || 'An unexpected error occurred';
+    .fail(function(xhr, textStatus, errorThrown) {
+        console.error('❌ Failed to send swap request:');
+        console.error('Status:', xhr.status);
+        console.error('Status Text:', textStatus);
+        console.error('Error Thrown:', errorThrown);
+        console.error('Response:', xhr.responseJSON || xhr.responseText);
+        
+        let errorMessage = 'An unexpected error occurred';
+        
+        if (xhr.responseJSON) {
+            errorMessage = xhr.responseJSON.message || xhr.responseJSON.error || errorMessage;
+        } else if (xhr.responseText) {
+            try {
+                const parsed = JSON.parse(xhr.responseText);
+                errorMessage = parsed.message || parsed.error || errorMessage;
+            } catch (e) {
+                errorMessage = xhr.responseText || errorMessage;
+            }
+        }
         
         showNotification(
             'Request Failed', 
@@ -3221,7 +3621,7 @@ function submitSwapRequest() {
     .always(function() {
         // Reset button state
         setButtonLoading('#send-request-btn', false);
-        sendButton.html('<i class="bi bi-send"></i> Send Request');
+        sendButton.html('<i class="bi bi-send me-1"></i> Send Swap Request');
     });
 }
 
@@ -3366,169 +3766,45 @@ function setupMessageValidation() {
     $(document).on('input', '#swap-message', function() {
         const textarea = $(this);
         const message = textarea.val();
-        const counter = $('#message-counter');
-        const validation = $('#message-validation');
+        const counter = $('#message-char-count');
         const sendButton = $('#send-request-btn');
         
         // Update character counter
-        counter.text(`${message.length}/500`);
+        counter.text(message.length);
         
-        // Reset validation state
-        textarea.removeClass('is-invalid is-valid');
-        validation.addClass('d-none');
-        
-        // Validate message
-        if (message.length === 0) {
-            // Don't show error for empty - let them start typing
-            sendButton.prop('disabled', true);
-        } else if (message.length < 10) {
+        // Update counter color based on length
+        if (message.length > 500) {
+            counter.css('color', '#dc3545');
             textarea.addClass('is-invalid');
-            validation.removeClass('d-none').text('Message should be at least 10 characters long to help the book owner understand your interest.');
-            sendButton.prop('disabled', true);
-        } else if (message.length > 500) {
-            textarea.addClass('is-invalid');
-            validation.removeClass('d-none').text('Message is too long. Please keep it under 500 characters.');
-            sendButton.prop('disabled', true);
+        } else if (message.length >= 450) {
+            counter.css('color', '#F6B443');
+            textarea.removeClass('is-invalid');
         } else {
+            counter.css('color', 'var(--text-muted)');
+            textarea.removeClass('is-invalid');
+        }
+        
+        // Validate message length
+        if (message.length >= 10 && message.length <= 500) {
             textarea.addClass('is-valid');
-            sendButton.prop('disabled', false);
-        }
-        
-        // Update character counter color
-        if (message.length > 450) {
-            counter.removeClass('text-muted text-warning').addClass('text-danger');
-        } else if (message.length > 350) {
-            counter.removeClass('text-muted text-danger').addClass('text-warning');
-        } else {
-            counter.removeClass('text-warning text-danger').addClass('text-muted');
+        } else if (message.length > 0) {
+            textarea.removeClass('is-valid');
         }
     });
     
-    // Also validate on focus out
     $(document).on('blur', '#swap-message', function() {
-        const message = $(this).val().trim();
+        const message = $(this).val();
         if (message.length > 0 && message.length < 10) {
-            showNotification('Please write a more detailed message to help the book owner understand your interest.', 'warning');
+            $(this).addClass('is-invalid');
         }
     });
 }
 
-// Enhanced notification system
-function showNotification(message, type = 'info') {
-    const types = {
-        success: { icon: 'bi-check-circle-fill', color: '#28A745' },
-        error: { icon: 'bi-exclamation-triangle-fill', color: '#DC3545' },
-        warning: { icon: 'bi-exclamation-circle-fill', color: '#FFC107' },
-        info: { icon: 'bi-info-circle-fill', color: '#17A2B8' }
-    };
-    
-    const config = types[type] || types.info;
-    
-    const toast = $(`
-        <div class="custom-toast ${type}-toast">
-            <div class="toast-content">
-                <i class="bi ${config.icon}" style="color: ${config.color}"></i>
-                <span>${message}</span>
-            </div>
-            <button class="toast-close" onclick="$(this).parent().remove()">
-                <i class="bi bi-x"></i>
-            </button>
-        </div>
-    `);
-    
-    // Add toast styles if not already added
-    if (!$('#custom-toast-styles').length) {
-        $('head').append(`
-            <style id="custom-toast-styles">
-                .custom-toast {
-                    position: fixed;
-                    top: 20px;
-                    right: 20px;
-                    background: rgba(30, 30, 30, 0.95);
-                    backdrop-filter: blur(10px);
-                    border-radius: 12px;
-                    padding: 16px 20px;
-                    z-index: 10000;
-                    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-                    transform: translateX(400px);
-                    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-                    max-width: 400px;
-                    border: 1px solid rgba(255, 255, 255, 0.1);
-                }
-                
-                .custom-toast.show {
-                    transform: translateX(0);
-                }
-                
-                .toast-content {
-                    display: flex;
-                    align-items: center;
-                    gap: 10px;
-                    color: white;
-                    font-size: 14px;
-                    line-height: 1.4;
-                }
-                
-                .toast-content i {
-                    font-size: 18px;
-                    flex-shrink: 0;
-                }
-                
-                .toast-close {
-                    position: absolute;
-                    top: 8px;
-                    right: 8px;
-                    background: none;
-                    border: none;
-                    color: rgba(255, 255, 255, 0.6);
-                    cursor: pointer;
-                    padding: 4px;
-                    border-radius: 4px;
-                    transition: all 0.2s ease;
-                }
-                
-                .toast-close:hover {
-                    background: rgba(255, 255, 255, 0.1);
-                    color: white;
-                }
-            </style>
-        `);
-    }
-    
-    $('body').append(toast);
-    
-    // Show with animation
-    setTimeout(() => toast.addClass('show'), 100);
-    
-    // Auto-hide after 5 seconds
-    setTimeout(() => {
-        toast.removeClass('show');
-        setTimeout(() => toast.remove(), 400);
-    }, 5000);
-}
-
-function showErrorMessage(message) {
-    // Create error toast
-    const toast = $(`
-        <div class="error-toast">
-            <div class="toast-content">
-                <i class="bi bi-exclamation-triangle-fill text-danger"></i>
-                <span>${message}</span>
-            </div>
-        </div>
-    `);
-    
-    $('body').append(toast);
-    
-    // Animate in
-    setTimeout(() => toast.addClass('show'), 100);
-    
-    // Remove after delay
-    setTimeout(() => {
-        toast.removeClass('show');
-        setTimeout(() => toast.remove(), 400);
-    }, 5000);
-}
+// Open library search on modal show
+$('#swapRequestModal').on('shown.bs.modal', function () {
+    $('#library-search').focus();
+    setupMessageValidation();
+});
 
 // Real-time chat integration function
 function openSimpleChat() {
@@ -3991,10 +4267,16 @@ function confirmMeeting(swapId) {
             method: 'PUT'
         })
         .done(function(response) {
-            showSuccessMessage('✅ Meeting confirmed! Both parties are now ready to meet.');
-            // Show next step
-            showNextStep(swapId, 3);
-            setTimeout(() => location.reload(), 1500);
+            console.log('✅ Meeting confirmation response:', response);
+            
+            if (response.bothConfirmed) {
+                showSuccessMessage('🎉 ' + (response.message || 'Both parties confirmed! Meeting is all set.'));
+            } else {
+                showSuccessMessage('✅ ' + (response.message || 'Meeting confirmed! Waiting for other party.'));
+            }
+            
+            // Auto-reload to show updated status
+            setTimeout(() => location.reload(), 2000);
         })
         .fail(function(xhr) {
             const errorMessage = xhr.responseJSON?.error || 'Failed to confirm meeting';
@@ -4125,7 +4407,7 @@ function showSwapProgressModal(swapId, action) {
                                 <span class="text-white font-weight-bold">Overall Progress</span>
                                 <span class="text-primary font-weight-bold">20%</span>
                             </div>
-                            <div style="background: rgba(255,255,255,0.1); border-radius: 20px; height: 12px; overflow: hidden;">
+                            <div style="background: rgba(35, 37, 41, 0.6); border-radius: 20px; height: 12px; overflow: hidden;">
                                 <div style="background: linear-gradient(90deg, #3BB7FB, #667eea); width: 20%; height: 100%; border-radius: 20px; transition: width 0.5s ease;"></div>
                             </div>
                         </div>
@@ -4168,7 +4450,7 @@ function showSwapProgressModal(swapId, action) {
                             </div>
                             
                             <!-- Step 3: Exchange Books -->
-                            <div class="workflow-step" style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: all 0.3s ease;">
+                            <div class="workflow-step" style="background: rgba(35, 37, 41, 0.6); border: 2px solid rgba(59, 183, 251, 0.15); border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: all 0.3s ease;">
                                 <div class="d-flex align-items-center">
                                     <div class="step-icon" style="width: 56px; height: 56px; background: rgba(255, 193, 7, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
                                         <i class="bi bi-arrow-left-right" style="font-size: 26px; color: #FFC107;"></i>
@@ -4187,7 +4469,7 @@ function showSwapProgressModal(swapId, action) {
                             </div>
                             
                             <!-- Step 4: Verify Exchange -->
-                            <div class="workflow-step" style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: all 0.3s ease;">
+                            <div class="workflow-step" style="background: rgba(35, 37, 41, 0.6); border: 2px solid rgba(59, 183, 251, 0.15); border-radius: 16px; padding: 20px; margin-bottom: 16px; transition: all 0.3s ease;">
                                 <div class="d-flex align-items-center">
                                     <div class="step-icon" style="width: 56px; height: 56px; background: rgba(23, 162, 184, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
                                         <i class="bi bi-camera" style="font-size: 26px; color: #17A2B8;"></i>
@@ -4206,7 +4488,7 @@ function showSwapProgressModal(swapId, action) {
                             </div>
                             
                             <!-- Step 5: Complete & Rate -->
-                            <div class="workflow-step" style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(255, 255, 255, 0.1); border-radius: 16px; padding: 20px; transition: all 0.3s ease;">
+                            <div class="workflow-step" style="background: rgba(35, 37, 41, 0.6); border: 2px solid rgba(59, 183, 251, 0.15); border-radius: 16px; padding: 20px; transition: all 0.3s ease;">
                                 <div class="d-flex align-items-center">
                                     <div class="step-icon" style="width: 56px; height: 56px; background: rgba(255, 193, 7, 0.2); border-radius: 50%; display: flex; align-items: center; justify-content: center; margin-right: 20px;">
                                         <i class="bi bi-star" style="font-size: 26px; color: #FFC107;"></i>
@@ -4397,10 +4679,15 @@ function confirmMeeting(swapId) {
     .done(function(response) {
         console.log('✅ Meeting confirmed:', response);
         $('#meetingDetailsModal').modal('hide');
-        showSuccessMessage('Meeting confirmed! Your swap partner has been notified.');
         
-        // Reload to show updated status
-        setTimeout(() => location.reload(), 1500);
+        if (response.bothConfirmed) {
+            showSuccessMessage('🎉 ' + (response.message || 'Both parties confirmed! Meeting is all set.'));
+        } else {
+            showSuccessMessage('✅ ' + (response.message || 'Meeting confirmed! Waiting for other party.'));
+        }
+        
+        // Auto-reload to show updated status
+        setTimeout(() => location.reload(), 2000);
     })
     .fail(function(xhr) {
         console.error('❌ Failed to confirm meeting:', xhr);
@@ -4429,7 +4716,7 @@ function showMeetingScheduleModal(swapId) {
                                     <i class="bi bi-geo-alt text-primary me-2"></i>Meeting Location
                                 </label>
                                 <input type="text" id="meeting-location" name="location" class="form-control" 
-                                       style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px 16px; font-size: 1rem;"
+                                       style="background: rgba(35, 37, 41, 0.6); border: 2px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px 16px; font-size: 1rem;"
                                        placeholder="e.g., Central Library, Coffee Shop, Park..." required>
                                 <small class="text-muted mt-1 d-block">
                                     <i class="bi bi-info-circle me-1"></i>Choose a public, safe location
@@ -4440,7 +4727,7 @@ function showMeetingScheduleModal(swapId) {
                                     <i class="bi bi-clock text-primary me-2"></i>Date & Time
                                 </label>
                                 <input type="datetime-local" id="meeting-datetime" name="datetime" class="form-control" 
-                                       style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px 16px; font-size: 1rem; color-scheme: dark;"
+                                       style="background: rgba(35, 37, 41, 0.6); border: 2px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px 16px; font-size: 1rem; color-scheme: dark;"
                                        required>
                             </div>
                             <div class="mb-4">
@@ -4448,7 +4735,7 @@ function showMeetingScheduleModal(swapId) {
                                     <i class="bi bi-chat-text text-primary me-2"></i>Additional Notes
                                 </label>
                                 <textarea id="meeting-notes" name="notes" class="form-control" rows="4"
-                                          style="background: rgba(255, 255, 255, 0.05); border: 2px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px 16px; font-size: 1rem; resize: none;"
+                                          style="background: rgba(35, 37, 41, 0.6); border: 2px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px 16px; font-size: 1rem; resize: none;"
                                           placeholder="Any specific instructions, parking info, or meeting details..."></textarea>
                             </div>
                             
@@ -4654,17 +4941,8 @@ function initializeTabSystem() {
     const savedTab = localStorage.getItem('swapMatcher_activeTab') || 'find-matches';
     console.log('💾 Saved tab from localStorage:', savedTab);
     
-    // First, reset all main tab buttons
-    $('#swapTabs .nav-link').removeClass('active').attr('aria-selected', 'false');
-    
-    // Set saved or default tab as active
-    $(`#${savedTab}-tab`).addClass('active').attr('aria-selected', 'true');
-    
-    // Hide all main tab panes with aggressive display control
-    $('#swapTabsContent > .tab-pane').removeClass('show active').hide().css('display', 'none');
-    
-    // Show saved or default tab content
-    $(`#${savedTab}`).addClass('show active').show().css('display', 'block');
+    // Use Bootstrap's native tab method to activate the saved tab
+    $(`#${savedTab}-tab`).tab('show');
     
     // Set up tab change handlers for persistence and auto-refresh
     $('#swapTabs .nav-link').off('click.persistence').on('click.persistence', function(e) {
@@ -4746,9 +5024,9 @@ function initializeMyRequestsSubTabs() {
     $('#requestStatusTabs .nav-link').removeClass('active').attr('aria-selected', 'false');
     $('#pending-requests-tab').addClass('active').attr('aria-selected', 'true');
     
-    // Show only the pending requests content
-    $('#requestStatusTabs ~ .tab-content > .tab-pane').removeClass('show active').hide();
-    $('#pending-requests').addClass('show active').show();
+    // Use Bootstrap's tab API to show the correct tab
+    $('#pending-requests, #completed-requests, #canceled-requests').removeClass('show active');
+    $('#pending-requests').addClass('show active');
     
     console.log('✅ My Requests sub-tabs initialized - Pending active');
 }
@@ -4762,7 +5040,7 @@ function handleMyRequestsTabActivation() {
         // Re-initialize sub-tabs to ensure they work properly
         initializeMyRequestsSubTabs();
         
-        // Bind sub-tab click events if not already bound
+        // Bind sub-tab click events - use Bootstrap's native tab() method
         $('#requestStatusTabs .nav-link').off('click.custom').on('click.custom', function(e) {
             e.preventDefault();
             
@@ -4771,17 +5049,12 @@ function handleMyRequestsTabActivation() {
             
             console.log('🔄 Sub-tab clicked:', targetId);
             
-            // Update active states
-            $('#requestStatusTabs .nav-link').removeClass('active').attr('aria-selected', 'false');
-            $(this).addClass('active').attr('aria-selected', 'true');
-            
-            // Hide all sub-tab panes
-            $('#requestStatusTabs ~ .tab-content > .tab-pane').removeClass('show active').hide();
-            
-            // Show target pane
-            $(target).addClass('show active').show();
+            // Use Bootstrap's native tab method
+            $(this).tab('show');
             
             console.log('✅ Sub-tab switched to:', targetId);
+            
+            return false;
         });
     }, 100);
 }
@@ -4858,21 +5131,12 @@ $(document).ready(function() {
     $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
         console.log('🔄 Tab switching from:', $(e.relatedTarget)?.attr('href'), 'to:', $(e.target).attr('href'));
         
-        // Immediately hide ALL tab panes to prevent flickering
-        $('.tab-pane').removeClass('show active').hide().css('display', 'none');
+        // Let Bootstrap handle the tab hiding
     });
     
     $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
         const targetTab = $(e.target).attr('href');
         console.log('✅ Tab switched to:', targetTab);
-        
-        // Ensure only the target tab is visible with aggressive cleanup
-        $('.tab-pane').each(function() {
-            $(this).removeClass('show active').hide().css('display', 'none');
-        });
-        
-        // Show only the target tab
-        $(targetTab).addClass('show active').show().css('display', 'block');
         
         // Special handling for My Requests tab to ensure sub-tabs work
         if (targetTab === '#my-requests') {
@@ -4880,7 +5144,6 @@ $(document).ready(function() {
         }
         
         console.log('✅ Active tab pane:', $(targetTab).attr('id'));
-        console.log('✅ Visible tabs count:', $('.tab-pane.show.active').length);
     });
 });
 
@@ -5057,7 +5320,7 @@ function resetPaginationForTab(tabKey, containerId, paginationId, itemsPerPage, 
 
 // Chat functionality - Use navbar chat system
 function openChat(swapId) {
-    console.log('� Opening chat for swap:', swapId);
+    console.log('💬 Opening chat for swap:', swapId);
     
     // Get swap details to find the other user
     $.get(`/api/swaps/${swapId}`)
@@ -5070,46 +5333,53 @@ function openChat(swapId) {
             const otherUser = isRequester ? swap.owner : swap.requester;
             const otherUserId = otherUser._id || otherUser;
             const otherUserName = otherUser.fullname || otherUser.username || 'User';
+            const otherUserImage = otherUser.profileImage || '/images/default-avatar.png';
             
-            console.log('📋 Opening chat with:', otherUserName, otherUserId);
+            console.log('📋 Opening chat with:', {
+                name: otherUserName,
+                id: otherUserId,
+                image: otherUserImage
+            });
             
-            // Use navbar chat system
-            if (window.realTimeChat && typeof window.realTimeChat.startChat === 'function') {
+            // Use the navbar chat system
+            if (window.swapShelfChat) {
                 try {
-                    console.log('✅ Using realTimeChat system');
-                    // Expand chat widget if minimized
-                    const chatWidget = document.getElementById('real-chat-widget');
-                    if (chatWidget && chatWidget.classList.contains('minimized')) {
-                        chatWidget.classList.remove('minimized');
-                    }
+                    console.log('✅ Using SwapShelf Chat Interface');
                     
-                    // Start chat with the other user
-                    window.realTimeChat.startChat(otherUserId, otherUserName);
-                    showSuccessMessage(`Chat with ${otherUserName} opened!`);
+                    // Prepare user object for chat
+                    const userForChat = {
+                        _id: otherUserId,
+                        fullname: otherUserName,
+                        username: otherUserName,
+                        profileImage: otherUserImage
+                    };
+                    
+                    // Open the chat modal
+                    window.swapShelfChat.openChat();
+                    
+                    // Wait a moment for modal to open, then start the conversation
+                    setTimeout(() => {
+                        window.swapShelfChat.showChatView(userForChat);
+                        showNotification('Chat Opened', `Now chatting with ${otherUserName}`, 'success', 3000);
+                    }, 300);
+                    
                 } catch (error) {
                     console.error('❌ Failed to open chat:', error);
-                    showErrorMessage('Failed to open chat. Please try again.');
-                }
-            } else if (typeof openUserChat === 'function') {
-                // Fallback to direct navbar chat function
-                try {
-                    console.log('✅ Using openUserChat fallback');
-                    openUserChat(otherUserId, otherUserName);
-                    showSuccessMessage(`Chat with ${otherUserName} opened!`);
-                } catch (error) {
-                    console.error('❌ Navbar chat failed:', error);
-                    showErrorMessage('Chat system not available. Please refresh the page.');
+                    showNotification('Chat Error', 'Failed to open chat. Please try again.', 'error');
                 }
             } else {
-                console.error('❌ No chat system available');
+                console.error('❌ SwapShelf Chat system not available');
                 console.log('🔍 Debug info:');
-                console.log('  - window.realTimeChat:', window.realTimeChat);
-                console.log('  - typeof openUserChat:', typeof openUserChat);
-                console.log('  - Other user ID:', otherUserId);
-                console.log('  - Other user name:', otherUserName);
+                console.log('  - window.swapShelfChat:', window.swapShelfChat);
+                console.log('  - Other user:', { id: otherUserId, name: otherUserName });
                 
-                // Last resort: Show helpful message with contact info
-                showErrorMessage(`Unable to open chat automatically. Please use the chat icon in the navbar to contact ${otherUserName}.`);
+                // Show helpful message
+                showNotification(
+                    'Chat Unavailable', 
+                    `Please use the chat icon in the navbar to contact ${otherUserName}.`, 
+                    'warning',
+                    5000
+                );
             }
         })
         .fail(function(xhr) {
@@ -5184,11 +5454,11 @@ function showSwapProcessGuide() {
                         <!-- Step 4 -->
                         <div class="swap-guide-step mb-4">
                             <div class="d-flex align-items-start mb-3">
-                                <div class="step-number" style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; flex-shrink: 0; margin-right: 16px;">4</div>
+                                <div class="step-number" style="width: 48px; height: 48px; background: linear-gradient(135deg, #3BB7FB, #5BCCF6); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; font-weight: 700; color: white; flex-shrink: 0; margin-right: 16px;">4</div>
                                 <div>
                                     <h5 class="text-white mb-2" style="font-weight: 600;">Exchange Books</h5>
                                     <p class="text-muted mb-2">Meet at the scheduled time and location. Inspect the books to ensure they match the description and condition. Exchange books and enjoy your new reading material!</p>
-                                    <span class="badge" style="background: rgba(102, 126, 234, 0.2); color: #667eea; padding: 6px 12px; border-radius: 8px;">
+                                    <span class="badge" style="background: rgba(59, 183, 251, 0.2); color: #3BB7FB; padding: 6px 12px; border-radius: 8px;">
                                         <i class="bi bi-arrow-left-right me-1"></i>Status: In Progress
                                     </span>
                                 </div>
@@ -5221,13 +5491,13 @@ function showSwapProcessGuide() {
                             </h6>
                             <div class="row g-3">
                                 <div class="col-md-6">
-                                    <button class="btn btn-block" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 12px; width: 100%; text-align: left;" onclick="$('#swapGuideModal').modal('hide'); $('#chatToggle').click();">
+                                    <button class="btn btn-block" style="background: rgba(35, 37, 41, 0.6); border: 1px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px; width: 100%; text-align: left;" onclick="$('#swapGuideModal').modal('hide'); $('#chatToggle').click();">
                                         <i class="bi bi-chat-dots text-primary me-2"></i>
                                         Open Chat
                                     </button>
                                 </div>
                                 <div class="col-md-6">
-                                    <button class="btn btn-block" style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); color: white; border-radius: 12px; padding: 12px; width: 100%; text-align: left;" onclick="$('#swapGuideModal').modal('hide'); $('a[href=\\\'#active-swaps\\\']').click();">
+                                    <button class="btn btn-block" style="background: rgba(35, 37, 41, 0.6); border: 1px solid rgba(59, 183, 251, 0.2); color: white; border-radius: 12px; padding: 12px; width: 100%; text-align: left;" onclick="$('#swapGuideModal').modal('hide'); $('a[href=\\\'#active-swaps\\\']').click();">
                                         <i class="bi bi-arrow-left-right text-success me-2"></i>
                                         View Active Swaps
                                     </button>
@@ -5253,7 +5523,112 @@ function showSwapProcessGuide() {
         $(this).remove();
     });
 }
+
+// Auto-refresh polling for active swaps when waiting for confirmations
+let pollInterval = null;
+
+function startSwapPolling() {
+    // Only poll if on Active Swaps tab and there are pending confirmations
+    const activeSwapsTab = $('#active-swaps-tab');
+    if (activeSwapsTab.length > 0 && activeSwapsTab.hasClass('active')) {
+        // Check if any swap is waiting for confirmations
+        const waitingForConfirmation = $('.active-swap-item').length > 0;
+        
+        if (waitingForConfirmation && !pollInterval) {
+            console.log('🔄 Starting swap status polling...');
+            pollInterval = setInterval(checkSwapUpdates, 10000); // Poll every 10 seconds
+        }
+    }
+}
+
+function stopSwapPolling() {
+    if (pollInterval) {
+        console.log('⏸️ Stopping swap status polling');
+        clearInterval(pollInterval);
+        pollInterval = null;
+    }
+}
+
+function checkSwapUpdates() {
+    // Silently check for updates without showing loading indicators
+    $.ajax({
+        url: '/api/swaps',
+        method: 'GET',
+        timeout: 5000
+    })
+    .done(function(response) {
+        // Check if any swap has new confirmations
+        const currentSwaps = response.mySwaps || response.userSwaps || [];
+        let needsRefresh = false;
+        
+        currentSwaps.forEach(swap => {
+            if (swap.status === 'Accepted' || swap.status === 'In Progress') {
+                // Check if meeting confirmations changed
+                if (swap.meetingDetails) {
+                    const requesterConfirmed = swap.meetingDetails.requesterConfirmed;
+                    const ownerConfirmed = swap.meetingDetails.ownerConfirmed;
+                    const bothConfirmed = requesterConfirmed && ownerConfirmed;
+                    
+                    // If both confirmed but page doesn't reflect it, refresh
+                    if (bothConfirmed) {
+                        const swapCard = $(`.active-swap-item[data-swap-id="${swap._id}"]`);
+                        if (swapCard.find('.text-warning').length > 0) {
+                            needsRefresh = true;
+                        }
+                    }
+                }
+                
+                // Check if book receipt confirmations changed
+                if (swap.receivedConfirmation) {
+                    const requesterConfirmed = swap.receivedConfirmation.requesterConfirmed;
+                    const ownerConfirmed = swap.receivedConfirmation.ownerConfirmed;
+                    const bothConfirmed = requesterConfirmed && ownerConfirmed;
+                    
+                    if (bothConfirmed && swap.status === 'Completed') {
+                        needsRefresh = true;
+                    }
+                }
+            }
+        });
+        
+        if (needsRefresh) {
+            console.log('✨ Swap status updated - refreshing page...');
+            location.reload();
+        }
+    })
+    .fail(function(xhr) {
+        console.log('⚠️ Swap polling failed (silent):', xhr.status);
+        // Don't show errors for polling failures
+    });
+}
+
+// Start polling when Active Swaps tab is shown
+$(document).ready(function() {
+    $('#active-swaps-tab').on('shown.bs.tab', function() {
+        startSwapPolling();
+    });
+    
+    // Stop polling when switching away from Active Swaps
+    $('a[data-toggle="tab"]').on('show.bs.tab', function(e) {
+        if ($(e.target).attr('href') !== '#active-swaps') {
+            stopSwapPolling();
+        }
+    });
+    
+    // Start polling if Active Swaps is the default tab
+    if ($('#active-swaps-tab').hasClass('active')) {
+        startSwapPolling();
+    }
+    
+    // Stop polling when user leaves the page
+    $(window).on('beforeunload', function() {
+        stopSwapPolling();
+    });
+});
 </script>
+
+<!-- Socket.IO for Real-time Chat -->
+<script src="/socket.io/socket.io.js"></script>
 
 <!-- Chat System Integration -->
 <script src="/js/navbar-chat.js"></script>

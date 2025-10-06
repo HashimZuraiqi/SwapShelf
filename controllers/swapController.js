@@ -313,18 +313,20 @@ class SwapController {
                     console.error('❌ Error auto-cancelling other swaps:', cancelError);
                 }
 
-                // Mark books as swapped
+                // Mark books as unavailable (reserved for this swap)
                 try {
                     const requestedBook = await Book.findById(swap.requestedBook.id);
                     if (requestedBook) {
-                        requestedBook.availability = 'swapped';
+                        requestedBook.availability = 'unavailable';
                         await requestedBook.save();
+                        console.log('📚 Marked requested book as unavailable');
                     }
                     if (swap.offeredBooks && swap.offeredBooks.length > 0) {
                         await Book.updateMany(
                             { _id: { $in: swap.offeredBooks.map(b => b.id) } },
-                            { availability: 'swapped' }
+                            { availability: 'unavailable' }
                         );
+                        console.log('📚 Marked offered books as unavailable');
                     }
                 } catch (bookSwapError) {
                     console.error('Error updating book statuses on accept:', bookSwapError);
@@ -342,10 +344,20 @@ class SwapController {
                     timestamp: new Date()
                 });
                 
-                // Mark book as available again
+                // Mark books as available again (both requested and offered)
                 await Book.findByIdAndUpdate(swap.requestedBook.id, {
                     availability: 'available'
                 });
+                
+                // Also restore offered books availability
+                if (swap.offeredBooks && swap.offeredBooks.length > 0) {
+                    await Book.updateMany(
+                        { _id: { $in: swap.offeredBooks.map(b => b.id) } },
+                        { availability: 'available' }
+                    );
+                }
+                
+                console.log('📚 Books marked as available again after decline');
             } else {
                 return res.status(400).json({ error: 'Invalid action' });
             }
@@ -466,12 +478,26 @@ class SwapController {
                 timestamp: new Date()
             });
             
-            // Update book statuses
-            await Book.findByIdAndUpdate(swap.requestedBook.id, { availability: 'swapped' });
+            // Delete books from libraries (not just mark as unavailable)
+            console.log('🗑️ Removing swapped books from libraries...');
             
-            // Update offered books if any
+            // Delete the requested book - handle both populated and non-populated IDs
+            const requestedBookId = swap.requestedBook?.id?._id || swap.requestedBook?.id || swap.requestedBook?._id;
+            if (requestedBookId) {
+                const deletedRequested = await Book.findByIdAndDelete(requestedBookId);
+                console.log('✅ Deleted requested book:', deletedRequested?._id || 'NOT FOUND');
+            }
+            
+            // Delete offered books - handle both populated and non-populated IDs
             if (swap.offeredBooks && swap.offeredBooks.length > 0) {
-                await Book.updateMany({ _id: { $in: swap.offeredBooks.map(b => b.id) } }, { availability: 'swapped' });
+                const bookIds = swap.offeredBooks
+                    .map(b => b.id?._id || b.id || b._id)
+                    .filter(id => id);
+                
+                if (bookIds.length > 0) {
+                    const deletedOffered = await Book.deleteMany({ _id: { $in: bookIds } });
+                    console.log('✅ Deleted offered books count:', deletedOffered.deletedCount);
+                }
             }
             
             await swap.save();
@@ -524,10 +550,20 @@ class SwapController {
                 timestamp: new Date()
             });
             
-            // Mark book as available again
+            // Mark books as available again (both requested and offered)
             await Book.findByIdAndUpdate(swap.requestedBook.id, {
                 availability: 'available'
             });
+            
+            // Also restore offered books availability
+            if (swap.offeredBooks && swap.offeredBooks.length > 0) {
+                await Book.updateMany(
+                    { _id: { $in: swap.offeredBooks.map(b => b.id) } },
+                    { availability: 'available' }
+                );
+            }
+            
+            console.log('📚 Books marked as available again after cancellation');
             
             await swap.save();
             
@@ -781,7 +817,7 @@ class SwapController {
     }
 
     /**
-     * Confirm meeting attendance
+     * Confirm meeting attendance - Both users must confirm
      */
     static async confirmMeeting(req, res) {
         console.log('✅ CONFIRM MEETING STARTED');
@@ -815,11 +851,20 @@ class SwapController {
                 });
             }
 
-            // Check if already confirmed
-            if (swap.meetingDetails.confirmed) {
+            // Initialize confirmation fields if they don't exist
+            if (swap.meetingDetails.requesterConfirmed === undefined) {
+                swap.meetingDetails.requesterConfirmed = false;
+            }
+            if (swap.meetingDetails.ownerConfirmed === undefined) {
+                swap.meetingDetails.ownerConfirmed = false;
+            }
+
+            // Check if this user already confirmed
+            if (isRequester && swap.meetingDetails.requesterConfirmed) {
                 return res.json({
                     success: true,
-                    message: 'Meeting already confirmed',
+                    message: 'You have already confirmed this meeting',
+                    bothConfirmed: swap.meetingDetails.ownerConfirmed,
                     swap: {
                         _id: swap._id,
                         meetingDetails: swap.meetingDetails
@@ -827,11 +872,44 @@ class SwapController {
                 });
             }
 
-            // Confirm the meeting
-            swap.meetingDetails.confirmed = true;
+            if (isOwner && swap.meetingDetails.ownerConfirmed) {
+                return res.json({
+                    success: true,
+                    message: 'You have already confirmed this meeting',
+                    bothConfirmed: swap.meetingDetails.requesterConfirmed,
+                    swap: {
+                        _id: swap._id,
+                        meetingDetails: swap.meetingDetails
+                    }
+                });
+            }
+
+            // Confirm the meeting for this user
+            if (isRequester) {
+                swap.meetingDetails.requesterConfirmed = true;
+                swap.meetingDetails.requesterConfirmedAt = new Date();
+            } else {
+                swap.meetingDetails.ownerConfirmed = true;
+                swap.meetingDetails.ownerConfirmedAt = new Date();
+            }
+
+            // Check if both parties have confirmed
+            const bothConfirmed = swap.meetingDetails.requesterConfirmed && swap.meetingDetails.ownerConfirmed;
+
+            // Update the old 'confirmed' field to maintain backward compatibility
+            if (bothConfirmed) {
+                swap.meetingDetails.confirmed = true;
+            }
+
             await swap.save();
 
-            console.log('✅ Meeting confirmed:', swap.meetingDetails);
+            console.log('✅ Meeting confirmed by user:', {
+                userId,
+                isRequester,
+                requesterConfirmed: swap.meetingDetails.requesterConfirmed,
+                ownerConfirmed: swap.meetingDetails.ownerConfirmed,
+                bothConfirmed
+            });
 
             // Notify the other party
             const otherParty = isRequester ? swap.owner : swap.requester;
@@ -848,16 +926,21 @@ class SwapController {
                     minute: '2-digit'
                 });
 
+                const message = bothConfirmed 
+                    ? `Both parties confirmed! Your meeting for "${bookTitle}" on ${formattedDateTime} is all set! 🎉`
+                    : `${currentUser.fullname || currentUser.username} confirmed the meeting for "${bookTitle}" on ${formattedDateTime}. Please confirm as well!`;
+
                 await Activity.create({
                     user: otherParty._id,
                     action: 'MATCH_SWAP',
-                    message: `${currentUser.fullname || currentUser.username} confirmed the meeting for "${bookTitle}" on ${formattedDateTime}`,
+                    message: message,
                     entityType: 'Swap',
                     entityId: swap._id,
                     meta: {
                         swapId: swap._id,
                         confirmedBy: userId,
                         meetingConfirmed: true,
+                        bothConfirmed,
                         bookTitle
                     }
                 });
@@ -869,7 +952,10 @@ class SwapController {
 
             res.json({
                 success: true,
-                message: `Meeting confirmed! ${otherParty.fullname || otherParty.username} has been notified.`,
+                message: bothConfirmed 
+                    ? '🎉 Meeting confirmed by both parties! See you at the meetup.'
+                    : `Meeting confirmed! Waiting for ${otherParty.fullname || otherParty.username} to confirm as well.`,
+                bothConfirmed,
                 swap: {
                     _id: swap._id,
                     status: swap.status,
@@ -915,10 +1001,10 @@ class SwapController {
                 return res.status(403).json({ error: 'Unauthorized - You are not part of this swap' });
             }
 
-            // Check if swap is in the right status
-            if (swap.status !== 'In Progress') {
+            // Allow confirmation for Accepted, In Progress, or Pending Confirmation
+            if (!['Accepted', 'In Progress', 'Pending Confirmation'].includes(swap.status)) {
                 return res.status(400).json({ 
-                    error: 'Can only confirm receipt for swaps in progress',
+                    error: 'Can only confirm receipt for swaps in progress or accepted',
                     currentStatus: swap.status
                 });
             }
@@ -976,25 +1062,45 @@ class SwapController {
                 swap.status = 'Completed';
                 swap.completedAt = new Date();
                 
-                // Update book statuses
-                await Book.findByIdAndUpdate(swap.requestedBook.id, { availability: 'swapped' });
+                // Delete swapped books from both users' libraries (not just mark as unavailable)
+                console.log('🗑️ Removing swapped books from libraries...');
+                console.log('📦 Swap data:', {
+                    requestedBook: swap.requestedBook,
+                    offeredBooks: swap.offeredBooks
+                });
                 
-                if (swap.offeredBooks && swap.offeredBooks.length > 0) {
-                    await Book.updateMany(
-                        { _id: { $in: swap.offeredBooks.map(b => b.id) } }, 
-                        { availability: 'swapped' }
-                    );
+                // Delete the requested book (owned by the owner)
+                // Handle both populated and non-populated book IDs
+                const requestedBookId = swap.requestedBook?.id?._id || swap.requestedBook?.id || swap.requestedBook?._id;
+                if (requestedBookId) {
+                    console.log('🎯 Attempting to delete requested book with ID:', requestedBookId);
+                    const deletedRequested = await Book.findByIdAndDelete(requestedBookId);
+                    console.log('✅ Deleted requested book:', deletedRequested?._id || 'NOT FOUND');
+                } else {
+                    console.log('⚠️ No requested book ID found');
                 }
+                
+                // Delete the offered books (owned by the requester)
+                if (swap.offeredBooks && swap.offeredBooks.length > 0) {
+                    // Handle both populated and non-populated book IDs
+                    const bookIds = swap.offeredBooks
+                        .map(b => b.id?._id || b.id || b._id)
+                        .filter(id => id);
+                    
+                    console.log('🎯 Attempting to delete offered books with IDs:', bookIds);
+                    
+                    if (bookIds.length > 0) {
+                        const deletedOffered = await Book.deleteMany({ _id: { $in: bookIds } });
+                        console.log('✅ Deleted offered books count:', deletedOffered.deletedCount);
+                    } else {
+                        console.log('⚠️ No offered book IDs found');
+                    }
+                }
+                
+                console.log('🎉 Book deletion process completed');
             }
 
             await swap.save();
-
-            console.log('📦 Receipt confirmed:', {
-                swapId,
-                userId,
-                isRequester,
-                bothConfirmed
-            });
 
             // Notify the other party
             const otherParty = isRequester ? swap.owner : swap.requester;
@@ -1022,17 +1128,14 @@ class SwapController {
                     }
                 });
 
-                console.log('✅ Receipt notification created for', otherParty.username);
-
                 // Award points if completed
                 if (bothConfirmed) {
                     await User.findByIdAndUpdate(swap.requester._id, { $inc: { points: 10 } });
                     await User.findByIdAndUpdate(swap.owner._id, { $inc: { points: 10 } });
-                    console.log('🎁 10 points awarded to both parties');
                 }
 
             } catch (activityError) {
-                console.error('⚠️ Failed to create activity notification:', activityError);
+                console.error('Failed to create activity notification:', activityError);
             }
 
             res.json({

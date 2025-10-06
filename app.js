@@ -1581,6 +1581,8 @@ app.get('/swap-matcher', async (req, res) => {
     });
 
     // Get user's swap activities with properly populated books
+    // Fetch all swaps without a hard limit to ensure ALL completed/cancelled swaps are visible
+    // Note: If performance becomes an issue with many swaps, consider implementing pagination
     const userSwaps = await Swap.find({
       $or: [
         { requester: userId },
@@ -1592,7 +1594,6 @@ app.get('/swap-matcher', async (req, res) => {
     .populate('requestedBook.id', 'title author coverImage image')
     .populate('offeredBooks.id', 'title author coverImage image')
     .sort({ createdAt: -1 })
-    .limit(20)
     .lean();
 
     // Flatten and fix book data for easier template access

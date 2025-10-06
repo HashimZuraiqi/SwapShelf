@@ -82,13 +82,23 @@ class SwapShelfChatInterface {
             
             this.socket.on('connect', () => {
                 console.log('✅ Socket connected:', this.socket.id);
+                // Join all user's chat rooms when connected
+                this.joinAllUserRooms();
             });
             
             this.socket.on('disconnect', () => {
                 console.log('❌ Socket disconnected');
             });
             
+            // Listen for new messages in real-time
+            this.socket.on('newMessage', (messageData) => {
+                console.log('📨 Received new message via socket:', messageData);
+                this.handleIncomingMessage(messageData);
+            });
+            
+            // Keep the old 'message' event for backward compatibility
             this.socket.on('message', (messageData) => {
+                console.log('📨 Received message via old event:', messageData);
                 this.handleIncomingMessage(messageData);
             });
             
@@ -97,6 +107,30 @@ class SwapShelfChatInterface {
             });
         } else {
             console.warn('⚠️ Socket.io not available');
+        }
+    }
+    
+    async joinAllUserRooms() {
+        try {
+            // Fetch all user's chat rooms
+            const response = await fetch('/api/chat/rooms', {
+                credentials: 'include'
+            });
+            
+            if (response.ok) {
+                const rooms = await response.json();
+                console.log(`🚪 Joining ${rooms.length} chat rooms`);
+                
+                // Join each room via Socket.IO
+                rooms.forEach(room => {
+                    if (this.socket && room._id) {
+                        this.socket.emit('joinRoom', room._id);
+                        console.log(`✅ Joined room: ${room._id}`);
+                    }
+                });
+            }
+        } catch (error) {
+            console.error('❌ Error joining user rooms:', error);
         }
     }
     
@@ -162,7 +196,23 @@ class SwapShelfChatInterface {
             });
         }
         
-        // Contact search functionality
+        // Contact search functionality (conversationSearch)
+        const conversationSearch = document.getElementById('conversationSearch');
+        if (conversationSearch) {
+            console.log('🔍 Setting up conversation search event listener');
+            let searchTimeout;
+            conversationSearch.addEventListener('input', (e) => {
+                console.log('🔍 Conversation search input:', e.target.value);
+                clearTimeout(searchTimeout);
+                searchTimeout = setTimeout(() => {
+                    const query = e.target.value.trim();
+                    this.searchUsers(query);
+                }, 300);
+            });
+            console.log('✅ Conversation search event listener bound');
+        }
+        
+        // Contact search functionality (legacy support)
         const contactSearch = document.getElementById('contactSearch');
         if (contactSearch) {
             console.log('🔍 Setting up contact search event listener');
@@ -348,16 +398,26 @@ class SwapShelfChatInterface {
     }
     
     async searchUsers(query) {
+        console.log('🔍 Searching for:', query);
+        
         if (!query || query.trim() === '') {
-            // Show default users when search is empty
-            this.loadContacts();
+            // Clear search results and show conversations
+            const searchResults = document.getElementById('chatSearchResults');
+            if (searchResults) {
+                searchResults.style.display = 'none';
+                searchResults.innerHTML = '';
+            }
+            // Show conversations list
+            const convList = document.getElementById('conversationsList');
+            if (convList) convList.style.display = 'block';
             return;
         }
         
         if (query.length < 2) {
-            const resultsContainer = document.getElementById('chatSearchResults');
-            if (resultsContainer) {
-                resultsContainer.innerHTML = '<div class="no-results">Type at least 2 characters to search</div>';
+            const searchResults = document.getElementById('chatSearchResults');
+            if (searchResults) {
+                searchResults.style.display = 'block';
+                searchResults.innerHTML = '<div class="search-hint">Type at least 2 characters to search for users</div>';
             }
             return;
         }
@@ -370,9 +430,8 @@ class SwapShelfChatInterface {
             if (response.ok) {
                 const data = await response.json();
                 console.log('✅ Users search response:', data);
-                // The API returns { users: [...] } so we need to extract the users array
                 const users = data.users || data;
-                this.displaySearchResults(users);
+                this.displayUserSearchResults(users);
             } else {
                 console.error('❌ Failed to search users:', response.status);
             }
@@ -381,55 +440,133 @@ class SwapShelfChatInterface {
         }
     }
     
-    displaySearchResults(users) {
-        const resultsContainer = document.getElementById('chatSearchResults');
-        console.log('🔍 Displaying search results in container:', resultsContainer);
+    displayUserSearchResults(users) {
+        const searchResults = document.getElementById('chatSearchResults');
+        console.log('🔍 Displaying user search results in container:', searchResults);
         
-        if (!resultsContainer) {
-            console.error('❌ Search results container not found!');
+        if (!searchResults) {
+            console.error('❌ Search results container not found! Creating it...');
+            // Create the search results container if it doesn't exist
+            const convPanel = document.getElementById('conversationsPanel');
+            if (convPanel) {
+                const searchContainer = document.createElement('div');
+                searchContainer.id = 'chatSearchResults';
+                searchContainer.className = 'chat-search-results';
+                searchContainer.style.cssText = `
+                    position: absolute;
+                    top: 120px;
+                    left: 20px;
+                    right: 20px;
+                    background: #1E1E1E;
+                    border: 1px solid rgba(59, 183, 251, 0.2);
+                    border-radius: 12px;
+                    max-height: 400px;
+                    overflow-y: auto;
+                    z-index: 1000;
+                    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+                `;
+                convPanel.style.position = 'relative';
+                convPanel.insertBefore(searchContainer, convPanel.children[1]);
+                return this.displayUserSearchResults(users); // Try again with the new container
+            }
             return;
         }
+        
+        // Hide conversations list while showing search results
+        const convList = document.getElementById('conversationsList');
+        if (convList) convList.style.display = 'none';
+        
+        searchResults.style.display = 'block';
         
         if (users.length === 0) {
-            resultsContainer.innerHTML = '<div class="no-results">No users found</div>';
+            searchResults.innerHTML = `
+                <div class="search-no-results" style="padding: 24px; text-align: center; color: rgba(255,255,255,0.5);">
+                    <i class="bi bi-search" style="font-size: 2rem; margin-bottom: 12px;"></i>
+                    <p>No users found matching your search</p>
+                </div>
+            `;
             return;
         }
         
-        resultsContainer.innerHTML = users.map(user => `
-            <div class="contact-item" data-user-id="${user._id}" style="cursor: pointer;">
-                <div class="contact-avatar-container">
-                    <img src="${user.profileImage || '/images/default-avatar.png'}" 
-                         alt="${user.fullname || user.name || user.username}" 
-                         class="contact-avatar"
-                         onerror="this.src='/images/default-avatar.png'; this.style.background='linear-gradient(135deg, #3BB7FB, #F6B443)'; this.style.borderRadius='50%';"
-                         onload="this.style.borderRadius='50%'; this.style.objectFit='cover';">
-                    <div class="status-indicator ${user.isOnline ? '' : 'offline'}"></div>
-                </div>
-                <div class="contact-info">
-                    <div class="contact-name">${user.fullname || user.name || user.username}</div>
-                    <div class="contact-username">@${user.username}</div>
-                </div>
-                <div class="contact-action">
-                    <button class="btn-chat-start">
-                        <i class="bi bi-chat-dots"></i>
+        searchResults.innerHTML = `
+            <div class="search-results-header" style="padding: 12px 16px; border-bottom: 1px solid rgba(255,255,255,0.05); color: rgba(255,255,255,0.6); font-size: 13px; font-weight: 600;">
+                <i class="bi bi-people"></i> FOUND ${users.length} USER${users.length > 1 ? 'S' : ''}
+            </div>
+            ${users.map(user => `
+                <div class="search-result-item" data-user-id="${user._id}" style="display: flex; align-items: center; padding: 12px 16px; cursor: pointer; transition: background 0.2s; border-bottom: 1px solid rgba(255,255,255,0.03);">
+                    <div style="position: relative; margin-right: 12px;">
+                        <img src="${user.profileImage || '/images/default-avatar.png'}" 
+                             alt="${user.fullname || user.username}" 
+                             style="width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid #3BB7FB;"
+                             onerror="this.src='/images/default-avatar.png';">
+                        ${user.isOnline ? '<div style="position: absolute; bottom: 2px; right: 2px; width: 12px; height: 12px; background: #28A745; border: 2px solid #1E1E1E; border-radius: 50%;"></div>' : ''}
+                    </div>
+                    <div style="flex: 1; min-width: 0;">
+                        <div style="font-weight: 600; color: #ffffff; margin-bottom: 2px;">${user.fullname || user.username}</div>
+                        <div style="font-size: 13px; color: rgba(255,255,255,0.5);">@${user.username}</div>
+                    </div>
+                    <button class="btn-start-chat" style="padding: 8px 16px; background: linear-gradient(135deg, #3BB7FB, #667eea); border: none; border-radius: 8px; color: white; font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 6px;">
+                        <i class="bi bi-chat-dots"></i> Chat
                     </button>
                 </div>
-            </div>
-        `).join('');
+            `).join('')}
+        `;
         
-        // Add click handlers to contact items
+        // Add hover effects and click handlers
         setTimeout(() => {
-            document.querySelectorAll('.contact-item').forEach(item => {
-                item.addEventListener('click', () => {
-                    console.log('👤 Contact clicked:', item.dataset.userId);
+            document.querySelectorAll('.search-result-item').forEach(item => {
+                item.addEventListener('mouseenter', () => {
+                    item.style.background = 'rgba(59, 183, 251, 0.08)';
+                });
+                item.addEventListener('mouseleave', () => {
+                    item.style.background = 'transparent';
+                });
+                item.addEventListener('click', (e) => {
+                    // If clicked on the item (not the button), start chat
+                    if (!e.target.closest('.btn-start-chat')) {
+                        const userId = item.dataset.userId;
+                        const user = users.find(u => u._id === userId);
+                        if (user) {
+                            this.startChatWithUser(user);
+                        }
+                    }
+                });
+            });
+            
+            // Handle chat button clicks
+            document.querySelectorAll('.btn-start-chat').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const item = btn.closest('.search-result-item');
                     const userId = item.dataset.userId;
                     const user = users.find(u => u._id === userId);
                     if (user) {
-                        this.showChatView(user);
+                        this.startChatWithUser(user);
                     }
                 });
             });
         }, 100);
+    }
+    
+    async startChatWithUser(user) {
+        console.log('💬 Starting chat with user:', user);
+        
+        // Clear search and hide results
+        const searchInput = document.getElementById('conversationSearch');
+        if (searchInput) searchInput.value = '';
+        
+        const searchResults = document.getElementById('chatSearchResults');
+        if (searchResults) {
+            searchResults.style.display = 'none';
+            searchResults.innerHTML = '';
+        }
+        
+        // Show conversations list again
+        const convList = document.getElementById('conversationsList');
+        if (convList) convList.style.display = 'block';
+        
+        // Open chat with this user
+        this.showChatView(user);
     }
     
     async loadConversations(page = 1, searchQuery = '') {
@@ -1207,20 +1344,25 @@ class SwapShelfChatInterface {
             });
             
             if (response.ok) {
-                // Message sent successfully - it will appear via socket or reload
-                // Remove temporary message if we added one
-                const tempMessages = document.querySelectorAll('.message.temporary');
-                tempMessages.forEach(msg => msg.remove());
+                const savedMessage = await response.json();
+                console.log('✅ Message saved to database:', savedMessage);
                 
-                // Reload messages to get the actual sent message and scroll to bottom
-                setTimeout(() => {
-                    this.loadMessages(this.currentRoomId).then(() => {
-                        // Ensure we scroll to the latest message after reload
-                        setTimeout(() => {
-                            this.scrollToBottom(false);
-                        }, 100);
+                // Emit via Socket.IO for real-time delivery to other users
+                if (this.socket && this.socket.connected) {
+                    this.socket.emit('sendMessage', {
+                        roomId: this.currentRoomId,
+                        message: savedMessage
                     });
-                }, 500);
+                    console.log('📡 Message emitted via socket');
+                }
+                
+                // Append the message to our own UI immediately
+                this.appendMessageToUI(savedMessage);
+                
+                // Scroll to bottom
+                setTimeout(() => {
+                    this.scrollToBottom(false);
+                }, 100);
             } else {
                 console.error('❌ Failed to send message:', response.status);
                 // Restore the message input if sending failed
@@ -1234,13 +1376,83 @@ class SwapShelfChatInterface {
     }
     
     handleIncomingMessage(messageData) {
-        if (messageData.roomId === this.currentRoomId) {
-            // Reload messages to show the new one
-            this.loadMessages(this.currentRoomId);
+        console.log('💬 Handling incoming message:', messageData);
+        
+        // If we're in the correct chat room, append the message immediately
+        if (messageData.roomId === this.currentRoomId || messageData.room === this.currentRoomId) {
+            const messagesContainer = document.getElementById('chatMessages');
+            if (messagesContainer) {
+                // Check if message already exists to avoid duplicates
+                const existingMsg = document.querySelector(`[data-message-id="${messageData._id}"]`);
+                if (existingMsg) {
+                    console.log('⚠️ Message already displayed, skipping');
+                    return;
+                }
+                
+                // Append the new message
+                this.appendMessageToUI(messageData);
+                
+                // Scroll to bottom to show new message
+                setTimeout(() => {
+                    this.scrollToBottom(false);
+                }, 100);
+            }
         }
         
-        // Update conversation list if needed
+        // Update conversation list to show new message preview
         this.loadConversations();
+    }
+    
+    appendMessageToUI(message) {
+        const messagesContainer = document.getElementById('chatMessages');
+        if (!messagesContainer) {
+            console.warn('⚠️ Messages container not found');
+            return;
+        }
+        
+        // Check for duplicates
+        const existingMsg = document.querySelector(`[data-message-id="${message._id}"]`);
+        if (existingMsg) {
+            console.log('⚠️ Message already in UI, skipping');
+            return;
+        }
+        
+        const isOwnMessage = message.sender === this.currentUser?._id || 
+                             message.sender?._id === this.currentUser?._id;
+        
+        const senderName = isOwnMessage ? 
+            'You' : 
+            (message.sender?.fullname || message.sender?.username || 'Unknown');
+        
+        const senderAvatar = isOwnMessage ?
+            (this.currentUser?.profileImage || '/images/default-avatar.png') :
+            (message.sender?.profileImage || message.sender?.avatar || '/images/default-avatar.png');
+        
+        const messageHTML = `
+            <div class="message ${isOwnMessage ? 'sent' : 'received'}" data-message-id="${message._id}">
+                ${!isOwnMessage ? `
+                    <div class="message-avatar">
+                        <img src="${senderAvatar}" 
+                             alt="${senderName}"
+                             class="avatar-img"
+                             onerror="this.src='/images/default-avatar.png';">
+                    </div>
+                ` : '<div class="message-avatar-spacer"></div>'}
+                <div class="message-content">
+                    <div class="message-text">${this.escapeHtml(message.content || message.message)}</div>
+                    <div class="message-time">${this.formatTime(message.createdAt || message.timestamp || new Date())}</div>
+                </div>
+            </div>
+        `;
+        
+        messagesContainer.insertAdjacentHTML('beforeend', messageHTML);
+        console.log('✅ Message appended to UI');
+    }
+    
+    escapeHtml(text) {
+        const div = document.createElement('div');
+        div.textContent = text;
+        return div.innerHTML;
     }
     
     formatTime(timestamp) {

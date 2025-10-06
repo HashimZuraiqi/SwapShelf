@@ -69,7 +69,17 @@ const swapSchema = new mongoose.Schema({
     confirmed: {
       type: Boolean,
       default: false
-    }
+    },
+    requesterConfirmed: {
+      type: Boolean,
+      default: false
+    },
+    requesterConfirmedAt: Date,
+    ownerConfirmed: {
+      type: Boolean,
+      default: false
+    },
+    ownerConfirmedAt: Date
   },
   receivedConfirmation: {
     requesterConfirmed: {
