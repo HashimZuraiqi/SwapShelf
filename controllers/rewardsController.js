@@ -50,6 +50,52 @@ class RewardsController {
   }
 
   /**
+   * Force refresh endpoint to update stats immediately
+   */
+  static async forceRefreshStats(req, res) {
+    try {
+      const userId = req.session?.user?._id || req.session?.user?.id;
+      
+      if (!userId) {
+        return res.status(401).json({ 
+          success: false, 
+          message: 'Authentication required' 
+        });
+      }
+
+      const rewards = await Reward.getOrCreateUserRewards(userId);
+      
+      console.log('🔄 Force refreshing stats for user:', userId);
+      
+      // Force update stats
+      await RewardsController.updateUserStats(userId, rewards);
+      rewards.stats.lastStatsUpdate = new Date();
+      
+      // Check for new badge unlocks
+      await RewardsController.checkAndUnlockBadges(rewards);
+      
+      // Save changes
+      await rewards.save();
+      
+      return res.json({
+        success: true,
+        message: 'Stats refreshed successfully',
+        data: {
+          totalPoints: rewards.totalPoints,
+          completedSwaps: rewards.stats.completedSwaps,
+          unlockedBadges: rewards.unlockedBadgesCount
+        }
+      });
+    } catch (error) {
+      console.error('Force refresh error:', error);
+      return res.status(500).json({ 
+        success: false, 
+        message: 'Error refreshing stats' 
+      });
+    }
+  }
+
+  /**
    * Get user's complete rewards data
    */
   static async getUserRewards(req, res) {
@@ -66,76 +112,69 @@ class RewardsController {
       // Get or create user rewards
       const rewards = await Reward.getOrCreateUserRewards(userId);
       
-      // Record visit activity for time-based badges
+      // Check if we need to update stats (only once per session or per hour)
+      const lastUpdate = rewards.stats.lastStatsUpdate || new Date(0);
+      const hoursSinceUpdate = (Date.now() - lastUpdate.getTime()) / (1000 * 60 * 60);
+      const shouldUpdateStats = hoursSinceUpdate >= 1; // Update at most once per hour
+      
+      if (shouldUpdateStats) {
+        console.log('📊 Updating stats (last update was', hoursSinceUpdate.toFixed(1), 'hours ago)');
+        
+        // Update user stats from recent activities
+        try {
+          await RewardsController.updateUserStats(userId, rewards);
+          rewards.stats.lastStatsUpdate = new Date();
+        } catch (statsError) {
+          console.error('Error updating user stats:', statsError.message);
+        }
+        
+        // Check for new badge unlocks
+        try {
+          await RewardsController.checkAndUnlockBadges(rewards);
+        } catch (badgeError) {
+          console.error('Error checking badges:', badgeError.message);
+        }
+        
+        // Save after stats update
+        await rewards.save();
+      } else {
+        console.log('📊 Using cached stats (last update was', hoursSinceUpdate.toFixed(1), 'hours ago)');
+      }
+      
+      // Record visit activity for time-based badges (lightweight operation)
       try {
         await RewardsController.recordActivity(userId, 'visit');
       } catch (visitError) {
         console.error('Error recording visit activity:', visitError.message);
-        // Continue without recording visit
       }
       
-      // Update user stats from recent activities
-      try {
-        await RewardsController.updateUserStats(userId, rewards);
-      } catch (statsError) {
-        console.error('Error updating user stats:', statsError.message);
-        // Continue without updating stats
-      }
+      // Validate badge integrity (remove duplicates only)
+      const seenBadgeIds = new Set();
+      const hasDuplicates = rewards.badges.some(badge => {
+        if (seenBadgeIds.has(badge.badgeId)) {
+          return true;
+        }
+        seenBadgeIds.add(badge.badgeId);
+        return false;
+      });
       
-      // Check for new badge unlocks
-      try {
-        await RewardsController.checkAndUnlockBadges(rewards);
-      } catch (badgeError) {
-        console.error('Error checking badges:', badgeError.message);
-        // Continue without checking badges
-      }
-      
-      // Debug: Log actual badges for troubleshooting
-      console.log('User badges:', rewards.badges);
-      console.log('Unlocked badges count:', rewards.unlockedBadgesCount);
-      
-      // Validate and fix badge count if needed
-      const actualUnlockedCount = rewards.badges.filter(b => b.isUnlocked === true).length;
-      const virtualCount = rewards.unlockedBadgesCount;
-      
-      console.log(`🔍 Badge count check - Virtual: ${virtualCount}, Actual: ${actualUnlockedCount}`);
-      
-      if (actualUnlockedCount !== virtualCount || actualUnlockedCount > 2) {
-        console.log(`⚠️  Badge count issue detected! Virtual: ${virtualCount}, Actual: ${actualUnlockedCount}`);
+      if (hasDuplicates) {
+        console.log(`⚠️  Duplicate badges detected - cleaning up`);
         
-        // Clean up duplicate badges
+        // Remove duplicate badges (keep first occurrence)
         const uniqueBadges = [];
-        const seenBadgeIds = new Set();
+        const uniqueIds = new Set();
         
         rewards.badges.forEach(badge => {
-          if (!seenBadgeIds.has(badge.badgeId)) {
-            seenBadgeIds.add(badge.badgeId);
+          if (!uniqueIds.has(badge.badgeId)) {
+            uniqueIds.add(badge.badgeId);
             uniqueBadges.push(badge);
-          } else {
-            console.log(`🗑️  Removing duplicate: ${badge.badgeId}`);
           }
         });
         
-        // If still more than 2, keep only the first 2 unlocked badges
-        if (uniqueBadges.filter(b => b.isUnlocked).length > 2) {
-          console.log(`🔧 Limiting to 2 unlocked badges`);
-          const unlockedBadges = uniqueBadges.filter(b => b.isUnlocked).slice(0, 2);
-          const lockedBadges = uniqueBadges.filter(b => !b.isUnlocked);
-          rewards.badges = [...unlockedBadges, ...lockedBadges];
-        } else {
-          rewards.badges = uniqueBadges;
-        }
+        rewards.badges = uniqueBadges;
         
-        // Special case: If user has multiple Night Owl badges, keep only one
-        const nightOwlBadges = rewards.badges.filter(b => b.badgeId === 'night_owl');
-        if (nightOwlBadges.length > 1) {
-          console.log(`🌙 Found ${nightOwlBadges.length} Night Owl badges, keeping only one`);
-          const otherBadges = rewards.badges.filter(b => b.badgeId !== 'night_owl');
-          const firstNightOwl = nightOwlBadges[0];
-          rewards.badges = [...otherBadges, firstNightOwl];
-        }
-        
-        // Recalculate total points to ensure accuracy
+        // Recalculate total points based on unique badges
         const badgeDefinitions = Reward.getBadgeDefinitions();
         let correctPoints = 0;
         rewards.badges.forEach(badge => {
@@ -144,20 +183,12 @@ class RewardsController {
           }
         });
         
-        if (correctPoints !== rewards.totalPoints) {
-          console.log(`💰 Points correction: ${rewards.totalPoints} → ${correctPoints}`);
-          rewards.totalPoints = correctPoints;
-        }
-        
+        rewards.totalPoints = correctPoints;
+        rewards.reputationLevel = rewards.calculateReputationLevel();
         rewards.markModified('badges');
         
-        // Save the changes
-        try {
-          await rewards.save();
-          console.log(`✅ Badge cleanup completed and saved!`);
-        } catch (saveError) {
-          console.error(`❌ Error saving badge cleanup:`, saveError.message);
-        }
+        await rewards.save();
+        console.log(`✅ Removed duplicates - now have ${rewards.badges.length} unique badges`);
       }
       
       // Get badge definitions for frontend
@@ -197,14 +228,20 @@ class RewardsController {
       // Calculate next milestone
       const nextMilestone = RewardsController.getNextMilestone(rewards);
 
+      // Calculate actual unlocked badges count
+      const actualUnlockedCount = rewards.badges.filter(b => b.isUnlocked).length;
+      
+      // Get total badges available (don't rely on virtual)
+      const totalBadgesAvailable = Object.keys(badgeDefinitions).length;
+
       res.json({
         success: true,
         data: {
           user: {
             totalPoints: rewards.totalPoints,
             reputationLevel: rewards.reputationLevel,
-            unlockedBadges: actualUnlockedCount, // Use manually calculated count
-            totalBadges: rewards.totalBadgesAvailable
+            unlockedBadges: actualUnlockedCount,
+            totalBadges: totalBadgesAvailable
           },
           stats: rewards.stats,
           badges: badgesWithProgress,
@@ -412,21 +449,34 @@ class RewardsController {
         book.genre && typeof book.genre === 'string' && book.genre.toLowerCase().includes('art')
       ).length;
 
-      // Update visit streak
+      // Update visit streak (only if it's a new day)
       const today = new Date();
+      today.setHours(0, 0, 0, 0); // Normalize to midnight
       const lastVisit = new Date(rewards.stats.lastVisitDate);
+      lastVisit.setHours(0, 0, 0, 0); // Normalize to midnight
       const daysDiff = Math.floor((today - lastVisit) / (1000 * 60 * 60 * 24));
       
       if (daysDiff === 1) {
+        // Visited yesterday, increment streak
         rewards.stats.consecutiveDays += 1;
         rewards.stats.visitStreak += 1;
+        rewards.stats.lastVisitDate = new Date();
+        console.log(`📅 Visit streak continued: ${rewards.stats.visitStreak} days`);
       } else if (daysDiff > 1) {
+        // Missed days, reset streak
         rewards.stats.consecutiveDays = 1;
         rewards.stats.visitStreak = 1;
+        rewards.stats.lastVisitDate = new Date();
+        console.log(`📅 Visit streak reset to 1 day (missed ${daysDiff - 1} days)`);
+      } else if (daysDiff === 0) {
+        // Same day visit, don't change anything
+        console.log(`📅 Same day visit - streak unchanged: ${rewards.stats.visitStreak} days`);
       }
       
-      rewards.stats.maxVisitStreak = Math.max(rewards.stats.maxVisitStreak, rewards.stats.visitStreak);
-      rewards.stats.lastVisitDate = today;
+      // Update max streak
+      if (rewards.stats.visitStreak > rewards.stats.maxVisitStreak) {
+        rewards.stats.maxVisitStreak = rewards.stats.visitStreak;
+      }
 
       // Update monthly stats
       const currentMonth = new Date().toISOString().slice(0, 7);

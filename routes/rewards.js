@@ -22,6 +22,13 @@ router.get('/', requireAuth, RewardsController.getUserRewards);
 router.get('/debug', requireAuth, RewardsController.debugUserBadges);
 
 /**
+ * @route   POST /api/rewards/refresh
+ * @desc    Force refresh user stats and badges
+ * @access  Private
+ */
+router.post('/refresh', requireAuth, RewardsController.forceRefreshStats);
+
+/**
  * @route   GET /api/rewards/leaderboard
  * @desc    Get leaderboard data
  * @access  Private

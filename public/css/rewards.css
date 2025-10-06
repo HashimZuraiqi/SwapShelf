@@ -125,17 +125,24 @@
   align-items: center;
   justify-content: center;
   min-height: 60vh;
+  text-align: center;
 }
 
 .loading-spinner-modern .spinner-border {
   color: var(--primary-color);
   width: 3rem;
   height: 3rem;
+  margin: 0 auto;
+  flex-shrink: 0;
 }
 
 .loading-spinner-modern p {
   color: var(--text-secondary);
   margin-top: 1rem;
+  margin-bottom: 0;
+  font-size: 1rem;
+  flex-shrink: 0;
+  width: 100%;
 }
 
 /* Header - Original beautiful design with your colors */

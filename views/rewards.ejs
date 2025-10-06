@@ -36,7 +36,7 @@
     <!-- Loading Spinner -->
     <div id="loadingSpinner" class="loading-spinner-modern">
         <div class="spinner-border text-primary" role="status">
-            <span class="visually-hidden">Loading...</span>
+            <span class="sr-only">Loading...</span>
         </div>
         <p class="mt-3">Loading your achievements...</p>
     </div>
@@ -57,7 +57,7 @@
                     </p>
                 </div>
                 <div class="col-lg-4 text-lg-end mt-3 mt-lg-0">
-                    <button class="btn-refresh-modern" onclick="loadRewardsData()">
+                    <button class="btn-refresh-modern" onclick="loadRewardsData(true)">
                         <i class="bi bi-arrow-clockwise"></i> Refresh
                     </button>
                     <a href="/leaderboard" class="btn-leaderboard-modern">
@@ -89,9 +89,6 @@
                     <div class="stat-card-body">
                         <div class="stat-value">
                             <span id="badgesUnlocked">0</span>/<span id="totalBadges">0</span>
-                            <button onclick="fixBadgeCount()" class="btn btn-sm btn-outline-warning ms-2" style="font-size: 0.7rem; padding: 2px 6px;" title="Fix Badge Count">
-                                🔧
-                            </button>
                         </div>
                         <div class="stat-label">Badges Earned</div>
                         <div class="stat-progress-mini">
@@ -202,9 +199,37 @@ let rewardsData = null;
 let currentCategory = 'all';
 let allBadges = [];
 
-async function loadRewardsData() {
+async function loadRewardsData(forceRefresh = false) {
     try {
-        console.log('🔄 Loading rewards data...');
+        console.log('🔄 Loading rewards data...', forceRefresh ? '(Force Refresh)' : '');
+        
+        // If force refresh, call the refresh endpoint first
+        if (forceRefresh) {
+            const refreshBtn = document.querySelector('.btn-refresh-modern i');
+            if (refreshBtn) {
+                refreshBtn.classList.add('fa-spin');
+            }
+            
+            try {
+                const refreshResponse = await fetch('/api/rewards/refresh', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'same-origin'
+                });
+                
+                if (refreshResponse.ok) {
+                    console.log('✅ Stats refreshed successfully');
+                }
+            } catch (refreshError) {
+                console.error('⚠️  Error refreshing stats:', refreshError);
+            }
+            
+            if (refreshBtn) {
+                refreshBtn.classList.remove('fa-spin');
+            }
+        }
         
         const response = await fetch('/api/rewards', {
             method: 'GET',
@@ -226,10 +251,12 @@ async function loadRewardsData() {
         if (result.success && result.data) {
             rewardsData = result.data;
             allBadges = result.data.badges || [];
-            console.log('✅ Data loaded successfully');
+            console.log('✅ Data loaded - Points:', rewardsData.totalPoints, 'Badges:', rewardsData.unlockedBadges, '/', rewardsData.totalBadges);
             renderRewards();
             hideLoading();
-            checkNewBadges();
+            if (!forceRefresh) {
+                checkNewBadges();
+            }
         } else {
             throw new Error(result.message || 'API returned no data');
         }
@@ -441,29 +468,6 @@ function hideLoading() {
 function showError(message) {
     alert(message);
     document.getElementById('mainContent').classList.remove('d-none');
-}
-
-// Fix badge count function
-async function fixBadgeCount() {
-    try {
-        console.log('🔧 Fixing badge count...');
-        
-        // Call the debug endpoint to trigger cleanup
-        const response = await fetch('/api/rewards/debug');
-        const data = await response.json();
-        
-        if (data.success) {
-            console.log('✅ Badge count fixed!', data.data);
-            // Reload the page to show updated count
-            location.reload();
-        } else {
-            console.error('❌ Failed to fix badge count:', data.message);
-            alert('Failed to fix badge count. Please try again.');
-        }
-    } catch (error) {
-        console.error('❌ Error fixing badge count:', error);
-        alert('Error fixing badge count. Please try again.');
-    }
 }
 
 // Load data when page loads

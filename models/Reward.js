@@ -267,6 +267,7 @@ const rewardSchema = new mongoose.Schema({
     reportsMade: { type: Number, default: 0 },
     consecutiveDays: { type: Number, default: 0 },
     lastVisitDate: { type: Date, default: Date.now },
+    lastStatsUpdate: { type: Date, default: Date.now },
     visitStreak: { type: Number, default: 0 },
     maxVisitStreak: { type: Number, default: 0 },
     uniquePartners: { type: Number, default: 0 },
@@ -395,41 +396,62 @@ rewardSchema.methods.canUnlockBadge = function(badgeId) {
 // Method to unlock a badge
 rewardSchema.methods.unlockBadge = function(badgeId) {
   const badge = BADGE_DEFINITIONS[badgeId];
-  if (!badge) return false;
+  if (!badge) {
+    console.log(`❌ Badge definition not found: ${badgeId}`);
+    return false;
+  }
   
-  if (!this.canUnlockBadge(badgeId)) return false;
-  
-  // Add or update badge
+  // Check if badge is already unlocked (prevent duplicates)
   const existingBadge = this.badges.find(b => b.badgeId === badgeId);
+  if (existingBadge && existingBadge.isUnlocked) {
+    console.log(`⚠️  Badge already unlocked: ${badgeId}`);
+    return false;
+  }
+  
+  // Check if user meets requirements
+  if (!this.canUnlockBadge(badgeId)) {
+    console.log(`⚠️  Requirements not met for badge: ${badgeId}`);
+    return false;
+  }
+  
+  // Update or add badge
   if (existingBadge) {
-    // Badge already exists - only update if not already unlocked
-    if (!existingBadge.isUnlocked) {
-      existingBadge.isUnlocked = true;
-      existingBadge.unlockedAt = new Date();
-      // Add points only if badge was not previously unlocked
-      this.totalPoints += badge.points;
-    }
-    // If already unlocked, do nothing (prevent duplicate points)
+    // Badge exists but not unlocked - unlock it
+    existingBadge.isUnlocked = true;
+    existingBadge.unlockedAt = new Date();
+    this.totalPoints += badge.points;
+    console.log(`✅ Unlocked existing badge: ${badgeId} (+${badge.points} points)`);
   } else {
-    // New badge - add it and award points
+    // New badge - add it
     this.badges.push({
       badgeId,
       isUnlocked: true,
       unlockedAt: new Date()
     });
     this.totalPoints += badge.points;
+    console.log(`✅ Added and unlocked new badge: ${badgeId} (+${badge.points} points)`);
   }
   
   // Update reputation level
   this.reputationLevel = this.calculateReputationLevel();
   
-  // Add to achievement history
-  this.achievementHistory.push({
-    type: 'badge_unlocked',
-    description: `Unlocked badge: ${badge.name}`,
-    points: badge.points,
-    meta: { badgeId, badgeName: badge.name }
-  });
+  // Add to achievement history (check for duplicates)
+  const alreadyInHistory = this.achievementHistory.some(
+    h => h.type === 'badge_unlocked' && h.meta.badgeId === badgeId
+  );
+  
+  if (!alreadyInHistory) {
+    this.achievementHistory.push({
+      type: 'badge_unlocked',
+      description: `Unlocked badge: ${badge.name}`,
+      points: badge.points,
+      meta: { badgeId, badgeName: badge.name }
+    });
+  }
+  
+  // Mark as modified to ensure save
+  this.markModified('badges');
+  this.markModified('achievementHistory');
   
   return true;
 };
@@ -522,6 +544,7 @@ rewardSchema.statics.getOrCreateUserRewards = async function(userId) {
         reportsMade: 0,
         consecutiveDays: 0,
         lastVisitDate: new Date(),
+        lastStatsUpdate: new Date(),
         visitStreak: 0,
         maxVisitStreak: 0,
         uniquePartners: 0,

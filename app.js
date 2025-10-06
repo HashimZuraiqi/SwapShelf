@@ -747,17 +747,33 @@ app.get('/api/users/search', async (req, res) => {
         .limit(10)
         .lean();
         
-        // Format user data for search results
-        const searchResults = users.map(user => ({
-            _id: user._id,
-            name: user.name || user.email?.split('@')[0] || 'User',
-            username: user.username || user.email?.split('@')[0] || 'Unknown',
-            email: user.email,
-            avatar: user.photo || '/images/default-avatar.png',
-            points: user.rewards?.points || 0,
-            badges: user.rewards?.badges?.length || 0,
-            booksOwned: user.stats?.booksOwned || 0,
-            joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown'
+        // Get recent books for each user
+        const Book = require('./models/Book');
+        const searchResults = await Promise.all(users.map(async (user) => {
+            const recentBooks = await Book.find({ owner: user._id })
+                .select('title author image genre')
+                .sort({ createdAt: -1 })
+                .limit(5)
+                .lean();
+            
+            return {
+                _id: user._id,
+                name: user.name || user.email?.split('@')[0] || 'User',
+                username: user.username || user.email?.split('@')[0] || 'Unknown',
+                email: user.email,
+                avatar: user.photo || '/images/default-avatar.png',
+                points: user.rewards?.points || 0,
+                badges: user.rewards?.badges?.length || 0,
+                booksOwned: user.stats?.booksOwned || 0,
+                joinDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString() : 'Unknown',
+                recentBooks: recentBooks.map(book => ({
+                    _id: book._id,
+                    title: book.title,
+                    author: book.author,
+                    image: book.image || '/images/placeholder-book.jpg',
+                    genre: book.genre
+                }))
+            };
         }));
         
         res.json({ users: searchResults });
@@ -798,16 +814,17 @@ app.get('/api/user/profile/:userId', async (req, res) => {
         console.log(`Found ${userBooks.length} books for user ${userId}:`, userBooks.map(b => ({ title: b.title, author: b.author, createdAt: b.createdAt })));
             
                // Get user's swap stats
+               // Match the exact status values from Swap model enum: ['Pending', 'Accepted', 'Declined', 'In Progress', 'Completed', 'Cancelled']
                const userSwaps = await Swap.find({
                    $or: [{ requester: userId }, { owner: userId }]
                });
                
                const completedSwaps = userSwaps.filter(swap => 
-                   swap.status === 'completed' || swap.status === 'Completed'
+                   swap.status === 'Completed'
                ).length;
                
                const pendingSwaps = userSwaps.filter(swap => 
-                   ['pending', 'Pending', 'accepted', 'Accepted', 'in-progress', 'In Progress'].includes(swap.status)
+                   ['Pending', 'Accepted', 'In Progress'].includes(swap.status)
                ).length;
                
                const totalSwaps = userSwaps.length;
@@ -838,8 +855,8 @@ app.get('/api/user/profile/:userId', async (req, res) => {
             email: user.email,
             avatar: user.photo || '/images/default-avatar.png',
             joinDate: joinDate,
-               level: level,
-               totalPoints: activityScore,
+            level: level,
+            totalPoints: activityScore,
             badgeCount: badgeCount,
             badges: user.rewards?.badges || [],
             stats: {
@@ -850,9 +867,27 @@ app.get('/api/user/profile/:userId', async (req, res) => {
                 booksViewed: user.stats?.booksViewed || 0,
                 booksInterested: user.stats?.booksInterested || 0
             },
-            recentBooks: userBooks.slice(0, 5),
+            recentBooks: userBooks.slice(0, 5).map(book => ({
+                _id: book._id,
+                title: book.title,
+                author: book.author,
+                genre: book.genre,
+                image: book.image,
+                condition: book.condition
+            })),
             preferences: user.preferences || {}
         };
+        
+        console.log('Profile data being sent:', {
+            userId: profileData._id,
+            displayName: profileData.displayName,
+            level: profileData.level,
+            totalPoints: profileData.totalPoints,
+            badgeCount: profileData.badgeCount,
+            badges: profileData.badges,
+            stats: profileData.stats,
+            recentBooksCount: profileData.recentBooks.length
+        });
         
         res.json(profileData);
     } catch (error) {
@@ -1625,31 +1660,33 @@ app.get('/swap-matcher', async (req, res) => {
     });
 
     // Calculate swap counts for tabs
+    // Match the exact status values from Swap model enum: ['Pending', 'Accepted', 'Declined', 'In Progress', 'Completed', 'Cancelled']
     const myPendingRequests = userSwaps.filter(s => s.status === 'Pending' && (s.requester._id || s.requester).toString() === userId).length;
     const incomingRequests = userSwaps.filter(s => s.status === 'Pending' && (s.owner._id || s.owner).toString() === userId).length;
-    const activeSwaps = userSwaps.filter(s => s.status === 'Accepted' || s.status === 'Pending Confirmation').length;
+    const activeSwaps = userSwaps.filter(s => ['Accepted', 'In Progress'].includes(s.status)).length;
+
+    // Calculate completed swaps count
+    const completedUserSwaps = await Swap.countDocuments({
+      $or: [{ requester: userId }, { owner: userId }],
+      status: 'Completed'
+    });
 
     // Get user stats
     const userStats = {
       rewardPoints: user.rewardPoints || 0,
-      swapsCompleted: user.totalSwapsCompleted || 0,
+      swapsCompleted: completedUserSwaps,
       booksOwned: await Book.countDocuments({ owner: userId }),
       pendingSwaps: await Swap.countDocuments({
         $or: [
-          { requester: userId, status: { $in: ['Pending', 'Accepted', 'Pending Confirmation'] } },
-          { owner: userId, status: { $in: ['Pending', 'Accepted', 'Pending Confirmation'] } }
+          { requester: userId, status: { $in: ['Pending', 'Accepted', 'In Progress'] } },
+          { owner: userId, status: { $in: ['Pending', 'Accepted', 'In Progress'] } }
         ]
       })
     };
 
-    // Calculate total and completed swaps for success rate
+    // Calculate total swaps for success rate
     const totalUserSwaps = await Swap.countDocuments({
       $or: [{ requester: userId }, { owner: userId }]
-    });
-    
-    const completedUserSwaps = await Swap.countDocuments({
-      $or: [{ requester: userId }, { owner: userId }],
-      status: 'Swapped'
     });
 
     const swapInsights = {
@@ -1733,13 +1770,8 @@ app.get('/rewards', (req, res) => {
   const userName = req.session.user.username || req.session.user.name || req.session.user.fullname || req.session.user.email?.split('@')[0] || 'User';
   const userPhoto = req.session.user.photo || '/images/default-avatar.png';
   
-  // Record visit activity for rewards
-  logActivity({
-    userId: req.session.user._id || req.session.user.id,
-    action: 'UPDATE_PROFILE',
-    message: 'Visited rewards page',
-    meta: { page: 'rewards' }
-  });
+  // Note: Visit tracking for badges is handled internally by the rewards controller
+  // No need to log activity history for page visits
   
   res.render('rewards', {
     userLoggedIn,
@@ -1777,16 +1809,17 @@ app.get('/leaderboard', async (req, res) => {
             });
             
             // Get user's swap statistics
+            // Match the exact status values from Swap model enum: ['Pending', 'Accepted', 'Declined', 'In Progress', 'Completed', 'Cancelled']
             const userSwaps = await Swap.find({
                 $or: [{ requester: user._id }, { owner: user._id }]
             });
             
             const completedSwaps = userSwaps.filter(swap => 
-                swap.status === 'completed' || swap.status === 'Completed'
+                swap.status === 'Completed'
             ).length;
             
             const pendingSwaps = userSwaps.filter(swap => 
-                ['pending', 'Pending', 'accepted', 'Accepted', 'in-progress', 'In Progress'].includes(swap.status)
+                ['Pending', 'Accepted', 'In Progress'].includes(swap.status)
             ).length;
             
             // Calculate activity score

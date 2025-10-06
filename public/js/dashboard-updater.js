@@ -138,14 +138,24 @@ class DashboardUpdater {
             this.isUpdating = true;
             this.showLoading('user-stats-section');
             
+            console.log('Fetching dashboard stats...');
             const response = await fetch('/api/dashboard/stats');
-            if (!response.ok) throw new Error('Failed to fetch stats');
+            console.log('Stats response status:', response.status);
+            
+            if (!response.ok) {
+                const errorText = await response.text();
+                console.error('Stats fetch failed:', errorText);
+                throw new Error('Failed to fetch stats');
+            }
             
             const stats = await response.json();
+            console.log('Stats received:', stats);
+            
             this.updateStatsUI(stats);
             this.lastUpdate = Date.now();
             
         } catch (error) {
+            console.error('Error refreshing stats:', error);
             this.showError('Failed to update statistics', 'user-stats-section');
         } finally {
             this.hideLoading('user-stats-section');
@@ -255,12 +265,18 @@ class DashboardUpdater {
      * Update statistics UI
      */
     updateStatsUI(stats) {
+        console.log('Updating stats UI with:', stats);
+        
         const updateStat = (id, value) => {
             const element = document.getElementById(id);
+            console.log(`Updating ${id}:`, { element: !!element, value });
+            
             if (element) {
                 // Animate the number change
                 const currentValue = parseInt(element.textContent) || 0;
                 this.animateNumber(element, currentValue, value);
+            } else {
+                console.warn(`Element not found: ${id}`);
             }
         };
         
@@ -268,6 +284,8 @@ class DashboardUpdater {
         updateStat('swaps-completed-count', stats.swapsCompleted);
         updateStat('wishlist-items-count', stats.wishlistItems);
         updateStat('pending-swaps-count', stats.pendingSwaps);
+        
+        console.log('Stats UI update complete');
     }
     
     /**
