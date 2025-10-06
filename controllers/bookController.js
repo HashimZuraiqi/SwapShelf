@@ -137,12 +137,19 @@ class BookController {
             const limit = parseInt(req.query.limit) || 12;
             const skip = (page - 1) * limit;
             
-            const books = await Book.find({ owner: userId })
+            // Exclude swapped books from user's library
+            const books = await Book.find({ 
+                owner: userId,
+                availability: { $ne: 'swapped' } // Exclude swapped books
+            })
                 .sort({ createdAt: -1 })
                 .skip(skip)
                 .limit(limit);
                 
-            const totalBooks = await Book.countDocuments({ owner: userId });
+            const totalBooks = await Book.countDocuments({ 
+                owner: userId,
+                availability: { $ne: 'swapped' } // Exclude swapped books from count
+            });
             const totalPages = Math.ceil(totalBooks / limit);
             
             res.json({

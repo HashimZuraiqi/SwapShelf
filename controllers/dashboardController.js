@@ -142,7 +142,10 @@ const enhanceBooksWithImages = async (books) => {
 const getDashboardData = async (userId) => {
     try {
         // User Statistics
-        const userBooks = await Book.find({ owner: userId });
+        const userBooks = await Book.find({ 
+            owner: userId,
+            availability: { $ne: 'swapped' } // Exclude swapped books
+        });
         const userSwaps = await Swap.find({
             $or: [{ requester: userId }, { owner: userId }]
         });

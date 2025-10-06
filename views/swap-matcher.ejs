@@ -12,722 +12,487 @@
     <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
     <style>
-        /* Active navigation styling for dynamic page */
-        .nav-item.active .nav-link {
-            color: #3BB7FB !important;
-            background: rgba(59, 183, 251, 0.1);
-            border-radius: 5px;
-            font-weight: 600;
+        /* ================== MODERN SWAP MATCHER STYLES ================== */
+        
+        /* Root Variables for Consistency */
+        :root {
+            --primary-color: #3BB7FB;
+            --primary-dark: #2A9FE8;
+            --secondary-color: #667eea;
+            --background-dark: #1a1a1a;
+            --card-background: #232529;
+            --border-color: rgba(59, 183, 251, 0.15);
+            --text-primary: #ffffff;
+            --text-secondary: #b0b3b8;
+            --text-muted: #8a8e94;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --danger-color: #dc3545;
+            --shadow-light: 0 2px 10px rgba(0, 0, 0, 0.1);
+            --shadow-medium: 0 4px 20px rgba(0, 0, 0, 0.15);
+            --shadow-heavy: 0 8px 30px rgba(0, 0, 0, 0.25);
+            --border-radius: 12px;
+            --border-radius-lg: 20px;
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        /* Professional Swap Matcher Styles */
-        .swap-hero {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border-radius: 20px;
-            padding: 40px;
-            margin-bottom: 30px;
-            color: white;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        /* Global Reset and Base Styles */
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--background-dark);
+            color: var(--text-primary);
+            font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+        }
+
+        /* Main Container */
+        .swap-matcher-main {
+            min-height: 100vh;
+            padding: 1rem 0;
+        }
+
+        /* Hero Section */
+        .welcome-hero {
+            background: linear-gradient(135deg, var(--secondary-color) 0%, #764ba2 100%);
+            border-radius: var(--border-radius-lg);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow-medium);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .welcome-hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, rgba(255,255,255,0.1) 0%, transparent 50%);
+            pointer-events: none;
+        }
+
+        .welcome-hero .container {
+            position: relative;
+            z-index: 1;
         }
 
         .swap-stats {
             background: rgba(255,255,255,0.15);
-            border-radius: 15px;
-            padding: 20px;
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
             backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.1);
         }
 
-        .swap-section-card {
-            background: #1E1E1E;
-            border-radius: 20px;
-            border: 1px solid rgba(59, 183, 251, 0.2);
-            transition: all 0.3s ease;
-            overflow: hidden;
-        }
-
-        .swap-section-card:hover {
-            border-color: rgba(59, 183, 251, 0.4);
-            transform: translateY(-5px);
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-        }
-
-        .swap-section-header {
-            background: linear-gradient(135deg, #2A2D35, #23242a);
-            padding: 20px;
-            border-bottom: 1px solid rgba(59, 183, 251, 0.2);
-        }
-
-        .book-swap-item {
-            background: #2A2D35;
-            border-radius: 15px;
-            padding: 15px;
-            margin-bottom: 15px;
-            border: 1px solid rgba(59, 183, 251, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .book-swap-item:hover {
-            border-color: rgba(59, 183, 251, 0.3);
-            transform: translateX(5px);
-            background: #2E3138;
-        }
-
-        .book-cover-small {
-            width: 60px;
-            height: 80px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
-        }
-
-        .match-indicator {
-            background: linear-gradient(45deg, #FF6B6B, #FFE66D);
-            color: white;
-            padding: 5px 12px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            display: inline-block;
-        }
-
-        .swap-status-badge {
-            padding: 6px 12px;
-            border-radius: 15px;
-            font-size: 12px;
-            font-weight: 500;
-        }
-
-        .status-pending {
-            background: rgba(255, 193, 7, 0.2);
-            color: #FFC107;
-            border: 1px solid rgba(255, 193, 7, 0.3);
-        }
-
-        .status-accepted {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28A745;
-            border: 1px solid rgba(40, 167, 69, 0.3);
-        }
-
-        .status-rejected {
-            background: rgba(220, 53, 69, 0.2);
-            color: #DC3545;
-            border: 1px solid rgba(220, 53, 69, 0.3);
-        }
-
-        .swap-action-btn {
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
-            border: none;
-            border-radius: 10px;
-            padding: 8px 16px;
-            color: white;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .swap-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(59, 183, 251, 0.3);
-            color: white;
-        }
-
-        .swap-tabs {
-            background: #1E1E1E;
-            border-radius: 15px;
-            padding: 10px;
-            margin-bottom: 30px;
-        }
-
-        .swap-tabs .nav-link {
-            background: transparent;
-            border: 1px solid rgba(59, 183, 251, 0.2);
-            color: #CCCCCC;
-            border-radius: 10px;
-            margin: 0 5px;
-            padding: 12px 20px;
-            transition: all 0.3s ease;
-        }
-
-        .swap-tabs .nav-link.active {
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
-            border-color: transparent;
-            color: white;
-        }
-
-        .swap-tabs .nav-link:hover:not(.active) {
-            background: rgba(59, 183, 251, 0.1);
-            border-color: rgba(59, 183, 251, 0.3);
-            color: #3BB7FB;
-        }
-
-        .empty-state {
-            text-align: center;
-            padding: 60px 20px;
-            color: #888;
-        }
-
-        .empty-state i {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            opacity: 0.5;
-        }
-
-        .quick-match-btn {
-            background: linear-gradient(135deg, #FF6B6B, #FFE66D);
-            border: none;
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 12px;
-            font-weight: bold;
-            transition: all 0.3s ease;
-        }
-
-        .quick-match-btn:hover {
-            transform: scale(1.05);
-            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.3);
-            color: white;
-        }
-
-        .matches-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 12px;
-            padding: 15px 0;
-        }
-
-        .match-card {
-            background: linear-gradient(135deg, #23242a, #1E1F23);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(120,130,150,0.10);
-            transition: all 0.3s ease;
-            height: 320px;
-            position: relative;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .match-card:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.3);
-            border-color: rgba(59, 183, 251, 0.2);
-        }
-
-        .book-cover-container {
-            position: relative;
-            text-align: center;
-            margin-bottom: 0.75rem;
-            flex-shrink: 0;
-        }
-
-        .book-cover-professional {
-            width: 100%;
-            max-width: 120px;
-            height: 140px;
-            object-fit: cover;
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            transition: transform 0.3s ease;
-        }
-
-        .book-cover-placeholder {
-            width: 120px;
-            height: 140px;
-            background: linear-gradient(135deg, #3BB7FB, #34a0e0);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin: 0 auto;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-        }
-
-        .match-card-content {
-            padding: 0.75rem;
-            display: flex;
-            flex-direction: column;
-            flex-grow: 1;
-            justify-content: space-between;
-        }
-
-        .book-owner {
-            margin-bottom: 0.25rem;
-        }
-
-        .book-owner i {
-            margin-right: 3px;
-            opacity: 0.7;
-        }
-
-        .book-title {
-            font-size: 0.9rem;
-            line-height: 1.2;
-            margin-bottom: 0.25rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            min-height: 2.4rem;
-        }
-
-        .book-author {
-            font-size: 0.75rem;
-            color: #888;
-            margin-bottom: 0.5rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 1;
-            line-clamp: 1;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .book-badges {
-            margin-bottom: 0.75rem;
-        }
-
-        .book-actions {
-            margin-top: auto;
-        }
-
-        /* Preferences modal & selection clarity */
-        .pref-section-title { color: #ffffff; font-weight: 600; margin-bottom: 0.5rem; }
-        .pref-hint { color: #b0b3b8; font-size: 0.9rem; margin-bottom: 0.75rem; }
-        .pref-chip { display:inline-flex; align-items:center; gap:.35rem; padding:.4rem .75rem; border:1px solid rgba(59,183,251,.25); color:#e4e6ea; border-radius:9999px; margin:.25rem; cursor:pointer; background:#1E1F23; transition:all .2s; font-size:.92rem; }
-        .pref-chip:hover { border-color: rgba(59,183,251,.5); }
-        .pref-chip.active { background: linear-gradient(135deg,#3BB7FB20,#F6B44320); border-color:#3BB7FB; color:#fff; box-shadow:0 6px 16px rgba(59,183,251,.15); }
-        .pref-btn-group .btn { margin-right:.5rem; margin-bottom:.5rem; }
-        .pref-range { width:100%; }
-        .range-value { color:#E5E7EB; font-weight:600; margin-left:.5rem; }
-        .book-swap-item.selected { border-color:#3BB7FB !important; background: rgba(59,183,251,.08); box-shadow:0 8px 24px rgba(59,183,251,.12); }
-
-        /* Custom Pagination Styling */
-        .pagination-custom {
-            margin: 0;
-        }
-
-        .pagination-custom .page-item .page-link {
-            background: #23242a;
-            border: 1px solid rgba(120,130,150,0.2);
-            color: #CCCCCC;
-            padding: 0.5rem 0.75rem;
-            margin: 0 2px;
-            border-radius: 8px;
-            transition: all 0.3s ease;
-            font-size: 0.9rem;
-        }
-
-        .pagination-custom .page-item .page-link:hover {
-            background: rgba(59, 183, 251, 0.1);
-            border-color: rgba(59, 183, 251, 0.3);
-            color: #3BB7FB;
-            transform: translateY(-1px);
-        }
-
-        .pagination-custom .page-item.active .page-link {
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
-            border-color: transparent;
-            color: white;
-            box-shadow: 0 4px 12px rgba(59, 183, 251, 0.3);
-        }
-
-        .pagination-custom .page-item.disabled .page-link {
-            background: #1E1F23;
-            border-color: rgba(120,130,150,0.1);
-            color: #666;
-            cursor: not-allowed;
-        }
-
-        .pagination-custom .page-item.disabled .page-link:hover {
-            background: #1E1F23;
-            border-color: rgba(120,130,150,0.1);
-            color: #666;
-            transform: none;
-        }
-
-        /* Advanced Filter Bar Styling */
-        #matches-filter-bar {
-            background: transparent;
-            border: none;
-            border-radius: 0;
+        /* Navigation Tabs */
+        .swap-tabs-container {
+            margin-bottom: 0;
             padding: 0;
-            margin-bottom: 20px;
-            position: relative;
         }
 
-        /* Remove box animations and effects */
-
-        /* Enhanced Form Controls */
-        #matches-filter-bar .form-control {
-            background: rgba(30, 30, 30, 0.8);
-            border: 1px solid rgba(120, 130, 150, 0.2);
-            border-radius: 8px;
-            color: #ffffff;
-            padding: 8px 12px;
-            font-size: 0.875rem;
-            height: auto;
-            transition: all 0.3s ease;
-            box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.2);
+        .nav-pills {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            margin-bottom: 1rem;
+            box-shadow: var(--shadow-light);
+            border: 1px solid var(--border-color);
         }
-
-        #matches-filter-bar .form-control:focus {
-            background: rgba(30, 30, 30, 0.95) !important;
-            border-color: #3BB7FB !important;
-            box-shadow: 
-                inset 0 1px 4px rgba(0, 0, 0, 0.3),
-                0 0 0 2px rgba(59, 183, 251, 0.15),
-                0 2px 8px rgba(59, 183, 251, 0.15) !important;
-            color: #ffffff !important;
-            outline: none;
-        }
-
-        #matches-filter-bar .form-control:hover {
-            border-color: rgba(59, 183, 251, 0.3);
-            background: rgba(30, 30, 30, 0.9);
-        }
-
-        /* Filter Labels */
-        #matches-filter-bar label {
-            color: #B0B3B8;
-            font-size: 0.75rem;
-            font-weight: 500;
-            text-transform: uppercase;
-            letter-spacing: 0.3px;
-            margin-bottom: 4px;
-            display: block;
-        }
-
-        /* Clear Filters Button */
-        #clear-filters {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.15), rgba(220, 53, 69, 0.25));
-            border: 1px solid rgba(220, 53, 69, 0.3);
-            color: #DC3545;
-            border-radius: 8px;
-            padding: 8px 12px;
-            font-size: 0.875rem;
-            font-weight: 500;
-            height: auto;
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-        }
-
-        #clear-filters:hover {
-            background: linear-gradient(135deg, rgba(220, 53, 69, 0.25), rgba(220, 53, 69, 0.35));
-            border-color: rgba(220, 53, 69, 0.5);
-            color: #ffffff;
-            transform: translateY(-1px);
-            box-shadow: 0 3px 12px rgba(220, 53, 69, 0.25);
-        }
-
-        #clear-filters:active {
-            transform: translateY(0);
-            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.2);
-        }
-
-        /* Matches Count Styling */
-        #matches-count {
-            color: #B0B3B8;
-            font-size: 0.8rem;
-            font-weight: 500;
-            padding: 4px 12px;
-            background: rgba(59, 183, 251, 0.1);
-            border: 1px solid rgba(59, 183, 251, 0.2);
-            border-radius: 15px;
-            display: inline-flex;
-            align-items: center;
-            gap: 4px;
-        }
-
-        #matches-count::before {
-            content: '🔍';
-            font-size: 0.75rem;
-        }
-
-        /* Filter Row Spacing */
-        #matches-filter-bar .row {
-            margin-left: -6px;
-            margin-right: -6px;
-        }
-
-        #matches-filter-bar .row > [class*="col-"] {
-            padding-left: 6px;
-            padding-right: 6px;
-        }
-
-        /* Filter Section Header */
-        .filter-section-header {
-            color: #ffffff;
-            font-size: 0.95rem;
-            font-weight: 600;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .filter-section-header i {
-            color: #3BB7FB;
-            font-size: 1rem;
-        }
-
-        /* Simplified Select Styling - Use browser default arrow */
-        #matches-filter-bar select.form-control {
-            background-color: rgba(30, 30, 30, 0.8) !important;
-            color: #ffffff !important;
-            /* Let browser handle the arrow */
-        }
-
-        #matches-filter-bar select.form-control:focus {
-            background-color: rgba(30, 30, 30, 0.95) !important;
-            color: #ffffff !important;
-        }
-
-        #matches-filter-bar select.form-control:hover {
-            background-color: rgba(30, 30, 30, 0.9) !important;
-            color: #ffffff !important;
-        }
-
-        /* Select Options Styling */
-        #matches-filter-bar select.form-control option {
-            background-color: #1E1E1E !important;
-            color: #ffffff !important;
-            padding: 8px 12px;
-        }
-
-        #matches-filter-bar select.form-control option:hover,
-        #matches-filter-bar select.form-control option:checked {
-            background-color: #3BB7FB !important;
-            color: #ffffff !important;
-        }
-
-        /* ========== MODERN REDESIGN STYLES ========== */
         
-        /* Discovery Section */
-        .discovery-section .card-header {
-            background: linear-gradient(135deg, #23242a, #1E1F23);
-            border-bottom: 1px solid rgba(59, 183, 251, 0.1);
-        }
-
-        .discovery-controls {
-            display: flex;
-            gap: 8px;
-            align-items: center;
-        }
-
-        /* Location Toggle Styles */
-        .location-toggle-wrapper {
-            text-align: center;
-        }
-
-        .location-toggle {
-            display: flex;
-            background: rgba(255, 255, 255, 0.1);
-            border-radius: 25px;
-            padding: 2px;
-            backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .toggle-btn {
-            padding: 6px 12px;
-            border: none;
-            border-radius: 20px;
-            background: transparent;
-            color: #b0b7c3;
-            font-size: 0.8rem;
+        .nav-pills .nav-link {
+            border-radius: var(--border-radius) !important;
+            margin: 0 0.25rem !important;
+            padding: 0.75rem 1.25rem !important;
+            transition: var(--transition-smooth) !important;
+            color: var(--text-secondary) !important;
+            background: transparent !important;
+            border: 1px solid transparent !important;
             font-weight: 500;
-            transition: all 0.3s ease;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 4px;
+            font-size: 0.9rem;
+            white-space: nowrap;
         }
-
-        .toggle-btn.active {
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
-            color: white;
+        
+        .nav-pills .nav-link:hover {
+            background: rgba(59, 183, 251, 0.1) !important;
+            color: var(--primary-color) !important;
+            transform: translateY(-1px);
+            border-color: rgba(59, 183, 251, 0.2) !important;
+        }
+        
+        .nav-pills .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+            border-color: var(--primary-color) !important;
+            color: white !important;
             box-shadow: 0 4px 15px rgba(59, 183, 251, 0.3);
+            transform: translateY(-1px);
         }
 
-        .toggle-btn:hover:not(.active) {
-            color: white;
-            background: rgba(255, 255, 255, 0.1);
-        }
-
-        .location-mode-info {
+        .nav-pills .nav-link .badge {
+            background: rgba(255, 255, 255, 0.2);
+            color: inherit;
+            padding: 0.2rem 0.5rem;
+            border-radius: 10px;
             font-size: 0.7rem;
-            margin-top: 4px;
-            display: block;
-            min-height: 14px;
+            font-weight: 600;
+            margin-left: 0.5rem;
+        }
+        
+        .nav-pills .nav-link.active .badge {
+            background: rgba(255, 255, 255, 0.3);
         }
 
-        /* Modern Button Styles */
+        /* Tab Content */
+        .tab-content {
+            margin-top: 0 !important;
+            padding-top: 0 !important;
+        }
+        
+        .tab-pane {
+            display: none !important;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.3s ease-in-out;
+            padding-top: 0 !important;
+        }
+
+        .tab-pane.show.active {
+            display: block !important;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Sub Tabs (My Requests) */
+        .sub-tabs-nav {
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: var(--border-radius);
+            padding: 0.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .sub-tabs-nav .nav-link {
+            background: transparent !important;
+            color: var(--text-secondary) !important;
+            border-radius: var(--border-radius) !important;
+            padding: 0.6rem 1rem !important;
+            margin: 0 0.25rem !important;
+            transition: var(--transition-smooth) !important;
+            border: 1px solid transparent !important;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .sub-tabs-nav .nav-link:hover {
+            background: rgba(59, 183, 251, 0.08) !important;
+            color: var(--primary-color) !important;
+            border-color: rgba(59, 183, 251, 0.2) !important;
+        }
+
+        .sub-tabs-nav .nav-link.active {
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark)) !important;
+            color: white !important;
+            border-color: transparent !important;
+            box-shadow: 0 2px 8px rgba(59, 183, 251, 0.3);
+        }
+
+        /* Cards and Sections */
+        .card-modern {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            box-shadow: var(--shadow-light);
+            transition: var(--transition-smooth);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .card-modern:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            box-shadow: var(--shadow-medium);
+            transform: translateY(-2px);
+        }
+
+        .card-modern .card-header {
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.05), rgba(102, 126, 234, 0.05));
+            border-bottom: 1px solid var(--border-color);
+            padding: 1.25rem 1.5rem;
+        }
+
+        .card-modern .card-body {
+            padding: 1.5rem;
+        }
+
+        /* Buttons */
         .btn-modern {
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             border: none;
             color: white;
-            padding: 8px 20px;
-            border-radius: 10px;
+            padding: 0.6rem 1.2rem;
+            border-radius: var(--border-radius);
             font-weight: 600;
             font-size: 0.875rem;
-            transition: all 0.3s ease;
+            transition: var(--transition-smooth);
             display: inline-flex;
             align-items: center;
-            gap: 6px;
+            gap: 0.5rem;
+            text-decoration: none;
         }
 
         .btn-modern:hover {
             transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(59, 183, 251, 0.3);
+            box-shadow: 0 6px 20px rgba(59, 183, 251, 0.4);
             color: white;
+            text-decoration: none;
         }
 
-        .btn-modern:disabled {
-            background: #666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-modern-outline {
-            background: transparent;
-            border: 2px solid rgba(59, 183, 251, 0.3);
-            color: #3BB7FB;
-            padding: 6px 16px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-modern-outline:hover {
-            border-color: #3BB7FB;
-            background: rgba(59, 183, 251, 0.1);
-            color: #3BB7FB;
-        }
-
-        .btn-danger-outline {
-            background: transparent;
-            border: 2px solid rgba(220, 53, 69, 0.3);
-            color: #DC3545;
-            padding: 8px 16px;
-            border-radius: 10px;
-            font-weight: 500;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-        }
-
-        .btn-danger-outline:hover {
-            border-color: #DC3545;
-            background: rgba(220, 53, 69, 0.1);
-            color: #DC3545;
-        }
-
-        /* Filter Panel */
-        .filter-panel {
-            animation: slideDown 0.3s ease;
-        }
-
-        @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .filter-label {
-            color: #B0B3B8;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 6px;
-        }
-
-        .form-control-modern {
-            background: rgba(30, 30, 30, 0.8);
-            border: 2px solid rgba(120, 130, 150, 0.2);
-            border-radius: 10px;
-            color: #ffffff;
-            padding: 10px 16px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
-        }
-
-        .form-control-modern:focus {
-            background: rgba(30, 30, 30, 0.95);
-            border-color: #3BB7FB;
-            box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.15);
-            color: #ffffff;
+        .btn-modern:focus {
+            box-shadow: 0 0 0 3px rgba(59, 183, 251, 0.25);
             outline: none;
         }
 
-        .results-info {
+        .btn-outline-modern {
+            background: transparent;
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            font-size: 0.875rem;
+            transition: var(--transition-smooth);
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-outline-modern:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-1px);
+        }
+
+        /* Swap Cards */
+        .swap-card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+            overflow: hidden;
+            margin-bottom: 1rem;
+        }
+
+        .swap-card:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .swap-card-header {
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.05), rgba(102, 126, 234, 0.05));
+            padding: 1rem 1.25rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .swap-card-body {
+            padding: 1.25rem;
+        }
+
+        /* Status Badges */
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-pending {
+            background: rgba(255, 193, 7, 0.15);
+            color: var(--warning-color);
+            border: 1px solid rgba(255, 193, 7, 0.3);
+        }
+
+        .status-accepted,
+        .status-completed {
+            background: rgba(40, 167, 69, 0.15);
+            color: var(--success-color);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+        }
+
+        .status-cancelled,
+        .status-declined {
+            background: rgba(220, 53, 69, 0.15);
+            color: var(--danger-color);
+            border: 1px solid rgba(220, 53, 69, 0.3);
+        }
+
+        .status-in-progress {
+            background: rgba(23, 162, 184, 0.15);
+            color: #17a2b8;
+            border: 1px solid rgba(23, 162, 184, 0.3);
+        }
+
+        /* Book Swap Cards */
+        .book-swap-card {
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
+            overflow: hidden;
+            box-shadow: var(--shadow-light);
+        }
+
+        .book-swap-card:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .book-swap-card.canceled {
+            opacity: 0.7;
+            border-color: rgba(220, 53, 69, 0.2);
+        }
+
+        .swap-book-images {
             display: flex;
             align-items: center;
-            gap: 12px;
+            justify-content: space-between;
+            padding: 1.5rem;
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.03), rgba(102, 126, 234, 0.03));
+            border-bottom: 1px solid var(--border-color);
         }
 
-        .matches-counter {
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.15), rgba(102, 126, 234, 0.15));
-            border: 1px solid rgba(59, 183, 251, 0.3);
-            color: #3BB7FB;
-            padding: 6px 16px;
-            border-radius: 20px;
-            font-size: 0.8rem;
+        .book-image-wrapper {
+            position: relative;
+            text-align: center;
+            flex: 1;
+        }
+
+        .swap-book-img {
+            width: 80px;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: var(--transition-smooth);
+        }
+
+        .book-swap-card:hover .swap-book-img {
+            transform: scale(1.05);
+        }
+
+        .book-label {
+            position: absolute;
+            bottom: -8px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--primary-color);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.7rem;
             font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 2px 8px rgba(59, 183, 251, 0.3);
         }
 
-        /* Books Discovery Grid */
-        .books-discovery-grid {
-            margin-bottom: 30px;
+        .book-label.success {
+            background: var(--success-color);
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
         }
 
+        .swap-arrow {
+            margin: 0 1rem;
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .swap-card-body {
+            padding: 1.25rem;
+        }
+
+        .swap-partner {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .swap-partner i {
+            font-size: 1.2rem;
+        }
+
+        .swap-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .swap-actions .btn {
+            border-radius: var(--border-radius);
+            font-weight: 500;
+            transition: var(--transition-smooth);
+        }
+
+        .swap-actions .btn:hover {
+            transform: translateY(-1px);
+        }
+
+        /* Discovery Books Grid */
         .discovery-books-grid {
             display: grid;
             grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-            gap: 20px;
-            padding: 20px 0;
-            align-items: stretch;
+            gap: 1.5rem;
+            padding: 1rem 0;
         }
 
         .discovery-book-card {
-            background: linear-gradient(135deg, #23242a, #1E1F23);
-            border-radius: 16px;
-            border: 1px solid rgba(120,130,150,0.1);
-            transition: all 0.3s ease;
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            transition: var(--transition-smooth);
             overflow: hidden;
-            cursor: pointer;
-            position: relative;
+            box-shadow: var(--shadow-light);
             display: flex;
             flex-direction: column;
             height: 100%;
         }
 
         .discovery-book-card:hover {
-            transform: translateY(-8px);
-            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
             border-color: rgba(59, 183, 251, 0.3);
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .discovery-book-image {
+            position: relative;
+            padding: 1rem;
+            text-align: center;
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.03), rgba(102, 126, 234, 0.03));
         }
 
         .discovery-book-cover {
             width: 100%;
+            max-width: 120px;
             height: 160px;
             object-fit: cover;
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
-            border-radius: 10px;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.4);
-            transition: transform 0.3s ease;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: var(--transition-smooth);
         }
 
         .discovery-book-card:hover .discovery-book-cover {
@@ -735,17 +500,17 @@
         }
 
         .discovery-book-info {
-            padding: 16px;
+            padding: 1.25rem;
             display: flex;
             flex-direction: column;
             flex-grow: 1;
         }
 
         .discovery-book-title {
-            font-size: 0.95rem;
+            font-size: 1rem;
             font-weight: 600;
-            color: #ffffff;
-            margin-bottom: 4px;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
             line-height: 1.3;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -755,165 +520,282 @@
         }
 
         .discovery-book-author {
-            color: #B0B3B8;
-            font-size: 0.8rem;
-            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-bottom: 1rem;
         }
 
         .discovery-book-meta {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 12px;
+            margin-bottom: 1rem;
         }
 
         .discovery-genre-badge {
             background: rgba(59, 183, 251, 0.15);
-            color: #3BB7FB;
-            padding: 3px 8px;
+            color: var(--primary-color);
+            padding: 0.25rem 0.75rem;
             border-radius: 12px;
             font-size: 0.7rem;
             font-weight: 500;
         }
 
         .discovery-condition {
-            color: #28A745;
+            color: var(--success-color);
             font-size: 0.75rem;
-            font-weight: 500;
+            font-weight: 600;
         }
 
         .discovery-owner {
-            color: #B0B3B8;
-            font-size: 0.75rem;
-            margin-bottom: 8px;
+            color: var(--text-secondary);
+            font-size: 0.8rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .discovery-swap-btn {
             width: 100%;
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             border: none;
             color: white;
-            padding: 8px 16px;
-            border-radius: 8px;
+            padding: 0.75rem;
+            border-radius: var(--border-radius);
             font-weight: 600;
-            font-size: 0.8rem;
-            transition: all 0.3s ease;
+            font-size: 0.85rem;
+            transition: var(--transition-smooth);
             margin-top: auto;
         }
 
         .discovery-swap-btn:hover {
-            background: linear-gradient(135deg, #2A9FE8, #5A6DD8);
+            background: linear-gradient(135deg, var(--primary-dark), var(--secondary-color));
             transform: translateY(-1px);
             color: white;
+            box-shadow: 0 4px 15px rgba(59, 183, 251, 0.3);
         }
 
-        /* Loading State */
+        /* Empty States */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-muted);
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            color: var(--primary-color);
+        }
+
+        .empty-state h6 {
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+
+        /* Loading States */
+        /* Loading States and Animations */
         .loading-state {
             text-align: center;
-            padding: 80px 20px;
-            color: #B0B3B8;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+            animation: fadeIn 0.5s ease-in-out;
         }
 
         .loading-spinner {
-            margin-bottom: 20px;
+            margin-bottom: 1rem;
         }
 
-        /* Location Filter Status */
-        .location-filter-status {
-            margin-bottom: 20px;
-            border-radius: 12px;
-            padding: 15px 20px;
-            border: none;
-            background: linear-gradient(135deg, #1a73e8 0%, #4285f4 100%);
-            color: white;
+        .loading-spinner .spinner-border {
+            width: 3rem;
+            height: 3rem;
+            border-width: 0.3rem;
+            border-color: var(--primary-color);
+            border-right-color: transparent;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Button Loading States */
+        .btn-loading {
+            position: relative;
+            color: transparent !important;
+        }
+
+        .btn-loading::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 16px;
+            top: 50%;
+            left: 50%;
+            margin-left: -8px;
+            margin-top: -8px;
+            border: 2px solid #ffffff;
+            border-radius: 50%;
+            border-top-color: transparent;
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        /* Toast Notifications */
+        .notification-toast {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: var(--card-background);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-heavy);
+            padding: 1rem 1.25rem;
+            z-index: 10000;
+            transform: translateX(400px);
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            max-width: 400px;
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .notification-toast.show {
+            transform: translateX(0);
+        }
+
+        .notification-toast.success {
+            border-left-color: var(--success-color);
+        }
+
+        .notification-toast.error {
+            border-left-color: var(--danger-color);
+        }
+
+        .notification-toast.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        .toast-content {
             display: flex;
-            align-items: center;
-            justify-content: space-between;
-            box-shadow: 0 4px 15px rgba(26, 115, 232, 0.3);
-            transition: all 0.3s ease;
+            align-items: flex-start;
+            gap: 0.75rem;
         }
 
-        .location-filter-status.alert-info {
-            background: linear-gradient(135deg, #17a2b8 0%, #20c997 100%);
-            box-shadow: 0 4px 15px rgba(23, 162, 184, 0.3);
+        .toast-icon {
+            font-size: 1.5rem;
+            flex-shrink: 0;
+            margin-top: 0.1rem;
         }
 
-        .location-filter-status .btn {
-            background: rgba(255, 255, 255, 0.2);
-            border: 1px solid rgba(255, 255, 255, 0.3);
-            color: white;
-            border-radius: 8px;
-            padding: 8px 16px;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+        .toast-message h6 {
+            color: var(--text-primary);
+            margin: 0 0 0.25rem 0;
+            font-weight: 600;
+            font-size: 0.95rem;
         }
 
-        .location-filter-status .btn:hover {
-            background: rgba(255, 255, 255, 0.3);
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        .toast-message p {
+            color: var(--text-secondary);
+            margin: 0;
+            font-size: 0.85rem;
+            line-height: 1.4;
         }
 
-        /* Modern Swap Request Modal */
+        .toast-close {
+            position: absolute;
+            top: 0.75rem;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            cursor: pointer;
+            padding: 0.25rem;
+            border-radius: 4px;
+            transition: var(--transition-smooth);
+        }
+
+        .toast-close:hover {
+            color: var(--text-primary);
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Modern Modal Styles */
         .modal-modern {
-            background: #1E1E1E;
-            border: 1px solid #3a3b40;
-            border-radius: 16px;
-            box-shadow: 0 25px 50px rgba(0,0,0,0.5);
+            background: var(--card-background);
+            border: 1px solid var(--border-color);
+            border-radius: var(--border-radius-lg);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+            overflow: hidden;
         }
 
         .modal-header-modern {
-            background: linear-gradient(135deg, #23242a, #1E1F23);
-            border-bottom: 1px solid rgba(59, 183, 251, 0.2);
-            padding: 24px 30px;
-            border-radius: 16px 16px 0 0;
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.08), rgba(102, 126, 234, 0.08));
+            border-bottom: 1px solid var(--border-color);
+            padding: 2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
         }
 
         .modal-title-section h4 {
-            color: #ffffff;
+            color: var(--text-primary);
             font-weight: 700;
+            font-size: 1.5rem;
             margin: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
         }
 
         .modal-subtitle {
-            color: #B0B3B8;
-            font-size: 0.9rem;
-            margin: 0;
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            margin: 0.5rem 0 0 0;
+            font-weight: 400;
         }
 
         .btn-close-modern {
             background: rgba(255, 255, 255, 0.1);
             border: none;
-            color: #ffffff;
-            width: 40px;
-            height: 40px;
+            color: var(--text-secondary);
+            width: 44px;
+            height: 44px;
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: var(--transition-smooth);
+            cursor: pointer;
+            font-size: 1.25rem;
         }
 
         .btn-close-modern:hover {
             background: rgba(220, 53, 69, 0.2);
-            color: #DC3545;
+            color: var(--danger-color);
+            transform: scale(1.1);
         }
 
         .modal-body-modern {
-            padding: 30px;
+            padding: 2.5rem;
+        }
+
+        .modal-footer-modern {
+            background: rgba(255, 255, 255, 0.02);
+            border-top: 1px solid var(--border-color);
+            padding: 2rem 2.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
         /* Step Indicator */
-        .swap-steps {
-            margin-bottom: 30px;
-        }
-
         .step-indicator {
             display: flex;
             align-items: center;
             justify-content: center;
             max-width: 600px;
             margin: 0 auto;
+            gap: 1rem;
         }
 
         .step {
@@ -921,7 +803,7 @@
             flex-direction: column;
             align-items: center;
             opacity: 0.5;
-            transition: all 0.3s ease;
+            transition: var(--transition-smooth);
         }
 
         .step.active {
@@ -929,36 +811,39 @@
         }
 
         .step-number {
-            width: 40px;
-            height: 40px;
+            width: 48px;
+            height: 48px;
             border-radius: 50%;
-            background: rgba(59, 183, 251, 0.2);
+            background: rgba(59, 183, 251, 0.15);
             border: 2px solid rgba(59, 183, 251, 0.3);
             display: flex;
             align-items: center;
             justify-content: center;
             font-weight: 700;
-            color: #3BB7FB;
-            margin-bottom: 8px;
-            transition: all 0.3s ease;
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+            transition: var(--transition-smooth);
+            font-size: 1.1rem;
         }
 
         .step.active .step-number {
-            background: linear-gradient(135deg, #3BB7FB, #667eea);
+            background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
             border-color: transparent;
             color: white;
-            box-shadow: 0 6px 20px rgba(59, 183, 251, 0.3);
+            box-shadow: 0 8px 25px rgba(59, 183, 251, 0.4);
+            transform: scale(1.1);
         }
 
         .step-label {
-            font-size: 0.8rem;
-            color: #B0B3B8;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
             font-weight: 500;
             text-align: center;
+            line-height: 1.2;
         }
 
         .step.active .step-label {
-            color: #ffffff;
+            color: var(--text-primary);
             font-weight: 600;
         }
 
@@ -966,126 +851,38 @@
             flex: 1;
             height: 2px;
             background: rgba(59, 183, 251, 0.2);
-            margin: 0 20px;
+            border-radius: 1px;
             position: relative;
-            top: -16px;
         }
 
-        /* Swap Steps */
+        /* Swap Steps Content */
         .swap-step {
             display: none;
+            animation: fadeIn 0.4s ease;
         }
 
         .swap-step.active {
             display: block;
-            animation: fadeIn 0.4s ease;
         }
 
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(10px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Book Display Card */
-        .book-display-card {
-            background: linear-gradient(135deg, #23242a, #1E1F23);
-            border-radius: 16px;
-            border: 1px solid rgba(59, 183, 251, 0.2);
-            padding: 20px;
-            height: 100%;
-        }
-
-        .book-display-header h6 {
-            color: #ffffff;
-            font-weight: 600;
-            margin-bottom: 16px;
-        }
-
-        /* Library Selection */
+        /* Book Display Cards */
+        .book-display-card,
         .library-selection-card {
-            background: linear-gradient(135deg, #23242a, #1E1F23);
-            border-radius: 16px;
-            border: 1px solid rgba(120,130,150,0.1);
-            padding: 20px;
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.03), rgba(102, 126, 234, 0.03));
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            padding: 1.5rem;
             height: 100%;
         }
 
+        .book-display-header h6,
         .library-header h6 {
-            color: #ffffff;
+            color: var(--text-primary);
             font-weight: 600;
-            margin-bottom: 4px;
-        }
-
-        .search-input-group {
-            position: relative;
-        }
-
-        .search-icon {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: #B0B3B8;
-        }
-
-        .search-input-group .form-control-modern {
-            padding-left: 45px;
-        }
-
-        /* User Books Grid */
-        .user-books-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-            gap: 16px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding: 16px 0;
-        }
-
-        .user-book-card {
-            background: rgba(30, 30, 30, 0.6);
-            border: 2px solid rgba(120,130,150,0.1);
-            border-radius: 12px;
-            padding: 12px;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .user-book-card:hover {
-            border-color: rgba(59, 183, 251, 0.3);
-            background: rgba(30, 30, 30, 0.8);
-            transform: translateY(-2px);
-        }
-
-        .user-book-card.selected {
-            border-color: #3BB7FB;
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.15), rgba(102, 126, 234, 0.15));
-            box-shadow: 0 6px 20px rgba(59, 183, 251, 0.2);
-        }
-
-        .book-cover-container {
-            text-align: center;
-            margin-bottom: 12px;
-        }
-
-        .user-book-cover {
-            width: 100%;
-            max-width: 80px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-            transition: transform 0.3s ease;
-        }
-
-        .user-book-card:hover .user-book-cover {
-            transform: scale(1.05);
-        }
-
-        /* Requested Book Display (You Want section) */
-        #requested-book-display .book-cover-professional:hover {
-            transform: scale(1.05);
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
 
         .book-display-content {
@@ -1093,22 +890,65 @@
             display: flex;
             align-items: center;
             justify-content: center;
-        }
-
-        /* Swap Preview Books Hover Effects */
-        .swap-book-preview .book-cover-professional:hover {
-            transform: scale(1.05);
-        }
-
-        .user-book-info {
             text-align: center;
         }
 
+        /* User Books Grid in Modal */
+        .user-books-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            gap: 1rem;
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 1rem 0;
+        }
+
+        .user-book-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid transparent;
+            border-radius: var(--border-radius);
+            padding: 1rem;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            position: relative;
+            text-align: center;
+        }
+
+        .user-book-card:hover {
+            border-color: rgba(59, 183, 251, 0.3);
+            background: rgba(59, 183, 251, 0.08);
+            transform: translateY(-3px);
+        }
+
+        .user-book-card.selected {
+            border-color: var(--primary-color);
+            background: linear-gradient(135deg, rgba(59, 183, 251, 0.15), rgba(102, 126, 234, 0.15));
+            box-shadow: 0 8px 25px rgba(59, 183, 251, 0.25);
+        }
+
+        .user-book-card .book-cover-container {
+            margin-bottom: 1rem;
+        }
+
+        .user-book-card .user-book-cover {
+            width: 100%;
+            max-width: 80px;
+            height: 100px;
+            object-fit: cover;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            transition: var(--transition-smooth);
+        }
+
+        .user-book-card:hover .user-book-cover {
+            transform: scale(1.05);
+        }
+
         .user-book-info .book-title {
-            font-size: 0.85rem;
-            color: #ffffff;
+            font-size: 0.8rem;
+            color: var(--text-primary);
             font-weight: 600;
-            margin-bottom: 4px;
+            margin-bottom: 0.25rem;
             line-height: 1.2;
             display: -webkit-box;
             -webkit-line-clamp: 2;
@@ -1118,48 +958,27 @@
         }
 
         .user-book-info .book-author {
-            font-size: 0.75rem;
-            color: #B0B3B8;
-            margin-bottom: 8px;
-        }
-
-        .book-meta {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-        }
-
-        .genre-badge {
-            background: rgba(59, 183, 251, 0.15);
-            color: #3BB7FB;
-            padding: 2px 6px;
-            border-radius: 8px;
-            font-size: 0.65rem;
-            font-weight: 500;
-        }
-
-        .condition-text {
-            color: #28A745;
             font-size: 0.7rem;
-            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
         }
 
         .selection-indicator {
             position: absolute;
-            top: -8px;
-            right: -8px;
+            top: -6px;
+            right: -6px;
             width: 24px;
             height: 24px;
-            background: #3BB7FB;
+            background: var(--primary-color);
             border-radius: 50%;
             display: flex;
             align-items: center;
             justify-content: center;
             color: white;
-            font-size: 0.7rem;
+            font-size: 0.75rem;
             opacity: 0;
             transform: scale(0.8);
-            transition: all 0.3s ease;
+            transition: var(--transition-smooth);
         }
 
         .user-book-card.selected .selection-indicator {
@@ -1167,440 +986,336 @@
             transform: scale(1);
         }
 
-        /* Step 2 Styles */
-        .swap-preview-section {
-            max-width: 800px;
-            margin: 0 auto;
+        /* Active Swaps Grid Layout - Like Wishlist */
+        #active-swaps-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 1.5rem;
+            padding: 1rem 0;
         }
 
-        .swap-book-preview {
-            text-align: center;
+        #active-swaps-container .active-swap-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 15px;
+            padding: 1.5rem;
+            transition: var(--transition-smooth);
+            height: fit-content;
         }
 
-        .preview-label {
-            color: #B0B3B8;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-bottom: 16px;
+        #active-swaps-container .active-swap-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+            border-color: rgba(59, 183, 251, 0.3);
         }
 
-        .swap-arrow {
-            font-size: 2rem;
-            color: #3BB7FB;
+        /* Responsive grid adjustments */
+        @media (max-width: 1200px) {
+            #active-swaps-container {
+                grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+                gap: 1rem;
+            }
         }
 
-        .message-section {
-            max-width: 600px;
-            margin: 0 auto;
+        @media (max-width: 768px) {
+            #active-swaps-container {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            #active-swaps-container .active-swap-item {
+                padding: 1rem;
+            }
         }
 
-        .form-label {
-            color: #ffffff;
-            font-weight: 600;
-            margin-bottom: 8px;
+        /* Enhanced pagination for grid display */
+        #active-swaps-pagination .pagination {
+            justify-content: center;
+            margin-top: 2rem;
         }
 
-        /* Modal Footer */
-        .modal-footer-modern {
-            background: rgba(30, 30, 30, 0.5);
-            border-top: 1px solid rgba(59, 183, 251, 0.2);
-            padding: 24px 30px;
-            border-radius: 0 0 16px 16px;
+        /* Compact swap card styling for grid layout */
+        .swap-tracker-card .swap-header .row {
+            margin: 0;
         }
 
-        .footer-actions {
+        .swap-tracker-card .swap-header .col-md-4 {
+            padding: 0 0.5rem;
+        }
+
+        .swap-tracker-card .book-cover {
+            width: 50px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 6px;
+        }
+
+        .swap-tracker-card .book-info p {
+            font-size: 0.8rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .swap-tracker-card .book-info small {
+            font-size: 0.7rem;
+            line-height: 1.2;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        /* Compact progress steps */
+        .swap-progress-tracker .progress-step {
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            background: rgba(255, 255, 255, 0.02);
+            border-radius: 8px;
+        }
+
+        .swap-progress-tracker .step-header {
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            gap: 0.75rem;
+        }
+
+        .swap-progress-tracker .step-number {
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+            flex-shrink: 0;
+        }
+
+        .swap-progress-tracker .step-title h6 {
+            font-size: 0.9rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .swap-progress-tracker .step-title small {
+            font-size: 0.75rem;
+        }
+
+        /* Micro-interactions and Hover Effects */
+        .nav-link {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .nav-link::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
             width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            transition: left 0.5s;
         }
 
-        .primary-actions {
-            display: flex;
-            gap: 12px;
-            align-items: center;
+        .nav-link:hover::before {
+            left: 100%;
         }
 
-        .btn-outline-modern {
-            background: transparent;
-            border: 2px solid rgba(120,130,150,0.3);
-            color: #B0B3B8;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
+        .card-modern,
+        .swap-card,
+        .book-swap-card,
+        .discovery-book-card {
+            position: relative;
+            overflow: hidden;
         }
 
-        .btn-outline-modern:hover {
-            border-color: rgba(59, 183, 251, 0.5);
-            color: #3BB7FB;
+        .card-modern::before,
+        .swap-card::before,
+        .book-swap-card::before,
+        .discovery-book-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(59, 183, 251, 0.1) 0%, transparent 70%);
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            pointer-events: none;
         }
 
-        .btn-chat-modern {
-            background: linear-gradient(135deg, #28A745, #20C997);
-            border: none;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 10px;
-            font-weight: 600;
-            font-size: 0.875rem;
-            transition: all 0.3s ease;
+        .card-modern:hover::before,
+        .swap-card:hover::before,
+        .book-swap-card:hover::before,
+        .discovery-book-card:hover::before {
+            opacity: 1;
         }
 
-        .btn-chat-modern:hover {
-            background: linear-gradient(135deg, #218838, #1FA085);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 20px rgba(40, 167, 69, 0.3);
-            color: white;
+        /* Pulse animation for important elements */
+        .pulse {
+            animation: pulse 2s infinite;
         }
 
-        .btn-success-modern {
-            background: linear-gradient(135deg, #28A745, #20C997);
-            border: none;
-            color: white;
-            padding: 12px 24px;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 0.9rem;
-            transition: all 0.3s ease;
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
         }
 
-        .btn-success-modern:hover {
-            background: linear-gradient(135deg, #218838, #1FA085);
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.4);
-            color: white;
+        /* Focus states for accessibility */
+        .nav-link:focus,
+        .btn-modern:focus,
+        .btn-outline-modern:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
         }
 
-        /* Empty States */
-        .empty-library {
-            text-align: center;
-            padding: 60px 20px;
-            color: #B0B3B8;
+        /* Progress Steps */
+        .progress-step {
+            margin-bottom: 1.5rem;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--border-color);
+            background: rgba(255, 255, 255, 0.02);
+            transition: var(--transition-smooth);
         }
 
-        .empty-library i {
-            font-size: 3rem;
-            margin-bottom: 16px;
-            opacity: 0.5;
+        .progress-step.active {
+            border-color: var(--primary-color);
+            background: rgba(59, 183, 251, 0.05);
+        }
+
+        .progress-step.completed {
+            border-color: var(--success-color);
+            background: rgba(40, 167, 69, 0.05);
         }
 
         /* Responsive Design */
         @media (max-width: 768px) {
-            .discovery-books-grid {
-                grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-                gap: 16px;
+            .swap-matcher-main {
+                padding: 0.5rem 0;
             }
             
-            .user-books-grid {
-                grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-                gap: 12px;
+            .welcome-hero {
+                padding: 1.5rem;
+                margin-bottom: 1rem;
             }
             
-            .modal-header-modern,
-            .modal-body-modern,
-            .modal-footer-modern {
-                padding: 20px;
-            }
-            
-            .step-indicator {
+            .nav-pills {
                 flex-direction: column;
-                gap: 16px;
+                padding: 0.75rem;
             }
             
-            .step-line {
-                display: none;
+            .nav-pills .nav-link {
+                margin: 0.25rem 0 !important;
+                text-align: center;
+                justify-content: center;
             }
             
-            .footer-actions {
-                flex-direction: column;
-                gap: 16px;
+            .sub-tabs-nav {
+                padding: 0.75rem;
             }
             
-            .primary-actions {
+            .sub-tabs-nav .nav-pills {
+                flex-direction: row;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .card-modern .card-body,
+            .swap-card-body {
+                padding: 1rem;
+            }
+            
+            .btn-modern,
+            .btn-outline-modern {
                 width: 100%;
-                justify-content: space-between;
+                justify-content: center;
+                margin-bottom: 0.5rem;
             }
         }
 
-        /* Toast Notification Styles */
-        .success-toast, .error-toast {
+        @media (max-width: 576px) {
+            .welcome-hero {
+                padding: 1rem;
+            }
+            
+            .nav-pills .nav-link {
+                font-size: 0.8rem;
+                padding: 0.6rem 1rem !important;
+            }
+            
+            .sub-tabs-nav .nav-link {
+                font-size: 0.75rem;
+                padding: 0.5rem 0.8rem !important;
+            }
+        }
+
+        /* Animation Classes */
+        .animate-bounce {
+            animation: bounce 1s infinite;
+        }
+
+        .animate-pulse {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 53%, 80%, 100% {
+                transform: translate3d(0,0,0);
+            }
+            40%, 43% {
+                transform: translate3d(0,-5px,0);
+            }
+            70% {
+                transform: translate3d(0,-3px,0);
+            }
+            90% {
+                transform: translate3d(0,-1px,0);
+            }
+        }
+
+        @keyframes pulse {
+            0% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.7;
+            }
+            100% {
+                opacity: 1;
+            }
+        }
+
+        /* Custom Notification Styles */
+        .notification-toast {
             position: fixed;
             top: 20px;
             right: 20px;
-            background: #1E1E1E;
-            border: 1px solid #28A745;
-            border-left: 4px solid #28A745;
-            border-radius: 12px;
-            padding: 16px 20px;
-            z-index: 10000;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-            transform: translateX(400px);
-            transition: all 0.4s ease;
-            max-width: 400px;
+            background: var(--card-background);
+            color: var(--text-primary);
+            padding: 1rem 1.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-heavy);
+            border: 1px solid var(--border-color);
+            z-index: 1050;
+            min-width: 300px;
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
         }
 
-        .error-toast {
-            border-color: #DC3545;
-            border-left-color: #DC3545;
-        }
-
-        .success-toast.show, .error-toast.show {
+        .notification-toast.show {
             transform: translateX(0);
         }
 
-        .toast-content {
-            display: flex;
-            align-items: center;
-            gap: 12px;
+        .notification-toast.success {
+            border-left: 4px solid var(--success-color);
         }
 
-        .toast-icon {
-            font-size: 24px;
-            flex-shrink: 0;
+        .notification-toast.error {
+            border-left: 4px solid var(--danger-color);
         }
 
-        .success-toast .toast-icon {
-            color: #28A745;
+        .notification-toast.info {
+            border-left: 4px solid var(--primary-color);
         }
 
-        .error-toast .toast-icon {
-            color: #DC3545;
-        }
-
-        .toast-message h6 {
-            color: #ffffff;
-            margin: 0 0 4px 0;
-            font-weight: 600;
-        }
-
-        .toast-message p {
-            color: #B0B3B8;
-            margin: 0;
-            font-size: 0.9rem;
-        }
-
-        /* Chat Message Styles */
-        .max-width-70 { 
-            max-width: 70% !important; 
-        }
-
-        #chat-messages { 
-            scrollbar-width: thin;
-            scrollbar-color: #666 #2a2a2a;
-        }
-
-        #chat-messages::-webkit-scrollbar {
-            width: 6px;
-        }
-
-        #chat-messages::-webkit-scrollbar-track {
-            background: #2a2a2a;
-        }
-
-        #chat-messages::-webkit-scrollbar-thumb {
-            background: #666;
-            border-radius: 3px;
-        }
-
-        /* Swap Workflow Tracker Styles */
-        .swap-workflow-tracker {
-            display: flex;
-            flex-direction: column;
-            gap: 20px;
-        }
-
-        .workflow-step {
-            display: flex;
-            align-items: flex-start;
-            gap: 15px;
-            padding: 20px;
-            border-radius: 12px;
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            transition: all 0.3s ease;
-        }
-
-        .workflow-step.active {
-            background: rgba(59, 183, 251, 0.1);
-            border-color: #3BB7FB;
-            box-shadow: 0 0 20px rgba(59, 183, 251, 0.2);
-        }
-
-        .workflow-step.completed {
-            background: rgba(40, 167, 69, 0.1);
-            border-color: #28A745;
-        }
-
-        .step-icon {
-            font-size: 1.5rem;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .step-content h6 {
-            color: white;
-            margin-bottom: 8px;
-            font-weight: 600;
-        }
-
-        .step-content p {
-            margin-bottom: 12px;
-            font-size: 0.9rem;
-        }
-
-        .step-content .btn {
-            font-size: 0.85rem;
-            padding: 6px 12px;
-        }
-
-        /* Swap Status Badges */
-        .swap-status-badge {
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 600;
-            text-transform: uppercase;
-        }
-
-        .status-pending {
-            background: rgba(255, 193, 7, 0.2);
-            color: #FFC107;
-            border: 1px solid #FFC107;
-        }
-
-        .status-accepted {
-            background: rgba(23, 162, 184, 0.2);
-            color: #17A2B8;
-            border: 1px solid #17A2B8;
-        }
-
-        .status-in-progress {
-            background: rgba(220, 53, 69, 0.2);
-            color: #DC3545;
-            border: 1px solid #DC3545;
-        }
-
-        .status-completed {
-            background: rgba(40, 167, 69, 0.2);
-            color: #28A745;
-            border: 1px solid #28A745;
-        }
-
-        .status-cancelled {
-            background: rgba(108, 117, 125, 0.2);
-            color: #6C757D;
-            border: 1px solid #6C757D;
-        }
-
-        /* Completion Animation */
-        .completion-animation {
-            animation: bounceIn 0.6s ease-out;
-        }
-
-        @keyframes bounceIn {
-            0% {
-                transform: scale(0.3);
-                opacity: 0;
-            }
-            50% {
-                transform: scale(1.05);
-            }
-            70% {
-                transform: scale(0.9);
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        /* Enhanced swap action buttons */
-        .swap-action-btn {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            border: none;
-            color: white;
-            border-radius: 8px;
-            padding: 10px 20px;
-            font-weight: 600;
-            transition: all 0.3s ease;
-        }
-
-        .swap-action-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
-            color: white;
-        }
-
-        .swap-action-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Swap Request Message Display */
-        .swap-request-message {
-            background: linear-gradient(135deg, rgba(59, 183, 251, 0.1) 0%, rgba(102, 126, 234, 0.1) 100%);
-            border-left: 4px solid #3BB7FB;
-            border-radius: 8px;
-            padding: 16px;
-            margin-top: 12px;
-        }
-
-        .swap-request-message .message-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-            font-size: 0.9rem;
-        }
-
-        .swap-request-message .message-header i {
-            font-size: 1.1rem;
-        }
-
-        .swap-request-message .message-content {
-            color: #E0E0E0;
-            font-size: 0.95rem;
-            line-height: 1.6;
-            padding: 12px;
-            background: rgba(0, 0, 0, 0.2);
-            border-radius: 6px;
-            font-style: italic;
-        }
-
-        /* Meeting Notification Animations */
-        @keyframes pulse {
-            0% {
-                transform: scale(1);
-                opacity: 1;
-            }
-            50% {
-                transform: scale(1.05);
-                opacity: 0.8;
-            }
-            100% {
-                transform: scale(1);
-                opacity: 1;
-            }
-        }
-
-        .animate__animated {
-            animation-duration: 1s;
-            animation-fill-mode: both;
-        }
-
-        .animate__pulse {
-            animation-name: pulse;
-        }
-
-        .animate__infinite {
-            animation-iteration-count: infinite;
-        }
-
-        /* Meeting Alert Badge Styles */
-        .badge.animate__pulse {
-            animation-duration: 2s;
-        }
     </style>
 </head>
 <body>
@@ -1608,7 +1323,7 @@
     <%- include('partials/navbar') %>
 
     <!-- Swap Matcher Main Content -->
-    <main class="container-fluid py-4">
+    <main class="container-fluid py-2">
     <div class="dashboard-content">
     <!-- Swap Matcher Hero Section -->
     <section class="welcome-hero">
@@ -1623,10 +1338,10 @@
                         Connect with readers in your area and expand your literary horizons.
                     </p>
                     <div class="d-flex flex-wrap gap-3">
-                        <button class="btn-professional" onclick="quickMatchAll()">
+                        <button class="btn-modern" onclick="quickMatchAll()">
                             <i class="bi bi-lightning-charge"></i> Quick Match All
                         </button>
-                        <button class="btn-outline-professional" onclick="showMatchPreferences()">
+                        <button class="btn-modern-outline" onclick="showMatchPreferences()">
                             <i class="bi bi-sliders"></i> Match Preferences
                         </button>
                     </div>
@@ -1662,16 +1377,16 @@
 
     <!-- Swap Navigation Tabs -->
     <div class="container">
-        <div class="card-dark mb-4">
-            <div class="card-body p-3">
+        <!-- Modern tab navigation with proper styling -->
+        <div class="swap-tabs-container">
             <ul class="nav nav-pills justify-content-center" id="swapTabs" role="tablist">
                 <li class="nav-item">
-                    <a class="nav-link active" id="find-matches-tab" data-toggle="pill" href="#find-matches" role="tab">
+                    <a class="nav-link active" id="find-matches-tab" data-toggle="tab" href="#find-matches" role="tab" aria-controls="find-matches" aria-selected="true">
                         <i class="bi bi-search"></i> Find Matches
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="my-requests-tab" data-toggle="pill" href="#my-requests" role="tab">
+                    <a class="nav-link" id="my-requests-tab" data-toggle="tab" href="#my-requests" role="tab" aria-controls="my-requests" aria-selected="false">
                         <i class="bi bi-arrow-up-right"></i> My Requests 
                         <% if (myPendingRequests > 0) { %>
                             <span class="badge badge-warning ml-1"><%= myPendingRequests %></span>
@@ -1679,7 +1394,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="incoming-requests-tab" data-toggle="pill" href="#incoming-requests" role="tab">
+                    <a class="nav-link" id="incoming-requests-tab" data-toggle="tab" href="#incoming-requests" role="tab" aria-controls="incoming-requests" aria-selected="false">
                         <i class="bi bi-arrow-down-left"></i> Incoming Requests
                         <% if (incomingRequests > 0) { %>
                             <span class="badge badge-success ml-1"><%= incomingRequests %></span>
@@ -1687,7 +1402,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" id="active-swaps-tab" data-toggle="pill" href="#active-swaps" role="tab">
+                    <a class="nav-link" id="active-swaps-tab" data-toggle="tab" href="#active-swaps" role="tab" aria-controls="active-swaps" aria-selected="false">
                         <i class="bi bi-hourglass-split"></i> Active Swaps
                         <% if (activeSwaps > 0) { %>
                             <span class="badge badge-info ml-1"><%= activeSwaps %></span>
@@ -1711,16 +1426,15 @@
                     </a>
                 </li>
             </ul>
-            </div>
         </div>
-
-        <!-- Tab Content -->
+        
+        <!-- Tab Content with proper spacing -->
         <div class="tab-content" id="swapTabsContent">
-            <!-- Find Matches Tab -->
-            <div class="tab-pane fade show active" id="find-matches" role="tabpanel">
+                <!-- Find Matches Tab -->
+            <div class="tab-pane fade show active" id="find-matches" role="tabpanel" aria-labelledby="find-matches-tab">
                 <!-- Available Books Discovery Section -->
                 <div class="discovery-section mb-4">
-                    <div class="card-dark">
+                    <div class="card-modern">
                         <div class="card-header border-0">
                             <div class="d-flex justify-content-between align-items-center">
                                 <div>
@@ -1730,20 +1444,6 @@
                                     <p class="text-muted mb-0">Find amazing books available for swap in your area</p>
                                 </div>
                                 <div class="discovery-controls">
-                                    <!-- Global/Local Toggle -->
-                                    <div class="location-toggle-wrapper mr-3">
-                                        <div class="location-toggle">
-                                            <button class="toggle-btn active" id="local-toggle" onclick="setLocationMode('local')">
-                                                <i class="bi bi-geo-alt"></i> Local
-                                            </button>
-                                            <button class="toggle-btn" id="global-toggle" onclick="setLocationMode('global')">
-                                                <i class="bi bi-globe"></i> Global
-                                            </button>
-                                        </div>
-                                        <small class="location-mode-info text-muted">
-                                            <span id="location-info">Showing books in your area • Swap available</span>
-                                        </small>
-                                    </div>
                                     <button class="btn-modern-outline btn-sm mr-2" onclick="showAdvancedFilters()">
                                         <i class="bi bi-funnel"></i> Filters
                                     </button>
@@ -1758,9 +1458,9 @@
 
                 <!-- Advanced Filter Panel -->
                 <div id="advanced-filters" class="filter-panel mb-4" style="display: none;">
-                    <div class="card-dark">
+                    <div class="card-modern">
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row align-items-end">
                                 <div class="col-md-3 mb-3">
                                     <label class="filter-label">Genre</label>
                                     <select id="genre-filter" class="form-control-modern">
@@ -1798,8 +1498,7 @@
                                     </select>
                                 </div>
                                 <div class="col-md-3 mb-3">
-                                    <label class="filter-label">&nbsp;</label>
-                                    <button id="clear-filters" class="btn-danger-outline form-control-modern" style="height: auto; padding: 10px 16px;">
+                                    <button id="clear-filters" class="btn-danger-outline form-control-modern w-100" style="height: 38px; padding: 8px 16px;">
                                         <i class="bi bi-x-circle"></i> Clear Filters
                                     </button>
                                 </div>
@@ -1817,7 +1516,7 @@
 
                 <!-- Books Discovery Grid -->
                 <div class="books-discovery-grid">
-                    <div class="card-dark">
+                    <div class="card-modern">
                         <div class="card-body p-4">
                             <div id="books-container">
                                 <div class="loading-state">
@@ -1834,8 +1533,8 @@
             </div>
 
             <!-- My Requests Tab -->
-            <div class="tab-pane fade" id="my-requests" role="tabpanel">
-                <div class="card-dark">
+            <div class="tab-pane fade" id="my-requests" role="tabpanel" aria-labelledby="my-requests-tab">
+                <div class="card-modern">
                     <div class="card-header">
                         <h5 class="mb-0 text-white">
                             <i class="bi bi-arrow-up-right text-primary"></i> Your Swap Requests
@@ -1844,64 +1543,238 @@
                     </div>
                     <div class="card-body">
                         <% const myRequests = userSwaps?.filter(swap => (swap.requester._id || swap.requester).toString() === user._id.toString()); %>
-                        <% if (myRequests && myRequests.length > 0) { %>
-                            <% myRequests.forEach(swap => { %>
-                                <div class="book-swap-item">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-2">
-                                            <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
-                                                 alt="<%= swap.requestedBook ? swap.requestedBook.title : 'Book' %>" class="img-fluid rounded">
-                                        </div>
-                                        <div class="col-md-4">
-                                            <h6 class="text-white">You want: <%= swap.requestedBook ? swap.requestedBook.title : 'Unknown Book' %></h6>
-                                            <small class="text-muted">by <%= swap.requestedBook ? swap.requestedBook.author : 'Unknown Author' %></small>
-                                            <br>
-                                            <small class="text-info">From: <%= swap.owner ? (swap.owner.username || swap.owner.fullname) : 'Unknown User' %></small>
-                                        </div>
-                                        <div class="col-md-2 text-center">
-                                            <i class="bi bi-arrow-left-right text-primary" style="font-size: 1.5rem;"></i>
-                                        </div>
-                                        <div class="col-md-2">
-                                            <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
-                                                 alt="<%= swap.offeredBook ? swap.offeredBook.title : 'Book' %>" class="img-fluid rounded">
-                                        </div>
-                                        <div class="col-md-2 text-right">
-                                            <span class="swap-status-badge status-<%= swap.status.toLowerCase().replace(' ', '-') %>">
-                                                <%= swap.status %>
-                                            </span>
-                                            <% if (swap.status === 'Pending') { %>
-                                                <br>
-                                                <button class="btn btn-sm btn-info mt-2" onclick="openChat('<%= swap._id %>')" style="display: block; width: 100%; margin-bottom: 5px;">
-                                                    <i class="bi bi-chat-dots"></i> Chat
-                                                </button>
-                                                <button class="btn btn-sm btn-outline-danger" onclick="cancelSwapRequest('<%= swap._id %>')">
-                                                    Cancel
-                                                </button>
-                                            <% } else if (swap.status === 'Accepted' || swap.status === 'In Progress') { %>
-                                                <br>
-                                                <button class="btn btn-sm btn-info mt-2" onclick="openChat('<%= swap._id %>')" style="display: block; width: 100%;">
-                                                    <i class="bi bi-chat-dots"></i> Chat
-                                                </button>
-                                            <% } %>
-                                        </div>
+                        <% 
+                            const pendingRequests = myRequests?.filter(swap => swap.status === 'Pending' || swap.status === 'Accepted' || swap.status === 'In Progress') || [];
+                            const completedRequests = myRequests?.filter(swap => swap.status === 'Completed' || swap.status === 'Swapped') || [];
+                            const canceledRequests = myRequests?.filter(swap => swap.status === 'Cancelled' || swap.status === 'Declined') || [];
+                        %>
+                        
+                        <!-- Sub Tabs for Request Status -->
+                        <div class="sub-tabs-nav">
+                            <ul class="nav nav-pills justify-content-center" id="requestStatusTabs" role="tablist">
+                                <li class="nav-item">
+                                    <a class="nav-link active" id="pending-requests-tab" data-toggle="tab" href="#pending-requests" role="tab" aria-controls="pending-requests" aria-selected="true">
+                                        <i class="bi bi-hourglass-split"></i> Pending <span class="badge badge-light ml-1"><%= pendingRequests.length %></span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="completed-requests-tab" data-toggle="tab" href="#completed-requests" role="tab" aria-controls="completed-requests" aria-selected="false">
+                                        <i class="bi bi-check-circle"></i> Completed <span class="badge badge-light ml-1"><%= completedRequests.length %></span>
+                                    </a>
+                                </li>
+                                <li class="nav-item">
+                                    <a class="nav-link" id="canceled-requests-tab" data-toggle="tab" href="#canceled-requests" role="tab" aria-controls="canceled-requests" aria-selected="false">
+                                        <i class="bi bi-x-circle"></i> Canceled <span class="badge badge-light ml-1"><%= canceledRequests.length %></span>
+                                    </a>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="tab-content">
+                            <!-- Pending Requests -->
+                            <div class="tab-pane fade show active" id="pending-requests" role="tabpanel" aria-labelledby="pending-requests-tab">
+                                <% if (pendingRequests.length > 0) { %>
+                                    <div class="row" id="pending-requests-container">
+                                        <% pendingRequests.forEach((swap, index) => { %>
+                                            <div class="col-md-6 col-lg-4 mb-4 pending-request-item" data-index="<%= index %>">
+                                                <div class="book-swap-card">
+                                                    <div class="swap-book-images">
+                                                        <div class="book-image-wrapper">
+                                                            <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || swap.requestedBook.image || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                                 alt="Requested Book" 
+                                                                 class="swap-book-img"
+                                                                 onerror="this.src='/images/placeholder-book.jpg'">
+                                                            <div class="book-label">You Want</div>
+                                                        </div>
+                                                        <div class="swap-arrow">
+                                                            <i class="bi bi-arrow-left-right"></i>
+                                                        </div>
+                                                        <div class="book-image-wrapper">
+                                                            <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || swap.offeredBook.image || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                                 alt="Offered Book" 
+                                                                 class="swap-book-img"
+                                                                 onerror="this.src='/images/placeholder-book.jpg'">
+                                                            <div class="book-label">You Offer</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="swap-card-body">
+                                                        <div class="swap-partner mb-2">
+                                                            <i class="bi bi-person-circle text-info"></i>
+                                                            <span class="text-white"><%= swap.owner ? (swap.owner.username || swap.owner.fullname || 'Unknown') : 'Unknown' %></span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="swap-status-badge status-<%= swap.status.toLowerCase().replace(/ /g, '-') %>">
+                                                                <%= swap.status %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="swap-actions mt-3">
+                                                            <button class="btn btn-sm btn-info btn-block mb-2" onclick="openChat('<%= swap._id %>')">
+                                                                <i class="bi bi-chat-dots"></i> Chat
+                                                            </button>
+                                                            <% if (swap.status === 'Pending') { %>
+                                                                <button class="btn btn-sm btn-outline-danger btn-block" onclick="cancelSwapRequest('<%= swap._id %>')">
+                                                                    <i class="bi bi-x-circle"></i> Cancel
+                                                                </button>
+                                                            <% } %>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
                                     </div>
-                                </div>
-                            <% }); %>
-                        <% } else { %>
-                            <div class="empty-state">
-                                <i class="bi bi-arrow-up-right"></i>
-                                <h6>No Requests Sent</h6>
-                                <p class="text-muted">You haven't made any swap requests yet. Start browsing to find great books!</p>
-                                <button class="btn btn-gradient" onclick="$('#find-matches-tab').tab('show')">Find Books to Swap</button>
+                                    <!-- Pagination for Pending -->
+                                    <% if (pendingRequests.length > 9) { %>
+                                        <nav aria-label="Pending requests pagination">
+                                            <ul class="pagination pagination-custom justify-content-center" id="pending-pagination">
+                                                <!-- Pagination will be generated by JavaScript -->
+                                            </ul>
+                                        </nav>
+                                    <% } %>
+                                <% } else { %>
+                                    <div class="empty-state">
+                                        <i class="bi bi-hourglass-split"></i>
+                                        <h6>No Pending Requests</h6>
+                                        <p class="text-muted">You don't have any pending swap requests</p>
+                                    </div>
+                                <% } %>
                             </div>
-                        <% } %>
+
+                            <!-- Completed Requests -->
+                            <div class="tab-pane fade" id="completed-requests" role="tabpanel" aria-labelledby="completed-requests-tab">
+                                <% if (completedRequests.length > 0) { %>
+                                    <div class="row" id="completed-requests-container">
+                                        <% completedRequests.forEach((swap, index) => { %>
+                                            <div class="col-md-6 col-lg-4 mb-4 completed-request-item" data-index="<%= index %>">
+                                                <div class="book-swap-card">
+                                                    <div class="swap-book-images">
+                                                        <div class="book-image-wrapper">
+                                                            <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || swap.requestedBook.image || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                                 alt="Requested Book" 
+                                                                 class="swap-book-img"
+                                                                 onerror="this.src='/images/placeholder-book.jpg'">
+                                                            <div class="book-label success">Received</div>
+                                                        </div>
+                                                        <div class="swap-arrow success">
+                                                            <i class="bi bi-check-circle-fill"></i>
+                                                        </div>
+                                                        <div class="book-image-wrapper">
+                                                            <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || swap.offeredBook.image || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                                 alt="Offered Book" 
+                                                                 class="swap-book-img"
+                                                                 onerror="this.src='/images/placeholder-book.jpg'">
+                                                            <div class="book-label success">Sent</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="swap-card-body">
+                                                        <div class="swap-partner mb-2">
+                                                            <i class="bi bi-person-circle text-success"></i>
+                                                            <span class="text-white"><%= swap.owner ? (swap.owner.username || swap.owner.fullname || 'Unknown') : 'Unknown' %></span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="swap-status-badge status-completed">
+                                                                <i class="bi bi-trophy"></i> Completed
+                                                            </span>
+                                                        </div>
+                                                        <div class="swap-date mt-2">
+                                                            <small class="text-muted">
+                                                                <i class="bi bi-calendar-check"></i> 
+                                                                <%= swap.updatedAt ? new Date(swap.updatedAt).toLocaleDateString() : 'N/A' %>
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                    </div>
+                                    <!-- Pagination for Completed -->
+                                    <% if (completedRequests.length > 9) { %>
+                                        <nav aria-label="Completed requests pagination">
+                                            <ul class="pagination pagination-custom justify-content-center" id="completed-pagination">
+                                                <!-- Pagination will be generated by JavaScript -->
+                                            </ul>
+                                        </nav>
+                                    <% } %>
+                                <% } else { %>
+                                    <div class="empty-state">
+                                        <i class="bi bi-check-circle"></i>
+                                        <h6>No Completed Swaps</h6>
+                                        <p class="text-muted">You haven't completed any swaps yet</p>
+                                    </div>
+                                <% } %>
+                            </div>
+
+                            <!-- Canceled Requests -->
+                            <div class="tab-pane fade" id="canceled-requests" role="tabpanel" aria-labelledby="canceled-requests-tab">
+                                <% if (canceledRequests.length > 0) { %>
+                                    <div class="row" id="canceled-requests-container">
+                                        <% canceledRequests.forEach((swap, index) => { %>
+                                            <div class="col-md-6 col-lg-4 mb-4 canceled-request-item" data-index="<%= index %>">
+                                                <div class="book-swap-card canceled">
+                                                    <div class="swap-book-images">
+                                                        <div class="book-image-wrapper">
+                                                            <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || swap.requestedBook.image || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                                 alt="Requested Book" 
+                                                                 class="swap-book-img grayscale"
+                                                                 onerror="this.src='/images/placeholder-book.jpg'">
+                                                            <div class="book-label danger">Not Received</div>
+                                                        </div>
+                                                        <div class="swap-arrow danger">
+                                                            <i class="bi bi-x-circle-fill"></i>
+                                                        </div>
+                                                        <div class="book-image-wrapper">
+                                                            <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || swap.offeredBook.image || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                                 alt="Offered Book" 
+                                                                 class="swap-book-img grayscale"
+                                                                 onerror="this.src='/images/placeholder-book.jpg'">
+                                                            <div class="book-label danger">Not Sent</div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="swap-card-body">
+                                                        <div class="swap-partner mb-2">
+                                                            <i class="bi bi-person-circle text-muted"></i>
+                                                            <span class="text-muted"><%= swap.owner ? (swap.owner.username || swap.owner.fullname || 'Unknown') : 'Unknown' %></span>
+                                                        </div>
+                                                        <div class="mb-2">
+                                                            <span class="swap-status-badge status-cancelled">
+                                                                <%= swap.status %>
+                                                            </span>
+                                                        </div>
+                                                        <div class="swap-date mt-2">
+                                                            <small class="text-muted">
+                                                                <i class="bi bi-calendar-x"></i> 
+                                                                <%= swap.updatedAt ? new Date(swap.updatedAt).toLocaleDateString() : 'N/A' %>
+                                                            </small>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        <% }); %>
+                                    </div>
+                                    <!-- Pagination for Canceled -->
+                                    <% if (canceledRequests.length > 9) { %>
+                                        <nav aria-label="Canceled requests pagination">
+                                            <ul class="pagination pagination-custom justify-content-center" id="canceled-pagination">
+                                                <!-- Pagination will be generated by JavaScript -->
+                                            </ul>
+                                        </nav>
+                                    <% } %>
+                                <% } else { %>
+                                    <div class="empty-state">
+                                        <i class="bi bi-x-circle"></i>
+                                        <h6>No Canceled Requests</h6>
+                                        <p class="text-muted">You don't have any canceled requests</p>
+                                    </div>
+                                <% } %>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- Incoming Requests Tab -->
-            <div class="tab-pane fade" id="incoming-requests" role="tabpanel">
-                <div class="card-dark">
+            <div class="tab-pane fade" id="incoming-requests" role="tabpanel" aria-labelledby="incoming-requests-tab">
+                <div class="card-modern">
                     <div class="card-header">
                         <h5 class="mb-0 text-white">
                             <i class="bi bi-arrow-down-left text-success"></i> Incoming Swap Requests
@@ -1980,8 +1853,8 @@
             </div>
 
             <!-- Active Swaps Tab -->
-            <div class="tab-pane fade" id="active-swaps" role="tabpanel">
-                <div class="card-dark">
+            <div class="tab-pane fade" id="active-swaps" role="tabpanel" aria-labelledby="active-swaps-tab">
+                <div class="card-modern">
                     <div class="card-header">
                         <h5 class="mb-0 text-white">
                             <i class="bi bi-hourglass-split text-warning"></i> Active Swaps
@@ -1989,19 +1862,37 @@
                         <small class="text-muted">Track your ongoing book exchanges and confirm when you receive books</small>
                     </div>
                     <div class="card-body">
-                        <!-- Quick Guide -->
-                        <div class="alert alert-info mb-4" style="background: rgba(59, 183, 251, 0.1); border: 1px solid rgba(59, 183, 251, 0.3);">
-                            <h6 class="text-primary mb-2">
-                                <i class="bi bi-info-circle-fill"></i> How to Confirm Book Receipt
+                        <!-- Swap Process Guide -->
+                        <div class="alert alert-info mb-3" style="background: rgba(59, 183, 251, 0.1); border: 1px solid rgba(59, 183, 251, 0.3); padding: 15px;">
+                            <h6 class="text-primary mb-2" style="font-size: 0.95rem;">
+                                <i class="bi bi-map"></i> Complete Swap Process
                             </h6>
-                            <ol class="mb-0 text-muted" style="font-size: 0.9rem; padding-left: 20px;">
-                                <li><strong>After accepting a swap</strong>, schedule a meeting with your partner</li>
-                                <li><strong>Meet up and exchange books</strong> in person at the scheduled time</li>
-                                <li><strong>Once you receive your book</strong>, come back here to the Active Swaps tab</li>
-                                <li><strong>Find your swap</strong> with status "In Progress"</li>
-                                <li><strong>Click "I Received My Book"</strong> button on the right side</li>
-                                <li><strong>Both parties must confirm</strong> to complete the swap and earn 10 points!</li>
-                            </ol>
+                            <div class="row text-center">
+                                <div class="col-3">
+                                    <div class="step-icon mb-1">
+                                        <i class="bi bi-calendar-event text-warning"></i>
+                                    </div>
+                                    <small style="font-size: 0.8rem;">1. Schedule<br>Meeting</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="step-icon mb-1">
+                                        <i class="bi bi-check-circle text-success"></i>
+                                    </div>
+                                    <small style="font-size: 0.8rem;">2. Confirm<br>Meeting</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="step-icon mb-1">
+                                        <i class="bi bi-people text-info"></i>
+                                    </div>
+                                    <small style="font-size: 0.8rem;">3. Meet &<br>Exchange</small>
+                                </div>
+                                <div class="col-3">
+                                    <div class="step-icon mb-1">
+                                        <i class="bi bi-book text-primary"></i>
+                                    </div>
+                                    <small style="font-size: 0.8rem;">4. Confirm<br>Receipt</small>
+                                </div>
+                            </div>
                         </div>
                         <% 
                         // Check for meetings needing confirmation
@@ -2016,14 +1907,14 @@
                         <!-- Meeting Confirmation Alert -->
                         <% if (meetingsNeedingAction.length > 0) { %>
                             <div class="alert alert-warning animate__animated animate__pulse animate__infinite" 
-                                 style="border: 2px solid #FFC107; background: rgba(255, 193, 7, 0.1); animation-duration: 2s; margin-bottom: 20px;">
+                                 style="border: 2px solid #FFC107; background: rgba(255, 193, 7, 0.1); animation-duration: 2s; margin-bottom: 15px; padding: 12px;">
                                 <div class="d-flex align-items-center">
-                                    <i class="bi bi-calendar-exclamation text-warning" style="font-size: 2rem; margin-right: 15px;"></i>
+                                    <i class="bi bi-calendar-exclamation text-warning" style="font-size: 1.5rem; margin-right: 12px;"></i>
                                     <div>
-                                        <h6 class="mb-1 text-warning" style="font-weight: 700;">
+                                        <h6 class="mb-1 text-warning" style="font-weight: 700; font-size: 0.9rem;">
                                             <i class="bi bi-exclamation-triangle"></i> Action Required!
                                         </h6>
-                                        <p class="mb-0" style="font-size: 0.95rem;">
+                                        <p class="mb-0" style="font-size: 0.85rem;">
                                             You have <strong><%= meetingsNeedingAction.length %></strong> meeting<%= meetingsNeedingAction.length > 1 ? 's' : '' %> 
                                             waiting for your confirmation. Please review and confirm below.
                                         </p>
@@ -2040,268 +1931,233 @@
                         
                         <!-- Status Summary -->
                         <% if (activeSwapsFiltered && activeSwapsFiltered.length > 0) { %>
-                            <div class="mb-3 p-3" style="background: rgba(255, 255, 255, 0.05); border-radius: 10px; border: 1px solid rgba(255, 255, 255, 0.1);">
-                                <h6 class="text-white mb-2">
+                            <div class="mb-2 p-2" style="background: rgba(255, 255, 255, 0.05); border-radius: 8px; border: 1px solid rgba(255, 255, 255, 0.1);">
+                                <h6 class="text-white mb-2" style="font-size: 0.9rem;">
                                     <i class="bi bi-pie-chart"></i> Your Active Swaps Summary
                                 </h6>
                                 <div class="row text-center">
                                     <div class="col-4">
-                                        <div class="badge badge-warning" style="font-size: 1.1rem; padding: 8px 12px;">
+                                        <div class="badge badge-warning" style="font-size: 0.9rem; padding: 6px 10px;">
                                             <%= activeSwapsFiltered.filter(s => s.status === 'Accepted').length %>
                                         </div>
                                         <br>
-                                        <small class="text-muted">Accepted<br>(Schedule Meeting)</small>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Accepted<br>(Schedule Meeting)</small>
                                     </div>
                                     <div class="col-4">
-                                        <div class="badge badge-primary" style="font-size: 1.1rem; padding: 8px 12px;">
+                                        <div class="badge badge-primary" style="font-size: 0.9rem; padding: 6px 10px;">
                                             <%= activeSwapsFiltered.filter(s => s.status === 'In Progress').length %>
                                         </div>
                                         <br>
-                                        <small class="text-muted">In Progress<br>(Confirm Receipt)</small>
+                                        <small class="text-muted" style="font-size: 0.75rem;">In Progress<br>(Confirm Receipt)</small>
                                     </div>
                                     <div class="col-4">
-                                        <div class="badge badge-info" style="font-size: 1.1rem; padding: 8px 12px;">
+                                        <div class="badge badge-info" style="font-size: 0.9rem; padding: 6px 10px;">
                                             <%= activeSwapsFiltered.filter(s => s.status === 'Pending Confirmation').length %>
                                         </div>
                                         <br>
-                                        <small class="text-muted">Pending Verification</small>
+                                        <small class="text-muted" style="font-size: 0.75rem;">Pending Verification</small>
                                     </div>
                                 </div>
                             </div>
                         <% } %>
                         
                         <% if (activeSwapsFiltered && activeSwapsFiltered.length > 0) { %>
+                            <div id="active-swaps-container">
                             <% activeSwapsFiltered.forEach(swap => { %>
-                                <div class="book-swap-item">
-                                    <div class="row align-items-center">
-                                        <div class="col-md-8">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <div class="d-flex align-items-center">
-                                                        <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
-                                                             alt="<%= swap.requestedBook ? swap.requestedBook.title : 'Book' %>" 
-                                                             class="book-cover-small mr-3">
-                                                        <div>
-                                                            <h6 class="mb-1 text-white"><%= swap.requestedBook ? swap.requestedBook.title : 'Unknown Book' %></h6>
-                                                            <small class="text-muted"><%= swap.requestedBook ? swap.requestedBook.author : 'Unknown Author' %></small>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                                <div class="col-6">
-                                                    <div class="d-flex align-items-center">
-                                                        <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
-                                                             alt="<%= swap.offeredBook ? swap.offeredBook.title : 'Book' %>" 
-                                                             class="book-cover-small mr-3">
-                                                        <div>
-                                                            <h6 class="mb-1 text-white"><%= swap.offeredBook ? swap.offeredBook.title : 'Unknown Book' %></h6>
-                                                            <small class="text-muted"><%= swap.offeredBook ? swap.offeredBook.author : 'Unknown Author' %></small>
-                                                        </div>
-                                                    </div>
+                                <div class="swap-tracker-card mb-4 active-swap-item" style="background: rgba(255, 255, 255, 0.03); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 15px; padding: 20px;">
+                                    <!-- Swap Header with Books -->
+                                    <div class="swap-header mb-3">
+                                        <div class="row align-items-center">
+                                            <div class="col-md-4">
+                                                <div class="book-info text-center">
+                                                    <img src="<%= swap.requestedBook ? (swap.requestedBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                         alt="<%= swap.requestedBook ? swap.requestedBook.title : 'Book' %>" 
+                                                         class="book-cover" style="width: 60px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                                    <p class="mb-0 mt-2" style="font-size: 0.85rem; font-weight: 600;">You Want</p>
+                                                    <small class="text-muted"><%= swap.requestedBook ? swap.requestedBook.title : 'Unknown Book' %></small>
                                                 </div>
                                             </div>
-                                            <hr class="bg-secondary">
-                                            <div class="row">
-                                                <div class="col-6">
-                                                    <strong class="text-white">Partner:</strong> 
-                                                    <span class="text-info">
-                                                        <%= (swap.requester._id.toString() === user._id.toString()) ? (swap.owner.username || swap.owner.fullname) : (swap.requester.username || swap.requester.fullname) %>
-                                                    </span>
-                                                </div>
-                                                <div class="col-6">
-                                                    <strong class="text-white">Status:</strong> 
-                                                    <span class="swap-status-badge status-<%= swap.status.toLowerCase().replace(' ', '-') %>">
-                                                        <%= swap.status %>
-                                                    </span>
+                                            <div class="col-md-4 text-center">
+                                                <i class="bi bi-arrow-left-right text-primary" style="font-size: 2rem;"></i>
+                                                <p class="mb-0 mt-2">
+                                                    <small class="text-muted">Swapping with</small><br>
+                                                    <strong><%= swap.requester._id.toString() === user._id.toString() ? (swap.owner.fullName || swap.owner.username) : (swap.requester.fullName || swap.requester.username) %></strong>
+                                                </p>
+                                            </div>
+                                            <div class="col-md-4">
+                                                <div class="book-info text-center">
+                                                    <img src="<%= swap.offeredBook ? (swap.offeredBook.coverImage || '/images/placeholder-book.jpg') : '/images/placeholder-book.jpg' %>" 
+                                                         alt="<%= swap.offeredBook ? swap.offeredBook.title : 'Book' %>" 
+                                                         class="book-cover" style="width: 60px; height: 80px; object-fit: cover; border-radius: 8px;">
+                                                    <p class="mb-0 mt-2" style="font-size: 0.85rem; font-weight: 600;">You Give</p>
+                                                    <small class="text-muted"><%= swap.offeredBook ? swap.offeredBook.title : 'Unknown Book' %></small>
                                                 </div>
                                             </div>
                                         </div>
-                                        <div class="col-md-4 text-right">
-                                            <% if (swap.status === 'Accepted') { %>
-                                                <% if (swap.meetingDetails && swap.meetingDetails.datetime) { %>
-                                                    <!-- Meeting scheduled -->
-                                                    <% if (!swap.meetingDetails.confirmed) { %>
-                                                        <!-- Pending confirmation - highlight it -->
-                                                        <div class="alert alert-warning mb-2 animate__animated animate__pulse animate__infinite" style="font-size: 0.85rem; padding: 12px; border: 2px solid #FFC107; animation-duration: 2s;">
-                                                            <i class="bi bi-calendar-exclamation"></i>
-                                                            <strong>Action Required!</strong>
-                                                            <br>
-                                                            <small style="font-weight: 600;">Meeting Scheduled</small>
-                                                            <br>
-                                                            <small><%= new Date(swap.meetingDetails.datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></small>
-                                                            <br>
-                                                            <span class="badge badge-warning mt-1">⚠️ Awaiting Your Confirmation</span>
-                                                        </div>
-                                                        <button class="btn btn-success btn-block mb-2 animate__animated animate__heartBeat" style="font-weight: 600;" onclick="showMeetingDetails('<%= swap._id %>')">
-                                                            <i class="bi bi-check-circle"></i> View & Confirm Meeting
-                                                        </button>
+                                    </div>
+
+                                    <!-- Progressive Step Tracker -->
+                                    <div class="swap-progress-tracker">
+                                        <% 
+                                        // Determine current step based on swap status and details
+                                        let currentStep = 1;
+                                        if (swap.meetingDetails && swap.meetingDetails.datetime) {
+                                            currentStep = 2;
+                                            if (swap.meetingDetails.confirmed) {
+                                                currentStep = 3;
+                                                if (swap.status === 'In Progress') {
+                                                    currentStep = 4;
+                                                }
+                                            }
+                                        }
+                                        %>
+                                        
+                                        <!-- Step 1: Schedule Meeting -->
+                                        <div class="progress-step <%= currentStep >= 1 ? 'active' : '' %> <%= currentStep > 1 ? 'completed' : '' %>" data-step="1">
+                                            <div class="step-header">
+                                                <div class="step-number">
+                                                    <% if (currentStep > 1) { %>
+                                                        <i class="bi bi-check"></i>
                                                     <% } else { %>
-                                                        <!-- Meeting confirmed -->
-                                                        <div class="alert alert-success mb-2" style="font-size: 0.85rem; padding: 8px 12px;">
-                                                            <i class="bi bi-calendar-check"></i>
-                                                            <strong>Meeting Confirmed</strong>
-                                                            <br>
-                                                            <small><%= new Date(swap.meetingDetails.datetime).toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) %></small>
-                                                            <br>
-                                                            <span class="badge badge-success mt-1">✅ Both Parties Confirmed</span>
-                                                        </div>
-                                                        <button class="btn btn-outline-primary btn-sm btn-block mb-2" onclick="showMeetingDetails('<%= swap._id %>')">
-                                                            <i class="bi bi-info-circle"></i> View Meeting Details
-                                                        </button>
+                                                        1
                                                     <% } %>
-                                                    <button class="btn btn-outline-secondary btn-sm btn-block mb-2" onclick="startSwap('<%= swap._id %>')">
-                                                        <i class="bi bi-play-circle"></i> View Swap Progress
+                                                </div>
+                                                <div class="step-title">
+                                                    <h6>Schedule Meeting</h6>
+                                                    <small class="text-muted">Set a time and place to meet</small>
+                                                </div>
+                                            </div>
+                                            <% if (currentStep === 1) { %>
+                                                <div class="step-actions mt-3">
+                                                    <% if (!swap.meetingDetails || !swap.meetingDetails.datetime) { %>
+                                                        <button class="btn btn-primary btn-sm" onclick="scheduleMeeting('<%= swap._id %>')">
+                                                            <i class="bi bi-calendar-event"></i> Schedule Meeting
+                                                        </button>
+                                                        <p class="text-muted mt-2 mb-0" style="font-size: 0.8rem;">
+                                                            <i class="bi bi-info-circle"></i> Coordinate with your swap partner to set a meeting time and location.
+                                                        </p>
+                                                    <% } %>
+                                                </div>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- Step 2: Confirm Meeting -->
+                                        <div class="progress-step <%= currentStep >= 2 ? 'active' : '' %> <%= currentStep > 2 ? 'completed' : '' %>" data-step="2" <% if (currentStep < 2) { %>style="display: none;"<% } %>>
+                                            <div class="step-header">
+                                                <div class="step-number">
+                                                    <% if (currentStep > 2) { %>
+                                                        <i class="bi bi-check"></i>
+                                                    <% } else { %>
+                                                        2
+                                                    <% } %>
+                                                </div>
+                                                <div class="step-title">
+                                                    <h6>Confirm Meeting</h6>
+                                                    <small class="text-muted">Both parties must confirm the meeting</small>
+                                                </div>
+                                            </div>
+                                            <% if (currentStep === 2) { %>
+                                                <div class="step-actions mt-3">
+                                                    <% if (swap.meetingDetails && !swap.meetingDetails.confirmed) { %>
+                                                        <div class="meeting-details mb-3 p-3" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); border-radius: 8px;">
+                                                            <p class="mb-2"><strong>Scheduled Meeting:</strong></p>
+                                                            <p class="mb-1"><i class="bi bi-calendar"></i> <%= new Date(swap.meetingDetails.datetime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                                                            <p class="mb-1"><i class="bi bi-clock"></i> <%= new Date(swap.meetingDetails.datetime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></p>
+                                                            <p class="mb-0"><i class="bi bi-geo-alt"></i> <%= swap.meetingDetails.location || 'Location not specified' %></p>
+                                                        </div>
+                                                        <button class="btn btn-success btn-sm animate__animated animate__pulse animate__infinite" onclick="confirmMeeting('<%= swap._id %>')">
+                                                            <i class="bi bi-check-circle"></i> Confirm This Meeting
+                                                        </button>
+                                                        <button class="btn btn-outline-secondary btn-sm ml-2" onclick="rescheduleMeeting('<%= swap._id %>')">
+                                                            <i class="bi bi-calendar-x"></i> Request Changes
+                                                        </button>
+                                                        <p class="text-warning mt-2 mb-0" style="font-size: 0.8rem;">
+                                                            <i class="bi bi-exclamation-triangle"></i> Waiting for your confirmation to proceed.
+                                                        </p>
+                                                    <% } %>
+                                                </div>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- Step 3: Meet & Exchange -->
+                                        <div class="progress-step <%= currentStep >= 3 ? 'active' : '' %> <%= currentStep > 3 ? 'completed' : '' %>" data-step="3" <% if (currentStep < 3) { %>style="display: none;"<% } %>>
+                                            <div class="step-header">
+                                                <div class="step-number">
+                                                    <% if (currentStep > 3) { %>
+                                                        <i class="bi bi-check"></i>
+                                                    <% } else { %>
+                                                        3
+                                                    <% } %>
+                                                </div>
+                                                <div class="step-title">
+                                                    <h6>Meet & Exchange</h6>
+                                                    <small class="text-muted">Meet in person and exchange books</small>
+                                                </div>
+                                            </div>
+                                            <% if (currentStep === 3) { %>
+                                                <div class="step-actions mt-3">
+                                                    <div class="meeting-confirmed mb-3 p-3" style="background: rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 8px;">
+                                                        <p class="mb-2"><strong><i class="bi bi-check-circle-fill text-success"></i> Meeting Confirmed!</strong></p>
+                                                        <p class="mb-1"><i class="bi bi-calendar"></i> <%= new Date(swap.meetingDetails.datetime).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' }) %></p>
+                                                        <p class="mb-1"><i class="bi bi-clock"></i> <%= new Date(swap.meetingDetails.datetime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) %></p>
+                                                        <p class="mb-0"><i class="bi bi-geo-alt"></i> <%= swap.meetingDetails.location || 'Location confirmed' %></p>
+                                                    </div>
+                                                    <button class="btn btn-warning btn-sm" onclick="markAsExchanged('<%= swap._id %>')">
+                                                        <i class="bi bi-people"></i> We Have Met & Exchanged Books
                                                     </button>
-                                                    <!-- Quick action to mark as In Progress -->
-                                                    <button class="btn btn-warning btn-sm btn-block" onclick="quickMarkInProgress('<%= swap._id %>')">
-                                                        <i class="bi bi-arrow-right-circle"></i> Mark as In Progress
-                                                    </button>
-                                                    <small class="text-muted d-block text-center mt-1">After exchanging books</small>
-                                                <% } else { %>
-                                                    <!-- No meeting scheduled yet -->
-                                                    <button class="btn swap-action-btn btn-block mb-2" onclick="startSwap('<%= swap._id %>')">
-                                                        <i class="bi bi-play-circle"></i> Start Swap Process
-                                                    </button>
-                                                    <button class="btn btn-outline-info btn-sm btn-block mb-2" onclick="scheduleMeeting('<%= swap._id %>')">
-                                                        <i class="bi bi-calendar-event"></i> Schedule Meeting
-                                                    </button>
-                                                    <!-- Quick action to mark as In Progress -->
-                                                    <button class="btn btn-warning btn-sm btn-block" onclick="quickMarkInProgress('<%= swap._id %>')">
-                                                        <i class="bi bi-arrow-right-circle"></i> Mark as In Progress
-                                                    </button>
-                                                    <small class="text-muted">Ready to coordinate exchange</small>
-                                                <% } %>
-                                            <% } else if (swap.status === 'In Progress') { %>
-                                                <!-- Book Receipt Confirmation Section -->
-                                                <% 
+                                                    <p class="text-info mt-2 mb-0" style="font-size: 0.8rem;">
+                                                        <i class="bi bi-info-circle"></i> Click this button after you have physically met and exchanged books.
+                                                    </p>
+                                                </div>
+                                            <% } %>
+                                        </div>
+
+                                        <!-- Step 4: Confirm Receipt -->
+                                        <div class="progress-step <%= currentStep >= 4 ? 'active' : '' %>" data-step="4" <% if (currentStep < 4) { %>style="display: none;"<% } %>>
+                                            <div class="step-header">
+                                                <div class="step-number">4</div>
+                                                <div class="step-title">
+                                                    <h6>Confirm Book Receipt</h6>
+                                                    <small class="text-muted">Verify you received the correct book</small>
+                                                </div>
+                                            </div>
+                                            <% if (currentStep === 4) { %>
+                                                <div class="step-actions mt-3">
+                                                    <% 
                                                     const currentUserId = user._id.toString();
                                                     const isRequester = swap.requester._id.toString() === currentUserId;
-                                                    const isOwner = swap.owner._id.toString() === currentUserId;
-                                                    
                                                     const userConfirmed = swap.receivedConfirmation && (
                                                         (isRequester && swap.receivedConfirmation.requesterConfirmed) ||
-                                                        (isOwner && swap.receivedConfirmation.ownerConfirmed)
+                                                        (!isRequester && swap.receivedConfirmation.ownerConfirmed)
                                                     );
-                                                    
-                                                    const partnerConfirmed = swap.receivedConfirmation && (
-                                                        (isRequester && swap.receivedConfirmation.ownerConfirmed) ||
-                                                        (isOwner && swap.receivedConfirmation.requesterConfirmed)
-                                                    );
-                                                    
-                                                    const bothConfirmed = userConfirmed && partnerConfirmed;
-                                                    
-                                                    const partnerName = isRequester ? 
-                                                        (swap.owner.fullname || swap.owner.username) : 
-                                                        (swap.requester.fullname || swap.requester.username);
-                                                %>
-                                                
-                                                <% if (bothConfirmed) { %>
-                                                    <!-- Both parties confirmed - Ready for verification -->
-                                                    <div class="alert alert-success mb-3 animate__animated animate__pulse" style="border: 2px solid #28A745; background: rgba(40, 167, 69, 0.1);">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="bi bi-check-circle-fill text-success" style="font-size: 2rem; margin-right: 12px;"></i>
-                                                            <div>
-                                                                <h6 class="mb-1 text-success" style="font-weight: 700;">
-                                                                    <i class="bi bi-trophy"></i> Books Received!
-                                                                </h6>
-                                                                <p class="mb-0">
-                                                                    Both parties confirmed receiving their books. Ready for verification!
-                                                                </p>
-                                                            </div>
+                                                    %>
+                                                    <% if (!userConfirmed) { %>
+                                                        <div class="book-verification mb-3 p-3" style="background: rgba(0, 123, 255, 0.1); border: 1px solid rgba(0, 123, 255, 0.3); border-radius: 8px;">
+                                                            <p class="mb-2"><strong>Please verify your book:</strong></p>
+                                                            <p class="mb-2">Did you receive "<%= swap.requestedBook ? swap.requestedBook.title : 'the book' %>" in good condition?</p>
                                                         </div>
-                                                    </div>
-                                                    <button class="btn btn-success btn-block mb-2" onclick="showVerificationModal('<%= swap._id %>')">
-                                                        <i class="bi bi-shield-check"></i> View Verification Details
-                                                    </button>
-                                                    <small class="text-success d-block text-center">
-                                                        <i class="bi bi-star-fill"></i> You earned 10 reward points!
-                                                    </small>
-                                                <% } else if (userConfirmed && !partnerConfirmed) { %>
-                                                    <!-- User confirmed, waiting for partner -->
-                                                    <div class="alert alert-info mb-3" style="border: 2px solid #17A2B8; background: rgba(23, 162, 184, 0.1);">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="bi bi-check-circle text-info" style="font-size: 1.5rem; margin-right: 10px;"></i>
-                                                            <div>
-                                                                <h6 class="mb-1 text-info" style="font-weight: 600;">
-                                                                    You Confirmed Receipt
-                                                                </h6>
-                                                                <p class="mb-0">
-                                                                    <small>Waiting for <%= partnerName %> to confirm their receipt</small>
-                                                                </p>
-                                                            </div>
+                                                        <button class="btn btn-success btn-sm animate__animated animate__heartBeat animate__infinite" onclick="confirmBookReceipt('<%= swap._id %>')">
+                                                            <i class="bi bi-book-check"></i> Yes, I Received My Book!
+                                                        </button>
+                                                        <button class="btn btn-outline-danger btn-sm ml-2" onclick="reportIssue('<%= swap._id %>')">
+                                                            <i class="bi bi-exclamation-triangle"></i> Report Issue
+                                                        </button>
+                                                        <p class="text-primary mt-2 mb-0" style="font-size: 0.8rem;">
+                                                            <i class="bi bi-gift"></i> Earn 10 points when you confirm receipt!
+                                                        </p>
+                                                    <% } else { %>
+                                                        <div class="receipt-confirmed mb-3 p-3" style="background: rgba(40, 167, 69, 0.1); border: 1px solid rgba(40, 167, 69, 0.3); border-radius: 8px;">
+                                                            <p class="mb-0"><strong><i class="bi bi-check-circle-fill text-success"></i> You have confirmed receipt!</strong></p>
+                                                            <small class="text-muted">Waiting for the other party to confirm as well.</small>
                                                         </div>
-                                                    </div>
-                                                    <button class="btn btn-outline-secondary btn-sm btn-block" disabled>
-                                                        <i class="bi bi-hourglass-split"></i> Waiting for Partner
-                                                    </button>
-                                                    <small class="text-muted d-block text-center mt-2">
-                                                        Swap will complete when both parties confirm
-                                                    </small>
-                                                <% } else if (!userConfirmed && partnerConfirmed) { %>
-                                                    <!-- Partner confirmed, user needs to confirm -->
-                                                    <div class="alert alert-warning mb-3 animate__animated animate__pulse animate__infinite" style="border: 2px solid #FFC107; background: rgba(255, 193, 7, 0.1);">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="bi bi-exclamation-triangle text-warning" style="font-size: 1.5rem; margin-right: 10px;"></i>
-                                                            <div>
-                                                                <h6 class="mb-1 text-warning" style="font-weight: 700;">
-                                                                    Action Required!
-                                                                </h6>
-                                                                <p class="mb-0">
-                                                                    <small><%= partnerName %> confirmed. Have you received your book?</small>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button class="btn swap-action-btn btn-block mb-2 animate__animated animate__heartBeat" onclick="confirmBookReceived('<%= swap._id %>')">
-                                                        <i class="bi bi-check-circle"></i> I Received My Book
-                                                    </button>
-                                                    <small class="text-muted d-block text-center">
-                                                        Only confirm if you physically received the book
-                                                    </small>
-                                                <% } else { %>
-                                                    <!-- Neither confirmed yet -->
-                                                    <div class="alert alert-primary mb-3" style="border: 2px solid #3BB7FB; background: rgba(59, 183, 251, 0.1);">
-                                                        <div class="d-flex align-items-center">
-                                                            <i class="bi bi-box-seam text-primary" style="font-size: 1.5rem; margin-right: 10px;"></i>
-                                                            <div>
-                                                                <h6 class="mb-1 text-primary" style="font-weight: 600;">
-                                                                    Exchange In Progress
-                                                                </h6>
-                                                                <p class="mb-0">
-                                                                    <small>Confirm when you physically receive your book</small>
-                                                                </p>
-                                                            </div>
-                                                        </div>
-                                                    </div>
-                                                    <button class="btn swap-action-btn btn-block mb-2" onclick="confirmBookReceived('<%= swap._id %>')">
-                                                        <i class="bi bi-check-circle"></i> I Received My Book
-                                                    </button>
-                                                    <small class="text-muted d-block text-center">
-                                                        Swap completes when both parties confirm
-                                                    </small>
-                                                <% } %>
-                                                
-                                                <!-- Additional Actions -->
-                                                <button class="btn btn-outline-info btn-sm btn-block mt-2" onclick="showMeetingDetails('<%= swap._id %>')">
-                                                    <i class="bi bi-calendar-event"></i> View Meeting Details
-                                                </button>
-                                            <% } else if (swap.status === 'Pending Confirmation') { %>
-                                                <div class="alert alert-info mb-2">
-                                                    <i class="bi bi-hourglass"></i>
-                                                    <small>Waiting for partner confirmation...</small>
+                                                    <% } %>
                                                 </div>
-                                                <button class="btn btn-outline-success btn-sm btn-block" onclick="rateSwapPartner('<%= swap._id %>', '<%= swap.requester._id.toString() === user._id.toString() ? swap.owner._id : swap.requester._id %>')">
-                                                    <i class="bi bi-star"></i> Rate Partner
-                                                </button>
                                             <% } %>
-                                            
-                                            <!-- Progress Tracker Button -->
-                                            <button class="btn btn-outline-secondary btn-sm btn-block mt-2" onclick="showSwapProgressModal('<%= swap._id %>', 'view')">
-                                                <i class="bi bi-diagram-2"></i> View Progress
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             <% }); %>
+                            </div> <!-- Close active-swaps-container -->
                         <% } else { %>
                             <div class="empty-state">
                                 <i class="bi bi-hourglass-split"></i>
@@ -2310,12 +2166,20 @@
                                 <button class="btn btn-gradient" onclick="$('#find-matches-tab').tab('show')">Start Swapping</button>
                             </div>
                         <% } %>
+                        
+                        <!-- Pagination for Active Swaps -->
+                        <% if (activeSwapsFiltered && activeSwapsFiltered.length > 6) { %>
+                            <div class="pagination-container mt-4" id="active-swaps-pagination">
+                                <!-- Pagination will be generated by JavaScript -->
+                            </div>
+                        <% } %>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-</div>
+
+            </div> <!-- Close tab-content -->
+        </div> <!-- Close card-dark -->
+    </div> <!-- Close container -->
 </main>
 
 <!-- Modern Swap Request Modal -->
@@ -2491,7 +2355,7 @@
 <!-- Match Preferences Modal -->
 <div class="modal fade" id="matchPreferencesModal" tabindex="-1">
     <div class="modal-dialog">
-        <div class="modal-content card-dark">
+        <div class="modal-content modal-modern">
             <div class="modal-header card-header">
                 <h5 class="modal-title">
                     <i class="bi bi-sliders text-primary"></i> Match Preferences
@@ -2533,6 +2397,62 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/js/bootstrap.bundle.min.js"></script>
 <script>
 // ========== MODERN SWAP MATCHER JAVASCRIPT ==========
+
+// Modern Notification System
+function showNotification(title, message, type = 'info', duration = 5000) {
+    // Remove any existing notification
+    const existingToast = document.querySelector('.notification-toast');
+    if (existingToast) {
+        existingToast.remove();
+    }
+
+    // Create notification element
+    const toast = document.createElement('div');
+    toast.className = `notification-toast ${type}`;
+    
+    // Choose icon based on type
+    let icon = 'bi-info-circle';
+    if (type === 'success') icon = 'bi-check-circle';
+    else if (type === 'error') icon = 'bi-x-circle';
+    else if (type === 'warning') icon = 'bi-exclamation-triangle';
+
+    toast.innerHTML = `
+        <div class="toast-content">
+            <i class="bi ${icon} toast-icon"></i>
+            <div class="toast-message">
+                <h6>${title}</h6>
+                <p>${message}</p>
+            </div>
+        </div>
+        <button class="toast-close" onclick="this.parentElement.remove()">
+            <i class="bi bi-x"></i>
+        </button>
+    `;
+
+    // Add to page
+    document.body.appendChild(toast);
+
+    // Show with animation
+    setTimeout(() => toast.classList.add('show'), 100);
+
+    // Auto-remove after duration
+    if (duration > 0) {
+        setTimeout(() => {
+            toast.classList.remove('show');
+            setTimeout(() => toast.remove(), 400);
+        }, duration);
+    }
+}
+
+// Button Loading State Management
+function setButtonLoading(buttonSelector, isLoading = true) {
+    const button = $(buttonSelector);
+    if (isLoading) {
+        button.addClass('btn-loading').prop('disabled', true);
+    } else {
+        button.removeClass('btn-loading').prop('disabled', false);
+    }
+}
 
 let selectedUserBook = null;
 let targetBook = null;
@@ -3233,7 +3153,7 @@ function startChatConversation() {
 // Submit swap request
 function submitSwapRequest() {
     if (!selectedUserBook || !targetBook) {
-        showErrorMessage('Please complete all steps before sending the request');
+        showNotification('Incomplete Request', 'Please complete all steps before sending the request', 'warning');
         return;
     }
     
@@ -3241,27 +3161,28 @@ function submitSwapRequest() {
     
     // Validate that a message is provided (make it required)
     if (!message) {
-        showErrorMessage('Please write a message to introduce yourself and explain why you want this book. This helps build trust with other users.');
+        showNotification('Message Required', 'Please write a message to introduce yourself and explain why you want this book. This helps build trust with other users.', 'warning');
         $('#swap-message').focus();
         return;
     }
     
     if (message.length < 10) {
-        showErrorMessage('Please write a more detailed message (at least 10 characters) to help the book owner understand your interest.');
+        showNotification('Message Too Short', 'Please write a more detailed message (at least 10 characters) to help the book owner understand your interest.', 'warning');
         $('#swap-message').focus();
         return;
     }
     
     if (message.length > 500) {
-        showErrorMessage('Message is too long. Please keep it under 500 characters.');
+        showNotification('Message Too Long', 'Please keep your message under 500 characters.', 'warning');
         $('#swap-message').focus();
         return;
     }
     
     const sendButton = $('#send-request-btn');
     
-    // Show loading state
-    sendButton.prop('disabled', true).html('<div class="spinner-border spinner-border-sm me-2"></div>Sending...');
+    // Show loading state with modern button loading
+    setButtonLoading('#send-request-btn', true);
+    sendButton.html('<span class="spinner-border spinner-border-sm me-2"></span>Sending...');
     
     $.post('/api/swaps', {
         offeredBookId: selectedUserBook,
@@ -3270,19 +3191,37 @@ function submitSwapRequest() {
     })
     .done(function(response) {
         console.log('✅ Swap request sent successfully:', response);
+        
+        // Show success notification
+        showNotification(
+            'Request Sent Successfully!', 
+            'Your swap request has been sent. The book owner will be notified and can respond through their dashboard.', 
+            'success',
+            6000
+        );
+        
+        // Close modal and reset
         $('#swapRequestModal').modal('hide');
         
-        // Show professional success confirmation modal
-        showSwapRequestSuccessModal();
+        // Refresh the page or update UI as needed
+        setTimeout(() => {
+            window.location.reload(); // Or update specific sections
+        }, 1500);
     })
     .fail(function(xhr) {
         console.error('❌ Failed to send swap request:', xhr);
-        const errorMessage = xhr.responseJSON?.message || xhr.responseText || 'Unknown error';
-        showErrorMessage('Failed to send swap request: ' + errorMessage);
+        const errorMessage = xhr.responseJSON?.message || xhr.responseText || 'An unexpected error occurred';
+        
+        showNotification(
+            'Request Failed', 
+            `Failed to send swap request: ${errorMessage}`, 
+            'error'
+        );
     })
     .always(function() {
         // Reset button state
-        sendButton.prop('disabled', false).html('<i class="bi bi-send"></i> Send Swap Request');
+        setButtonLoading('#send-request-btn', false);
+        sendButton.html('<i class="bi bi-send"></i> Send Request');
     });
 }
 
@@ -3869,31 +3808,74 @@ function executeConfirmBookReceived(swapId) {
     // Close the confirmation modal
     $('#confirmReceiptModal').modal('hide');
     
-    // Show loading state
-    const loadingToast = showNotification('Processing confirmation...', 'info');
+    // Show loading notification with fallback
+    try {
+        showNotification('Processing confirmation...', 'info');
+    } catch (e) {
+        console.log('Processing confirmation...');
+    }
     
     $.ajax({
         url: `/api/swaps/${swapId}/received`,
-        method: 'PUT'
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        timeout: 10000 // 10 second timeout
     })
     .done(function(response) {
         console.log('✅ Book receipt confirmed:', response);
         
         if (response.bothConfirmed && response.completed) {
             // Both parties confirmed - show celebration modal
-            showSwapCompletionModal('🎉 Swap Completed! Both parties confirmed receiving their books. You earned 10 reward points!');
+            try {
+                showSwapCompletionModal('🎉 Swap Completed! Both parties confirmed receiving their books. You earned 10 reward points!');
+            } catch (e) {
+                console.log('🎉 Swap Completed! Both parties confirmed receiving their books. You earned 10 reward points!');
+            }
         } else {
             // Waiting for other party
-            showSuccessMessage(response.message || 'Receipt confirmed! Waiting for your swap partner to confirm.');
+            try {
+                showSuccessMessage(response.message || 'Receipt confirmed! Waiting for your swap partner to confirm.');
+            } catch (e) {
+                console.log('Receipt confirmed! Waiting for your swap partner to confirm.');
+            }
         }
         
         // Reload after a short delay
-        setTimeout(() => location.reload(), 2000);
+        setTimeout(() => location.reload(), 2500);
     })
-    .fail(function(xhr) {
-        console.error('❌ Failed to confirm book receipt:', xhr);
-        const errorMsg = xhr.responseJSON?.error || xhr.responseJSON?.message || 'Failed to confirm book receipt';
-        showErrorMessage(errorMsg);
+    .fail(function(xhr, status, error) {
+        console.error('❌ Failed to confirm book receipt:', {
+            status: xhr.status,
+            statusText: xhr.statusText,
+            responseText: xhr.responseText,
+            error: error
+        });
+        
+        let errorMsg = 'Failed to confirm book receipt';
+        
+        if (xhr.status === 401) {
+            errorMsg = 'Session expired. Please log in again.';
+            setTimeout(() => window.location.href = '/login', 2000);
+        } else if (xhr.status === 403) {
+            errorMsg = 'You are not authorized to confirm this swap.';
+        } else if (xhr.status === 404) {
+            errorMsg = 'Swap not found.';
+        } else if (xhr.status === 400) {
+            errorMsg = xhr.responseJSON?.error || 'Invalid swap status for confirmation.';
+        } else if (xhr.responseJSON?.error) {
+            errorMsg = xhr.responseJSON.error;
+        } else if (xhr.responseJSON?.message) {
+            errorMsg = xhr.responseJSON.message;
+        }
+        
+        try {
+            showErrorMessage(errorMsg);
+        } catch (e) {
+            console.error('Error:', errorMsg);
+            alert(errorMsg); // Fallback
+        }
     });
 }
 
@@ -3999,6 +3981,78 @@ function startSwap(swapId) {
 // Schedule meeting for swap
 function scheduleMeeting(swapId) {
     showMeetingScheduleModal(swapId);
+}
+
+// Confirm meeting details
+function confirmMeeting(swapId) {
+    if (confirm('Confirm this meeting time and location?')) {
+        $.ajax({
+            url: `/api/swaps/${swapId}/confirm-meeting`,
+            method: 'PUT'
+        })
+        .done(function(response) {
+            showSuccessMessage('✅ Meeting confirmed! Both parties are now ready to meet.');
+            // Show next step
+            showNextStep(swapId, 3);
+            setTimeout(() => location.reload(), 1500);
+        })
+        .fail(function(xhr) {
+            const errorMessage = xhr.responseJSON?.error || 'Failed to confirm meeting';
+            showErrorMessage(errorMessage);
+        });
+    }
+}
+
+// Mark as exchanged (Step 3 completion)
+function markAsExchanged(swapId) {
+    if (confirm('Have you physically met and exchanged books with your partner?')) {
+        $.ajax({
+            url: `/api/swaps/${swapId}/progress`,
+            method: 'PUT',
+            data: { status: 'In Progress' }
+        })
+        .done(function(response) {
+            showSuccessMessage('✅ Books exchanged! Now please confirm receipt of your book.');
+            // Show next step
+            showNextStep(swapId, 4);
+            setTimeout(() => location.reload(), 1500);
+        })
+        .fail(function(xhr) {
+            const errorMessage = xhr.responseJSON?.error || 'Failed to update status';
+            showErrorMessage(errorMessage);
+        });
+    }
+}
+
+// Confirm book receipt (Step 4 completion)
+function confirmBookReceipt(swapId) {
+    // Use the enhanced confirmation modal from confirmBookReceived
+    confirmBookReceived(swapId);
+}
+
+// Report issue with swap
+function reportIssue(swapId) {
+    const issue = prompt('Please describe the issue with this swap:');
+    if (issue && issue.trim()) {
+        $.ajax({
+            url: `/api/swaps/${swapId}/report`,
+            method: 'POST',
+            data: { issue: issue.trim() }
+        })
+        .done(function(response) {
+            showSuccessMessage('Issue reported. Our team will review and contact you.');
+        })
+        .fail(function(xhr) {
+            showErrorMessage('Failed to report issue. Please try again.');
+        });
+    }
+}
+
+// Show next step in progression
+function showNextStep(swapId, stepNumber) {
+    // Visual feedback for step progression
+    $(`[data-step="${stepNumber}"]`).show().addClass('active');
+    $(`[data-step="${stepNumber - 1}"]`).addClass('completed');
 }
 
 // Mark swap as in-progress
@@ -4592,10 +4646,153 @@ function showErrorMessage(message) {
     showNotification(message, 'error');
 }
 
+// Initialize tab system with proper isolation and persistence
+function initializeTabSystem() {
+    console.log('🔧 Initializing tab system...');
+    
+    // Check for saved active tab
+    const savedTab = localStorage.getItem('swapMatcher_activeTab') || 'find-matches';
+    console.log('💾 Saved tab from localStorage:', savedTab);
+    
+    // First, reset all main tab buttons
+    $('#swapTabs .nav-link').removeClass('active').attr('aria-selected', 'false');
+    
+    // Set saved or default tab as active
+    $(`#${savedTab}-tab`).addClass('active').attr('aria-selected', 'true');
+    
+    // Hide all main tab panes with aggressive display control
+    $('#swapTabsContent > .tab-pane').removeClass('show active').hide().css('display', 'none');
+    
+    // Show saved or default tab content
+    $(`#${savedTab}`).addClass('show active').show().css('display', 'block');
+    
+    // Set up tab change handlers for persistence and auto-refresh
+    $('#swapTabs .nav-link').off('click.persistence').on('click.persistence', function(e) {
+        const tabId = $(this).attr('href').substring(1); // Remove #
+        console.log('💾 Saving tab to localStorage:', tabId);
+        localStorage.setItem('swapMatcher_activeTab', tabId);
+        
+        // Auto-refresh content when switching tabs
+        setTimeout(() => {
+            refreshTabContent(tabId);
+        }, 100);
+    });
+    
+    console.log(`✅ Tab system initialized - ${savedTab} active`);
+}
+
+// Auto-refresh tab content when switching
+function refreshTabContent(tabId) {
+    console.log('🔄 Auto-refreshing content for tab:', tabId);
+    
+    switch(tabId) {
+        case 'find-matches':
+            // Refresh discovery content
+            if (typeof loadDiscoveryBooks === 'function') {
+                showLoadingState('#books-grid');
+                loadDiscoveryBooks();
+            }
+            break;
+            
+        case 'my-requests':
+            // Refresh requests content
+            showNotification('Refreshing your requests...', 'info', 2000);
+            setTimeout(() => {
+                location.reload(); // For now, reload to get fresh server data
+            }, 500);
+            break;
+            
+        case 'active-swaps':
+            // Refresh active swaps
+            showNotification('Refreshing active swaps...', 'info', 2000);
+            setTimeout(() => {
+                location.reload(); // For now, reload to get fresh server data
+            }, 500);
+            break;
+            
+        case 'incoming-requests':
+            // Refresh incoming requests
+            showNotification('Refreshing incoming requests...', 'info', 2000);
+            setTimeout(() => {
+                location.reload(); // For now, reload to get fresh server data
+            }, 500);
+            break;
+            
+        default:
+            console.log('No refresh action defined for tab:', tabId);
+    }
+}
+
+// Show loading state for tab content
+function showLoadingState(selector) {
+    const $container = $(selector);
+    if ($container.length) {
+        $container.html(`
+            <div class="loading-state text-center py-5">
+                <div class="spinner-border text-primary mb-3" role="status">
+                    <span class="sr-only">Loading...</span>
+                </div>
+                <p class="text-muted">Refreshing content...</p>
+            </div>
+        `);
+    }
+}
+
+// Initialize My Requests Sub-tabs
+function initializeMyRequestsSubTabs() {
+    console.log('🔧 Initializing My Requests sub-tabs...');
+    
+    // Ensure the first sub-tab (Pending) is active by default
+    $('#requestStatusTabs .nav-link').removeClass('active').attr('aria-selected', 'false');
+    $('#pending-requests-tab').addClass('active').attr('aria-selected', 'true');
+    
+    // Show only the pending requests content
+    $('#requestStatusTabs ~ .tab-content > .tab-pane').removeClass('show active').hide();
+    $('#pending-requests').addClass('show active').show();
+    
+    console.log('✅ My Requests sub-tabs initialized - Pending active');
+}
+
+// Enhanced My Requests Tab Handler
+function handleMyRequestsTabActivation() {
+    console.log('🎯 My Requests tab activated - ensuring sub-tabs work');
+    
+    // Small delay to ensure the main tab is fully activated
+    setTimeout(() => {
+        // Re-initialize sub-tabs to ensure they work properly
+        initializeMyRequestsSubTabs();
+        
+        // Bind sub-tab click events if not already bound
+        $('#requestStatusTabs .nav-link').off('click.custom').on('click.custom', function(e) {
+            e.preventDefault();
+            
+            const target = $(this).attr('href');
+            const targetId = target.substring(1); // Remove #
+            
+            console.log('🔄 Sub-tab clicked:', targetId);
+            
+            // Update active states
+            $('#requestStatusTabs .nav-link').removeClass('active').attr('aria-selected', 'false');
+            $(this).addClass('active').attr('aria-selected', 'true');
+            
+            // Hide all sub-tab panes
+            $('#requestStatusTabs ~ .tab-content > .tab-pane').removeClass('show active').hide();
+            
+            // Show target pane
+            $(target).addClass('show active').show();
+            
+            console.log('✅ Sub-tab switched to:', targetId);
+        });
+    }, 100);
+}
+
 // Initialize when document is ready
 $(document).ready(function() {
     console.log('🚀 Modern Swap Matcher - Page Ready');
     console.log('jQuery version:', $.fn.jquery);
+    
+    // Initialize tab isolation immediately - ensure Find Matches is active
+    initializeTabSystem();
     
     // Initialize the swap matcher
     initializeSwapMatcher();
@@ -4630,7 +4827,233 @@ $(document).ready(function() {
                 window.location.href = '/login';
             }
         });
+    
+    // Initialize Pagination for My Requests
+    initializeRequestsPagination();
+    
+    // Initialize sub-tabs for My Requests section
+    initializeMyRequestsSubTabs();
+    
+    // Reset pagination when switching sub-tabs (Pending/Completed/Canceled)
+    $('#pending-requests-tab, #completed-requests-tab, #canceled-requests-tab').on('shown.bs.tab', function (e) {
+        const targetTab = $(e.target).attr('href');
+        
+        // Reset to page 1 when switching tabs
+        if (targetTab === '#pending-requests') {
+            resetPaginationForTab('pending', 'pending-requests-container', 'pending-pagination', 9, '.pending-request-item');
+        } else if (targetTab === '#completed-requests') {
+            resetPaginationForTab('completed', 'completed-requests-container', 'completed-pagination', 9, '.completed-request-item');
+        } else if (targetTab === '#canceled-requests') {
+            resetPaginationForTab('canceled', 'canceled-requests-container', 'canceled-pagination', 9, '.canceled-request-item');
+        }
+    });
+    
+    // Reset pagination for Active Swaps when switching to that tab
+    $('#active-swaps-tab').on('shown.bs.tab', function (e) {
+        console.log('🔄 Active Swaps tab activated - resetting pagination');
+        resetPaginationForTab('active', 'active-swaps-container', 'active-swaps-pagination', 6, '.active-swap-item');
+    });
+    
+    // Enhanced tab isolation and switching functionality
+    $('a[data-toggle="tab"]').on('show.bs.tab', function (e) {
+        console.log('🔄 Tab switching from:', $(e.relatedTarget)?.attr('href'), 'to:', $(e.target).attr('href'));
+        
+        // Immediately hide ALL tab panes to prevent flickering
+        $('.tab-pane').removeClass('show active').hide().css('display', 'none');
+    });
+    
+    $('a[data-toggle="tab"]').on('shown.bs.tab', function (e) {
+        const targetTab = $(e.target).attr('href');
+        console.log('✅ Tab switched to:', targetTab);
+        
+        // Ensure only the target tab is visible with aggressive cleanup
+        $('.tab-pane').each(function() {
+            $(this).removeClass('show active').hide().css('display', 'none');
+        });
+        
+        // Show only the target tab
+        $(targetTab).addClass('show active').show().css('display', 'block');
+        
+        // Special handling for My Requests tab to ensure sub-tabs work
+        if (targetTab === '#my-requests') {
+            handleMyRequestsTabActivation();
+        }
+        
+        console.log('✅ Active tab pane:', $(targetTab).attr('id'));
+        console.log('✅ Visible tabs count:', $('.tab-pane.show.active').length);
+    });
 });
+
+// Pagination for My Requests
+// Store pagination state for each tab
+const paginationStates = {
+    pending: { currentPage: 1 },
+    completed: { currentPage: 1 },
+    canceled: { currentPage: 1 },
+    active: { currentPage: 1 }
+};
+
+function initializeRequestsPagination() {
+    console.log('🔧 Initializing all pagination systems...');
+    
+    const itemsPerPage = 9; // 3x3 grid for requests
+    const activeSwapsPerPage = 6; // 2x3 grid for active swaps like wishlist
+    
+    // Initialize pagination for each tab with unique selectors
+    setupPagination('pending', 'pending-requests-container', 'pending-pagination', itemsPerPage, '.pending-request-item');
+    setupPagination('completed', 'completed-requests-container', 'completed-pagination', itemsPerPage, '.completed-request-item');
+    setupPagination('canceled', 'canceled-requests-container', 'canceled-pagination', itemsPerPage, '.canceled-request-item');
+    
+    // Add Active Swaps pagination - 6 swaps per page in grid layout
+    setupPagination('active', 'active-swaps-container', 'active-swaps-pagination', activeSwapsPerPage, '.active-swap-item');
+    
+    console.log('✅ All pagination systems initialized');
+}
+
+function setupPagination(tabKey, containerId, paginationId, itemsPerPage, itemSelector) {
+    console.log(`🔧 Setting up pagination for ${tabKey}:`, {containerId, paginationId, itemsPerPage, itemSelector});
+    
+    const container = document.getElementById(containerId);
+    const pagination = document.getElementById(paginationId);
+    
+    if (!container) {
+        console.warn(`❌ Container not found: ${containerId}`);
+        return;
+    }
+    
+    const items = container.querySelectorAll(itemSelector);
+    const totalItems = items.length;
+    
+    console.log(`📊 Found ${totalItems} items for ${tabKey} pagination`);
+    
+    if (totalItems === 0) {
+        console.log(`ℹ️ No items found for ${tabKey} - hiding pagination`);
+        if (pagination) pagination.style.display = 'none';
+        return;
+    }
+    const totalPages = Math.ceil(totalItems / itemsPerPage);
+    
+    // Always hide items beyond first page, even if pagination isn't shown
+    items.forEach((item, index) => {
+        if (index >= itemsPerPage) {
+            item.style.display = 'none';
+        } else {
+            item.style.display = 'block';
+        }
+    });
+    
+    if (totalPages <= 1) return; // No pagination needed
+    
+    function showPage(page) {
+        // Update state
+        paginationStates[tabKey].currentPage = page;
+        
+        // Hide all items
+        items.forEach(item => {
+            item.style.display = 'none';
+        });
+        
+        // Show items for current page
+        const start = (page - 1) * itemsPerPage;
+        const end = start + itemsPerPage;
+        
+        for (let i = start; i < end && i < totalItems; i++) {
+            items[i].style.display = 'block';
+        }
+        
+        // Update pagination buttons
+        updatePaginationButtons(page, totalPages);
+        
+        // Scroll to top of container
+        container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+    
+    function updatePaginationButtons(page, total) {
+        if (!pagination) return;
+        
+        let html = '';
+        
+        // Previous button
+        html += `<li class="page-item ${page === 1 ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${page - 1}" data-tab="${tabKey}">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                 </li>`;
+        
+        // Page numbers
+        for (let i = 1; i <= total; i++) {
+            if (i === 1 || i === total || (i >= page - 1 && i <= page + 1)) {
+                html += `<li class="page-item ${i === page ? 'active' : ''}">
+                            <a class="page-link" href="#" data-page="${i}" data-tab="${tabKey}">${i}</a>
+                         </li>`;
+            } else if (i === page - 2 || i === page + 2) {
+                html += `<li class="page-item disabled">
+                            <span class="page-link">...</span>
+                         </li>`;
+            }
+        }
+        
+        // Next button
+        html += `<li class="page-item ${page === total ? 'disabled' : ''}">
+                    <a class="page-link" href="#" data-page="${page + 1}" data-tab="${tabKey}">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                 </li>`;
+        
+        pagination.innerHTML = html;
+        
+        // Add click handlers
+        pagination.querySelectorAll('a.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const newPage = parseInt(this.getAttribute('data-page'));
+                const clickedTab = this.getAttribute('data-tab');
+                if (newPage >= 1 && newPage <= total && clickedTab === tabKey) {
+                    showPage(newPage);
+                }
+            });
+        });
+    }
+    
+    // Show first page initially
+    showPage(1);
+}
+
+// Helper function to reset pagination when switching tabs
+function resetPaginationForTab(tabKey, containerId, paginationId, itemsPerPage, itemSelector) {
+    const container = document.getElementById(containerId);
+    
+    if (!container) return;
+    
+    // Reset state to page 1
+    paginationStates[tabKey].currentPage = 1;
+    
+    const items = container.querySelectorAll(itemSelector);
+    
+    // Show only first page items
+    items.forEach((item, index) => {
+        if (index < itemsPerPage) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+    
+    // Reset pagination buttons to page 1 if they exist
+    const pagination = document.getElementById(paginationId);
+    if (pagination && pagination.innerHTML) {
+        // Find and activate the first page button
+        const pageButtons = pagination.querySelectorAll('li.page-item');
+        pageButtons.forEach((btn) => {
+            const link = btn.querySelector('a.page-link');
+            if (link && link.getAttribute('data-page') === '1') {
+                btn.classList.add('active');
+            } else {
+                btn.classList.remove('active');
+            }
+        });
+    }
+}
 
 // Chat functionality - Use navbar chat system
 function openChat(swapId) {

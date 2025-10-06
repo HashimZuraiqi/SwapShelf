@@ -55,44 +55,68 @@
 /* Chat Card Header */
 .chat-card-header {
     background: linear-gradient(135deg, rgba(59, 183, 251, 0.1), rgba(102, 126, 234, 0.1));
-    padding: 24px 32px;
+    padding: 20px 24px;
     border-bottom: 1px solid rgba(59, 183, 251, 0.2);
     display: flex;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
+    min-height: 100px;
+    position: relative;
 }
 
 .chat-brand-header {
     display: flex;
+    flex-direction: column;
     align-items: center;
-    gap: 16px;
+    gap: 4px;
+    text-align: center;
+}
+
+.chat-brand-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    align-items: center;
+    text-align: center;
 }
 
 .chat-brand-logo {
-    width: 60px;
-    height: 60px;
+    width: 45px;
+    height: 45px;
     background: linear-gradient(135deg, #3BB7FB, #667eea);
-    border-radius: 15px;
+    border-radius: 12px;
     display: flex;
     align-items: center;
     justify-content: center;
     box-shadow: 0 4px 15px rgba(59, 183, 251, 0.3);
+    flex-shrink: 0;
+}
+
+.chat-brand-logo i {
+    font-size: 1.5rem !important;
+    color: #ffffff;
 }
 
 .chat-brand-title {
-    font-size: 28px;
+    font-size: 22px;
     font-weight: 700;
     color: #ffffff;
     margin: 0;
+    line-height: 1.2;
 }
 
 .chat-brand-subtitle {
-    font-size: 14px;
+    font-size: 13px;
     color: rgba(255, 255, 255, 0.6);
     margin: 0;
+    line-height: 1.2;
 }
 
 .chat-close-btn {
+    position: absolute;
+    right: 24px;
+    top: 50%;
+    transform: translateY(-50%);
     width: 40px;
     height: 40px;
     background: rgba(255, 255, 255, 0.05);
@@ -110,7 +134,7 @@
 .chat-close-btn:hover {
     background: rgba(220, 53, 69, 0.2);
     border-color: #dc3545;
-    transform: rotate(90deg);
+    transform: translateY(-50%) rotate(90deg);
 }
 
 /* Main Content Area */
@@ -558,15 +582,35 @@
     
     .chat-card-header {
         padding: 16px 20px;
+        min-height: 90px;
+    }
+    
+    .chat-brand-header {
+        gap: 6px;
     }
     
     .chat-brand-title {
-        font-size: 22px;
+        font-size: 20px;
+    }
+    
+    .chat-brand-subtitle {
+        font-size: 12px;
     }
     
     .chat-brand-logo {
-        width: 50px;
-        height: 50px;
+        width: 45px;
+        height: 45px;
+    }
+    
+    .chat-brand-logo i {
+        font-size: 1.5rem !important;
+    }
+    
+    .chat-close-btn {
+        width: 36px;
+        height: 36px;
+        font-size: 18px;
+        right: 20px;
     }
     
     .chat-actions {
@@ -583,10 +627,12 @@
         <div class="chat-card-header">
             <div class="chat-brand-header">
                 <div class="chat-brand-logo">
-                    <i class="bi bi-chat-dots" style="font-size: 2rem; color: #ffffff;"></i>
+                    <i class="bi bi-chat-dots"></i>
                 </div>
-                <h2 class="chat-brand-title">Messages</h2>
-                <p class="chat-brand-subtitle">Connect & Share Books</p>
+                <div class="chat-brand-text">
+                    <h2 class="chat-brand-title">Messages</h2>
+                    <p class="chat-brand-subtitle">Connect & Share Books</p>
+                </div>
             </div>
             <button id="chatCloseBtn" class="chat-close-btn">
                 <i class="bi bi-x-lg"></i>

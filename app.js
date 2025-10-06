@@ -1491,8 +1491,23 @@ app.get('/swap-matcher', async (req, res) => {
       return res.redirect('/login');
     }
 
-    // Get user's own books (available for swapping)
-    const userBooks = await Book.find({ owner: userId, availability: 'available' }).sort({ createdAt: -1 }).lean();
+    // Create safe user object for template
+    const safeUser = {
+      _id: user._id,
+      username: user.username,
+      fullname: user.fullname,
+      email: user.email,
+      profilePicture: user.profilePicture,
+      rewardPoints: user.rewardPoints || 0,
+      totalSwapsCompleted: user.totalSwapsCompleted || 0,
+      books: [] // Will be populated later
+    };
+
+    // Get user's own books (available for swapping) - exclude swapped books
+    const userBooks = await Book.find({ 
+        owner: userId, 
+        availability: { $in: ['available', 'unavailable'] } // Include available and unavailable, but exclude swapped
+    }).sort({ createdAt: -1 }).lean();
 
     // Enhance user books with Google Books images
     console.log(`Enhancing ${userBooks.length} user books with Google Books images...`);
@@ -1547,11 +1562,11 @@ app.get('/swap-matcher', async (req, res) => {
     console.log(`✅ Completed enhancing user books with Google Books images`);
 
     // Add enhanced books to user object for template
-    safeUser.books = enhancedUserBooks;
+    user.books = enhancedUserBooks;
 
     // Get available books for swapping (exclude user's own books)
     const availableBooks = await Book.find({ owner: { $ne: userId }, availability: 'available' })
-    .populate('owner', 'username fullname location')
+    .populate('owner', 'username fullname')
     .sort({ createdAt: -1 })
     .limit(50)
     .lean();
@@ -1616,8 +1631,8 @@ app.get('/swap-matcher', async (req, res) => {
 
     // Get user stats
     const userStats = {
-      rewardPoints: safeUser.rewardPoints || 0,
-      swapsCompleted: safeUser.totalSwapsCompleted || 0,
+      rewardPoints: user.rewardPoints || 0,
+      swapsCompleted: user.totalSwapsCompleted || 0,
       booksOwned: await Book.countDocuments({ owner: userId }),
       pendingSwaps: await Swap.countDocuments({
         $or: [
@@ -1671,9 +1686,9 @@ app.get('/swap-matcher', async (req, res) => {
     res.render('swap-matcher', { 
       userLoggedIn: true, 
       activePage: 'swap-matcher', 
-      user: safeUser, 
-      userName: safeUser.username || safeUser.fullname || 'Reader',
-      userPhoto: safeUser.profilePicture || '/images/default-avatar.png',
+      user, 
+      userName: user.username || user.fullname || 'Reader',
+      userPhoto: user.profilePicture || '/images/default-avatar.png',
       availableBooks,
       userSwaps,
       userStats,
