@@ -56,29 +56,36 @@
     
     .brand-header {
       text-align: center;
-      margin-bottom: 2rem;
+      margin-bottom: 1.5rem;
     }
     
     .brand-logo {
-      width: 64px;
-      height: 64px;
-      margin: 0 auto 1.5rem;
-      border-radius: 20px;
-      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
+      width: 160px;
+      height: 160px;
+      margin: 0 auto 0.5rem;
       display: flex;
       align-items: center;
       justify-content: center;
-      box-shadow: 0 8px 32px rgba(59, 183, 251, 0.3);
       position: relative;
+      transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+      cursor: pointer;
+    }
+    
+    .brand-logo:hover {
+      transform: scale(1.1);
+      filter: drop-shadow(0 10px 25px rgba(59, 183, 251, 0.4));
+    }
+    
+    .brand-logo img {
+      transition: all 0.3s cubic-bezier(0.4, 0.0, 0.2, 1);
+    }
+    
+    .brand-logo:hover img {
+      filter: brightness(1.1);
     }
     
     .brand-logo::after {
-      content: '';
-      position: absolute;
-      inset: 2px;
-      border-radius: 18px;
-      background: linear-gradient(135deg, #3BB7FB 0%, #F6B443 100%);
-      opacity: 0.1;
+      display: none;
     }
     
     .brand-title {

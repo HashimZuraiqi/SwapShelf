@@ -84,11 +84,19 @@ router.get('/:swapId', requireAuth, requireSwapParticipation, SwapController.get
 
 // Aliases used by frontend UI
 router.put('/:swapId/accept', requireAuth, requireSwapParticipation, (req, res) => {
+  // Ensure req.body exists before setting properties
+  if (!req.body) {
+    req.body = {};
+  }
   req.body.action = 'accept';
   return SwapController.respondToSwap(req, res);
 });
 
 router.put('/:swapId/reject', requireAuth, requireSwapParticipation, (req, res) => {
+  // Ensure req.body exists before setting properties
+  if (!req.body) {
+    req.body = {};
+  }
   req.body.action = 'decline';
   return SwapController.respondToSwap(req, res);
 });
@@ -96,6 +104,61 @@ router.put('/:swapId/reject', requireAuth, requireSwapParticipation, (req, res) 
 router.post('/:swapId/confirm', requireAuth, requireSwapParticipation, SwapController.completeSwap);
 
 router.delete('/:swapId', requireAuth, requireSwapParticipation, SwapController.cancelSwap);
+
+/**
+ * @route   PUT /api/swaps/:swapId/meeting
+ * @desc    Schedule a meeting for book exchange
+ * @access  Private (Participants only)
+ */
+router.put('/:swapId/meeting', 
+    requireAuth, 
+    requireSwapParticipation, 
+    SwapController.scheduleMeeting
+);
+
+/**
+ * @route   PUT /api/swaps/:swapId/meeting/confirm
+ * @desc    Confirm meeting attendance
+ * @access  Private (Participants only)
+ */
+router.put('/:swapId/meeting/confirm', 
+    requireAuth, 
+    requireSwapParticipation, 
+    SwapController.confirmMeeting
+);
+
+/**
+ * @route   PUT /api/swaps/:swapId/received
+ * @desc    Confirm book received from swap
+ * @access  Private (Participants only)
+ */
+router.put('/:swapId/received', 
+    requireAuth, 
+    requireSwapParticipation, 
+    SwapController.confirmBookReceived
+);
+
+/**
+ * @route   PUT /api/swaps/:swapId/progress
+ * @desc    Mark swap as In Progress
+ * @access  Private (Participants only)
+ */
+router.put('/:swapId/progress', 
+    requireAuth, 
+    requireSwapParticipation, 
+    SwapController.markAsInProgress
+);
+
+/**
+ * @route   GET /api/swaps/:swapId/details
+ * @desc    Get swap details including meeting information
+ * @access  Private (Participants only)
+ */
+router.get('/:swapId/details', 
+    requireAuth, 
+    requireSwapParticipation, 
+    SwapController.getSwapDetails
+);
 
 /**
  * @route   POST /api/swaps/:swapId/respond

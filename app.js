@@ -1477,24 +1477,19 @@ app.delete('/wishlist/remove/:bookId', async (req, res) => {
 });
 
 app.get('/swap-matcher', async (req, res) => {
-  // Temporarily disable auth for testing
-  // if (!req.session || !req.session.user) return res.redirect('/login');
+  // Check authentication
+  if (!req.session || !req.session.user) {
+    return res.redirect('/login');
+  }
   
   try {
-    // For debugging - use dummy user if no session
-    const userId = req.session?.user?._id || req.session?.user?.id || '689e2ba746de4ed0a2716e4f';
+    const userId = req.session.user._id || req.session.user.id;
     
     const user = await User.findById(userId);
-    if (!user && req.session?.user) return res.redirect('/login');
-    
-    // Create a fallback user object if no user found (for testing)
-    const safeUser = user || {
-      _id: userId,
-      username: 'testuser',
-      fullname: 'Test User',
-      location: 'Test City',
-      email: 'test@example.com'
-    };
+    if (!user) {
+      console.error('❌ User not found in database:', userId);
+      return res.redirect('/login');
+    }
 
     // Get user's own books (available for swapping)
     const userBooks = await Book.find({ owner: userId, availability: 'available' }).sort({ createdAt: -1 }).lean();
@@ -1570,26 +1565,47 @@ app.get('/swap-matcher', async (req, res) => {
       }
     });
 
-    // Get user's swap activities
+    // Get user's swap activities with properly populated books
     const userSwaps = await Swap.find({
       $or: [
         { requester: userId },
         { owner: userId }
       ]
     })
-    .populate('requester', 'username fullname')
-    .populate('owner', 'username fullname')
-    .populate('requestedBook.id', 'title author coverImage')
+    .populate('requester', 'username fullname profilePicture')
+    .populate('owner', 'username fullname profilePicture')
+    .populate('requestedBook.id', 'title author coverImage image')
+    .populate('offeredBooks.id', 'title author coverImage image')
     .sort({ createdAt: -1 })
     .limit(20)
     .lean();
 
-    // Flatten requestedBook data
+    // Flatten and fix book data for easier template access
     userSwaps.forEach(swap => {
+      // Fix requested book
       if (swap.requestedBook?.id) {
-        swap.requestedBook.title = swap.requestedBook.id.title || swap.requestedBook.title;
-        swap.requestedBook.author = swap.requestedBook.id.author || swap.requestedBook.author;
-        swap.requestedBook.coverImage = swap.requestedBook.id.coverImage;
+        swap.requestedBook = {
+          ...swap.requestedBook,
+          title: swap.requestedBook.id.title || swap.requestedBook.title,
+          author: swap.requestedBook.id.author || swap.requestedBook.author,
+          coverImage: swap.requestedBook.id.coverImage || swap.requestedBook.id.image || '/images/placeholder-book.jpg'
+        };
+      }
+      
+      // Fix offered books - take the first one for display
+      if (swap.offeredBooks && swap.offeredBooks.length > 0 && swap.offeredBooks[0].id) {
+        swap.offeredBook = {
+          title: swap.offeredBooks[0].id.title || swap.offeredBooks[0].title,
+          author: swap.offeredBooks[0].id.author || swap.offeredBooks[0].author,
+          coverImage: swap.offeredBooks[0].id.coverImage || swap.offeredBooks[0].id.image || '/images/placeholder-book.jpg'
+        };
+      } else {
+        // Fallback if no offered books
+        swap.offeredBook = {
+          title: 'Unknown Book',
+          author: 'Unknown Author',
+          coverImage: '/images/placeholder-book.jpg'
+        };
       }
     });
 
@@ -1674,7 +1690,8 @@ app.get('/swap-matcher', async (req, res) => {
 
   } catch (error) {
     console.error('Swap matcher error:', error);
-    res.status(500).render('error', { message: 'Failed to load swap matcher' });
+    // Redirect to login if there's an error - likely authentication issue
+    res.redirect('/login');
   }
 });
 
