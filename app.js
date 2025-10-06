@@ -2345,10 +2345,10 @@ io.on('connection', (socket) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 3000;
-server.listen(PORT, () => {
-  console.log(`🚀 Server is running at http://localhost:${PORT}`);
-  console.log(`📊 Dashboard available at: http://localhost:${PORT}/dashboard`);
+const PORT = process.env.PORT || 5000;
+server.listen(PORT, '0.0.0.0', () => {
+  console.log(`🚀 Server is running at http://0.0.0.0:${PORT}`);
+  console.log(`📊 Dashboard available at: http://0.0.0.0:${PORT}/dashboard`);
   console.log(`💬 Enhanced Chat System: ACTIVE`);
   console.log(`🔌 WebSocket Server: READY`);
 });
