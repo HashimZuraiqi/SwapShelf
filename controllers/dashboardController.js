@@ -212,16 +212,36 @@ const getDashboardData = async (userId) => {
         
         // Calculate Swap Partners (unique users swapped with)
         const swapPartners = new Set();
+        console.log('=== SWAP PARTNERS DEBUG ===');
+        console.log('Current userId:', userId);
+        console.log('Total userSwaps:', userSwaps.length);
+        
         userSwaps.forEach(swap => {
-            if (swap.status === 'completed') {
+            const status = swap.status ? swap.status.toLowerCase() : '';
+            console.log(`Checking swap:`, {
+                status: swap.status,
+                statusLower: status,
+                requester: swap.requester.toString(),
+                owner: swap.owner.toString(),
+                isRequester: swap.requester.toString() === userId.toString(),
+                isOwner: swap.owner.toString() === userId.toString()
+            });
+            
+            // Include completed and accepted swaps (case-insensitive)
+            if (status === 'completed' || status === 'accepted') {
                 if (swap.requester.toString() === userId.toString()) {
+                    console.log('  -> User is requester, adding owner:', swap.owner.toString());
                     swapPartners.add(swap.owner.toString());
                 } else if (swap.owner.toString() === userId.toString()) {
+                    console.log('  -> User is owner, adding requester:', swap.requester.toString());
                     swapPartners.add(swap.requester.toString());
                 }
             }
         });
         const swapPartnersCount = swapPartners.size;
+        console.log('Final Swap Partners:', Array.from(swapPartners));
+        console.log('Swap Partners Count:', swapPartnersCount);
+        console.log('=== END SWAP PARTNERS DEBUG ===');
         
         // Calculate Community Rank
         const allUsersForRank = await User.find({}).select('_id');
@@ -229,8 +249,17 @@ const getDashboardData = async (userId) => {
         
         for (const u of allUsersForRank) {
             const userSwapCount = await Swap.countDocuments({
-                $or: [{ requester: u._id }, { owner: u._id }],
-                status: 'completed'
+                $and: [
+                    {
+                        $or: [{ requester: u._id }, { owner: u._id }]
+                    },
+                    {
+                        $or: [
+                            { status: /^completed$/i },  // Case-insensitive regex
+                            { status: /^accepted$/i }
+                        ]
+                    }
+                ]
             });
             userScores.push({ userId: u._id.toString(), score: userSwapCount });
         }
