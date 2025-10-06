@@ -163,13 +163,131 @@ const getDashboardData = async (userId) => {
         
         console.log('User stats being returned:', userStats);
         
-        // Swap Insights
+        // Calculate Swap Insights with actual data
+        const totalSwapRequests = userSwaps.filter(swap => swap.requester.toString() === userId.toString()).length;
+        const totalSwapOffers = userSwaps.filter(swap => swap.owner.toString() === userId.toString()).length;
+        const successRate = userSwaps.length > 0 ? Math.round((completedSwaps.length / userSwaps.length) * 100) : 100;
+        
+        // Calculate average response time
+        let avgResponseTime = '1-2 hours';
+        const swapsWithResponseTime = userSwaps.filter(swap => 
+            swap.status === 'accepted' && swap.acceptedAt && swap.createdAt
+        );
+        
+        if (swapsWithResponseTime.length > 0) {
+            const totalResponseHours = swapsWithResponseTime.reduce((sum, swap) => {
+                const hours = Math.round((new Date(swap.acceptedAt) - new Date(swap.createdAt)) / (1000 * 60 * 60));
+                return sum + hours;
+            }, 0);
+            const avgHours = Math.round(totalResponseHours / swapsWithResponseTime.length);
+            
+            if (avgHours < 1) {
+                avgResponseTime = '< 1 hour';
+            } else if (avgHours === 1) {
+                avgResponseTime = '1 hour';
+            } else if (avgHours <= 6) {
+                avgResponseTime = `${avgHours} hours`;
+            } else if (avgHours <= 24) {
+                avgResponseTime = '< 1 day';
+            } else {
+                const days = Math.ceil(avgHours / 24);
+                avgResponseTime = `${days} day${days > 1 ? 's' : ''}`;
+            }
+        }
+        
+        // Find most popular genre from user's books
+        const userBooksForGenre = await Book.find({ owner: userId });
+        const genreCounts = {};
+        userBooksForGenre.forEach(book => {
+            if (book.genre && Array.isArray(book.genre)) {
+                book.genre.forEach(g => {
+                    genreCounts[g] = (genreCounts[g] || 0) + 1;
+                });
+            }
+        });
+        
+        const popularGenre = Object.keys(genreCounts).length > 0
+            ? Object.keys(genreCounts).reduce((a, b) => genreCounts[a] > genreCounts[b] ? a : b)
+            : 'Fiction';
+        
+        // Calculate Swap Partners (unique users swapped with)
+        const swapPartners = new Set();
+        console.log('=== SWAP PARTNERS DEBUG ===');
+        console.log('Current userId:', userId);
+        console.log('Total userSwaps:', userSwaps.length);
+        
+        userSwaps.forEach(swap => {
+            const status = swap.status ? swap.status.toLowerCase() : '';
+            console.log(`Checking swap:`, {
+                status: swap.status,
+                statusLower: status,
+                requester: swap.requester.toString(),
+                owner: swap.owner.toString(),
+                isRequester: swap.requester.toString() === userId.toString(),
+                isOwner: swap.owner.toString() === userId.toString()
+            });
+            
+            // Include completed and accepted swaps (case-insensitive)
+            if (status === 'completed' || status === 'accepted') {
+                if (swap.requester.toString() === userId.toString()) {
+                    console.log('  -> User is requester, adding owner:', swap.owner.toString());
+                    swapPartners.add(swap.owner.toString());
+                } else if (swap.owner.toString() === userId.toString()) {
+                    console.log('  -> User is owner, adding requester:', swap.requester.toString());
+                    swapPartners.add(swap.requester.toString());
+                }
+            }
+        });
+        const swapPartnersCount = swapPartners.size;
+        console.log('Final Swap Partners:', Array.from(swapPartners));
+        console.log('Swap Partners Count:', swapPartnersCount);
+        console.log('=== END SWAP PARTNERS DEBUG ===');
+        
+        // Calculate Community Rank
+        const allUsersForRank = await User.find({}).select('_id');
+        const userScores = [];
+        
+        for (const u of allUsersForRank) {
+            const userSwapCount = await Swap.countDocuments({
+                $and: [
+                    {
+                        $or: [{ requester: u._id }, { owner: u._id }]
+                    },
+                    {
+                        $or: [
+                            { status: /^completed$/i },  // Case-insensitive regex
+                            { status: /^accepted$/i }
+                        ]
+                    }
+                ]
+            });
+            userScores.push({ userId: u._id.toString(), score: userSwapCount });
+        }
+        
+        // Sort by score descending
+        userScores.sort((a, b) => b.score - a.score);
+        
+        // Find user's rank
+        const userRank = userScores.findIndex(u => u.userId === userId.toString()) + 1;
+        const totalUsers = userScores.length;
+        const rankPercentile = totalUsers > 0 ? Math.round((1 - (userRank / totalUsers)) * 100) : 0;
+        
+        let communityRank = `#${userRank}`;
+        if (totalUsers > 0) {
+            communityRank = `Top ${Math.max(1, 100 - rankPercentile)}%`;
+        }
+        
         const swapInsights = {
-            totalRequests: userSwaps.filter(swap => swap.requester.toString() === userId.toString()).length,
-            totalOffers: userSwaps.filter(swap => swap.owner.toString() === userId.toString()).length,
-            averageRating: 4.2, // Placeholder - will be calculated from actual ratings
-            monthlyGrowth: 15 // Placeholder - will be calculated from actual data
+            successRate: successRate,
+            avgResponseTime: avgResponseTime,
+            popularGenre: popularGenre,
+            swapPartners: swapPartnersCount,
+            communityRank: communityRank,
+            totalRequests: totalSwapRequests,
+            totalOffers: totalSwapOffers
         };
+        
+        console.log('Swap Insights calculated:', swapInsights);
         
         // Recommended Books based on user preferences
         const user = await User.findById(userId);
@@ -328,8 +446,11 @@ const getDashboardData = async (userId) => {
             distance: b.distance 
         })));
         
-        // Trending Genres
+        // Trending Genres - Fixed to handle genre arrays
         const genreStats = await Book.aggregate([
+            // Unwind the genre array so each genre gets counted separately
+            { $unwind: { path: '$genre', preserveNullAndEmptyArrays: true } },
+            // Group by individual genre
             {
                 $group: {
                     _id: '$genre',
@@ -341,10 +462,16 @@ const getDashboardData = async (userId) => {
             { $limit: 5 }
         ]);
         
-        const trendingGenres = genreStats.map(genre => ({
-            name: genre._id || 'Unknown',
+        // Get total count of ALL books to calculate proper percentages
+        const totalBooksCount = await Book.countDocuments({});
+        
+        const trendingGenres = genreStats.map((genre, index) => ({
+            name: genre._id || 'Other',
             count: genre.count,
-            books: genre.books.slice(0, 3)
+            swaps: genre.count, // For display
+            percentage: totalBooksCount > 0 ? Math.round((genre.count / totalBooksCount) * 100) : 0,
+            books: genre.books.slice(0, 3),
+            rank: index + 1
         }));
         
         // Real Leaderboard System - Calculate actual user statistics
