@@ -2314,8 +2314,16 @@ io.on('connection', (socket) => {
       const { roomId, message } = data;
       console.log('📨 Real-time message received:', message.content);
       
-      // Broadcast to room (excluding sender)
-      socket.to(roomId).emit('newMessage', message);
+      // Ensure message has roomId field for client-side filtering
+      const messageWithRoom = {
+        ...message,
+        roomId: roomId,
+        room: roomId,
+        chatRoom: message.chatRoom || roomId
+      };
+      
+      // Broadcast to everyone in the room (including sender)
+      io.to(roomId).emit('newMessage', messageWithRoom);
       
       console.log('✅ Message broadcasted to room:', roomId);
     } catch (error) {
