@@ -210,10 +210,50 @@ const getDashboardData = async (userId) => {
             ? Object.keys(genreCounts).reduce((a, b) => genreCounts[a] > genreCounts[b] ? a : b)
             : 'Fiction';
         
+        // Calculate Swap Partners (unique users swapped with)
+        const swapPartners = new Set();
+        userSwaps.forEach(swap => {
+            if (swap.status === 'completed') {
+                if (swap.requester.toString() === userId.toString()) {
+                    swapPartners.add(swap.owner.toString());
+                } else if (swap.owner.toString() === userId.toString()) {
+                    swapPartners.add(swap.requester.toString());
+                }
+            }
+        });
+        const swapPartnersCount = swapPartners.size;
+        
+        // Calculate Community Rank
+        const allUsersForRank = await User.find({}).select('_id');
+        const userScores = [];
+        
+        for (const u of allUsersForRank) {
+            const userSwapCount = await Swap.countDocuments({
+                $or: [{ requester: u._id }, { owner: u._id }],
+                status: 'completed'
+            });
+            userScores.push({ userId: u._id.toString(), score: userSwapCount });
+        }
+        
+        // Sort by score descending
+        userScores.sort((a, b) => b.score - a.score);
+        
+        // Find user's rank
+        const userRank = userScores.findIndex(u => u.userId === userId.toString()) + 1;
+        const totalUsers = userScores.length;
+        const rankPercentile = totalUsers > 0 ? Math.round((1 - (userRank / totalUsers)) * 100) : 0;
+        
+        let communityRank = `#${userRank}`;
+        if (totalUsers > 0) {
+            communityRank = `Top ${Math.max(1, 100 - rankPercentile)}%`;
+        }
+        
         const swapInsights = {
             successRate: successRate,
             avgResponseTime: avgResponseTime,
             popularGenre: popularGenre,
+            swapPartners: swapPartnersCount,
+            communityRank: communityRank,
             totalRequests: totalSwapRequests,
             totalOffers: totalSwapOffers
         };
