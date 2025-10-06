@@ -150,8 +150,14 @@ const getDashboardData = async (userId) => {
             $or: [{ requester: userId }, { owner: userId }]
         });
         
-        const completedSwaps = userSwaps.filter(swap => swap.status === 'completed');
-        const activeSwaps = userSwaps.filter(swap => ['pending', 'accepted', 'in-progress'].includes(swap.status));
+        const completedSwaps = userSwaps.filter(swap => {
+            const status = swap.status ? swap.status.toLowerCase() : '';
+            return status === 'completed';
+        });
+        const activeSwaps = userSwaps.filter(swap => {
+            const status = swap.status ? swap.status.toLowerCase() : '';
+            return ['pending', 'accepted', 'in-progress'].includes(status);
+        });
         
         const userStats = {
             booksOwned: userBooks.length,
@@ -170,9 +176,10 @@ const getDashboardData = async (userId) => {
         
         // Calculate average response time
         let avgResponseTime = '1-2 hours';
-        const swapsWithResponseTime = userSwaps.filter(swap => 
-            swap.status === 'accepted' && swap.acceptedAt && swap.createdAt
-        );
+        const swapsWithResponseTime = userSwaps.filter(swap => {
+            const status = swap.status ? swap.status.toLowerCase() : '';
+            return status === 'accepted' && swap.acceptedAt && swap.createdAt;
+        });
         
         if (swapsWithResponseTime.length > 0) {
             const totalResponseHours = swapsWithResponseTime.reduce((sum, swap) => {
