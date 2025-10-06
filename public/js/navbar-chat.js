@@ -137,52 +137,100 @@ class SwapShelfChatInterface {
     bindEvents() {
         console.log('🔄 Binding chat events...');
         
-        // Chat toggle
+        // Chat toggle with touch support for mobile
+        // Bind to BOTH desktop and mobile chat buttons
         const chatToggle = document.getElementById('chatToggle');
-        console.log('📱 Chat toggle element:', chatToggle);
+        const chatToggleMobile = document.getElementById('chatToggleMobile');
         
+        console.log('📱 Chat toggle element (desktop):', chatToggle);
+        console.log('📱 Chat toggle element (mobile):', chatToggleMobile);
+        
+        // Handler function for both buttons
+        const toggleHandler = (e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            console.log('🎯 Chat button clicked/touched!');
+            this.toggleChat();
+        };
+        
+        // Bind desktop chat button
         if (chatToggle) {
-            chatToggle.addEventListener('click', (e) => {
+            chatToggle.addEventListener('click', toggleHandler);
+            chatToggle.addEventListener('touchstart', (e) => {
                 e.preventDefault();
-                console.log('🎯 Chat button clicked!');
+                console.log('📱 Desktop chat button touched');
                 this.toggleChat();
-            });
-            console.log('✅ Chat toggle event bound');
+            }, { passive: false });
+            console.log('✅ Desktop chat toggle event bound');
         } else {
-            console.error('❌ Chat toggle element not found!');
+            console.warn('⚠️ Desktop chat toggle element not found');
         }
         
-        // Close chat
+        // Bind mobile chat button (CRITICAL FOR MOBILE)
+        if (chatToggleMobile) {
+            chatToggleMobile.addEventListener('click', toggleHandler);
+            chatToggleMobile.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                console.log('📱 Mobile chat button touched');
+                this.toggleChat();
+            }, { passive: false });
+            console.log('✅ Mobile chat toggle event bound');
+        } else {
+            console.warn('⚠️ Mobile chat toggle element not found');
+        }
+        
+        // If neither button is found, show error
+        if (!chatToggle && !chatToggleMobile) {
+            console.error('❌ No chat toggle buttons found!');
+        }
+        
+        // Close chat with touch support
         const chatCloseBtn = document.getElementById('chatCloseBtn');
         if (chatCloseBtn) {
             chatCloseBtn.addEventListener('click', () => {
                 this.closeChat();
             });
+            chatCloseBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.closeChat();
+            }, { passive: false });
         }
         
-        // Modal overlay click
+        // Modal overlay click with touch support
         const chatModalOverlay = document.querySelector('.chat-modal-overlay');
         if (chatModalOverlay) {
             chatModalOverlay.addEventListener('click', () => {
                 this.closeChat();
             });
+            chatModalOverlay.addEventListener('touchstart', () => {
+                this.closeChat();
+            }, { passive: true });
         }
         
-        // Back to main panel
+        // Back to main panel with touch support
         const backToMain = document.getElementById('backToMain');
         if (backToMain) {
             backToMain.addEventListener('click', () => {
                 console.log('🔙 Back button clicked');
                 this.showMainPanels();
             });
+            backToMain.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                console.log('🔙 Back button touched (mobile)');
+                this.showMainPanels();
+            }, { passive: false });
         }
         
-        // Message send button
+        // Message send button with touch support
         const sendBtn = document.getElementById('sendMessageBtn');
         if (sendBtn) {
             sendBtn.addEventListener('click', () => {
                 this.sendMessage();
             });
+            sendBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                this.sendMessage();
+            }, { passive: false });
         }
         
         // Message input enter key
@@ -229,6 +277,34 @@ class SwapShelfChatInterface {
         } else {
             console.log('⚠️ Contact search element not found during initial binding');
         }
+        
+        // Prevent body scroll when chat modal is open (mobile fix)
+        this.preventBodyScroll();
+    }
+    
+    preventBodyScroll() {
+        const modal = document.querySelector('.chat-modal');
+        if (modal) {
+            modal.addEventListener('touchmove', (e) => {
+                // Allow scrolling within specific containers
+                const target = e.target;
+                const scrollableContainers = [
+                    '.contacts-list-container',
+                    '.conversations-list-container',
+                    '.messages-container',
+                    '.chat-panel'
+                ];
+                
+                const isScrollable = scrollableContainers.some(selector => 
+                    target.closest(selector)
+                );
+                
+                // If not in a scrollable container, prevent default
+                if (!isScrollable) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
     }
     
     toggleChat() {
@@ -242,36 +318,83 @@ class SwapShelfChatInterface {
     
     openChat() {
         console.log('🔓 Opening chat modal...');
+        console.log('📱 Device info:', {
+            userAgent: navigator.userAgent,
+            isMobile: /Mobi|Android/i.test(navigator.userAgent),
+            viewport: {
+                width: window.innerWidth,
+                height: window.innerHeight
+            }
+        });
+        
         const modal = document.querySelector('.chat-modal');
         console.log('📱 Modal element found:', modal);
+        console.log('📱 Modal display:', modal ? window.getComputedStyle(modal).display : 'N/A');
         
         if (modal) {
-            modal.classList.add('show');
-            this.isOpen = true;
-            console.log('✅ Chat modal opened');
-            
-            // Ensure proper panel visibility
-            this.showMainPanels();
-            
-            // Load initial data
-            this.loadConversations();
-            
-            // Setup search functionality with a small delay to ensure DOM is ready
-            setTimeout(() => {
-                this.setupSearchFunctionality();
-                this.setupContactSearchFunctionality();
-            }, 100);
+            try {
+                // Force visibility
+                modal.style.display = 'flex';
+                modal.classList.add('show');
+                this.isOpen = true;
+                
+                // Prevent body scroll on mobile when modal is open
+                document.body.style.overflow = 'hidden';
+                document.body.style.position = 'fixed';
+                document.body.style.width = '100%';
+                document.body.style.top = '0';
+                
+                console.log('✅ Chat modal opened');
+                console.log('📱 Modal classList:', modal.classList.toString());
+                console.log('📱 Modal styles:', {
+                    display: modal.style.display,
+                    opacity: window.getComputedStyle(modal).opacity,
+                    zIndex: window.getComputedStyle(modal).zIndex
+                });
+                
+                // Ensure proper panel visibility
+                this.showMainPanels();
+                
+                // Load initial data
+                this.loadConversations();
+                
+                // Setup search functionality with a small delay to ensure DOM is ready
+                setTimeout(() => {
+                    this.setupSearchFunctionality();
+                    this.setupContactSearchFunctionality();
+                }, 100);
+            } catch (error) {
+                console.error('❌ Error opening chat modal:', error);
+                alert('Error opening chat. Please refresh the page and try again.');
+            }
         } else {
-            console.error('❌ Chat modal element not found!');
+            console.error('❌ Chat modal element not found in DOM!');
+            console.log('📱 Available elements:', {
+                hasNavbarChat: !!document.querySelector('#chatToggle'),
+                hasNavbarChatMobile: !!document.querySelector('#chatToggleMobile'),
+                hasChatModal: !!document.querySelector('.chat-modal'),
+                allModals: document.querySelectorAll('[id*="chat"]').length
+            });
+            alert('Chat feature not available. Please refresh the page.');
         }
     }
     
     closeChat() {
+        console.log('🔒 Closing chat modal...');
         const modal = document.querySelector('.chat-modal');
         if (modal) {
             modal.classList.remove('show');
+            modal.style.display = 'none';
             this.isOpen = false;
+            
+            // Re-enable body scroll
+            document.body.style.overflow = '';
+            document.body.style.position = '';
+            document.body.style.width = '';
+            document.body.style.top = '';
+            
             this.showMainPanels();
+            console.log('✅ Chat modal closed');
         }
     }
     
