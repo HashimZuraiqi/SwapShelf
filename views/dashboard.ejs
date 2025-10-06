@@ -659,12 +659,12 @@
                 <div class="col-6 col-md-6 col-lg-3 mb-4">
                     <div class="card card-dark h-100">
                         <div class="card-body text-center d-flex flex-column justify-content-center">
-                            <a href="/messages" class="action-card-modern">
+                            <a href="/rewards" class="action-card-modern">
                                 <div class="action-icon-modern">
-                                    <i class="bi bi-chat-dots"></i>
+                                    <i class="bi bi-trophy"></i>
                                 </div>
-                                <h6>Messages</h6>
-                                <p>Check conversations</p>
+                                <h6>Rewards</h6>
+                                <p>Earn points & badges</p>
                             </a>
                         </div>
                     </div>
@@ -689,41 +689,45 @@
                             </h5>
                         </div>
                         <div class="card-body">
-                            <div class="insight-item mb-4">
-                                <div class="insight-header">
-                                    <div class="insight-title">
-                                        <i class="bi bi-graph-up-arrow"></i>
-                                        <span>Success Rate</span>
+                            <div class="insight-item mb-3">
+                                <div class="insight-content">
+                                    <div class="insight-icon-wrapper" style="background: linear-gradient(135deg, rgba(59, 183, 251, 0.2), rgba(59, 183, 251, 0.1));">
+                                        <i class="bi bi-graph-up-arrow" style="color: #3BB7FB; font-size: 1.5rem;"></i>
                                     </div>
-                                    <div class="insight-value">
-                                        <span class="badge badge-gradient"><span id="success-rate"><%= swapInsights.successRate %></span>%</span>
+                                    <div class="insight-info">
+                                        <div class="insight-label">Success Rate</div>
+                                        <div class="insight-value-large">
+                                            <span class="badge badge-gradient" id="success-rate"><%= swapInsights.successRate %></span>%
+                                        </div>
                                     </div>
                                 </div>
-                                <div class="progress-modern">
-                                    <div class="progress-bar-modern bg-gradient" data-width="<%= swapInsights.successRate %>"></div>
+                                <div class="progress-modern mt-2">
+                                    <div class="progress-bar-modern" data-width="<%= swapInsights.successRate %>" style="width: 0%;"></div>
                                 </div>
                             </div>
                             
-                            <div class="insight-item mb-4">
-                                <div class="insight-header">
-                                    <div class="insight-title">
-                                        <i class="bi bi-clock-history"></i>
-                                        <span>Avg Response Time</span>
+                            <div class="insight-item mb-3">
+                                <div class="insight-content">
+                                    <div class="insight-icon-wrapper" style="background: linear-gradient(135deg, rgba(246, 180, 67, 0.2), rgba(246, 180, 67, 0.1));">
+                                        <i class="bi bi-clock-history" style="color: #F6B443; font-size: 1.5rem;"></i>
                                     </div>
-                                    <div class="insight-value">
-                                        <span class="insight-text" id="avg-response-time"><%= swapInsights.avgResponseTime %></span>
+                                    <div class="insight-info">
+                                        <div class="insight-label">Avg Response Time</div>
+                                        <div class="insight-value-text" id="avg-response-time"><%= swapInsights.avgResponseTime %></div>
                                     </div>
                                 </div>
                             </div>
                             
                             <div class="insight-item">
-                                <div class="insight-header">
-                                    <div class="insight-title">
-                                        <i class="bi bi-bookmark"></i>
-                                        <span>Popular Genre</span>
+                                <div class="insight-content">
+                                    <div class="insight-icon-wrapper" style="background: linear-gradient(135deg, rgba(89, 178, 89, 0.2), rgba(89, 178, 89, 0.1));">
+                                        <i class="bi bi-bookmark-fill" style="color: #59B259; font-size: 1.5rem;"></i>
                                     </div>
-                                    <div class="insight-value">
-                                        <span class="badge badge-gradient" id="popular-genre"><%= swapInsights.popularGenre %></span>
+                                    <div class="insight-info">
+                                        <div class="insight-label">Popular Genre</div>
+                                        <div class="insight-value-large">
+                                            <span class="badge badge-gradient" id="popular-genre"><%= swapInsights.popularGenre %></span>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -804,10 +808,10 @@
                                                     <span class="trending-rank">#<%= index + 1 %></span>
                                                     <span class="genre-name"><%= genre.name %></span>
                                                 </div>
-                                                <span class="badge badge-gradient"><%= genre.swaps %></span>
+                                                <span class="badge badge-gradient"><%= genre.count || genre.swaps || 0 %></span>
                                             </div>
                                             <div class="progress-modern">
-                                                <div class="progress-bar-modern bg-gradient" data-width="<%= genre.percentage %>"></div>
+                                                <div class="progress-bar-modern" data-width="<%= genre.percentage || 0 %>" style="width: 0%;"></div>
                                             </div>
                                         </div>
                                     <% }); %>
@@ -1232,10 +1236,34 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             // Set progress bar widths from data attributes
-            document.querySelectorAll('.progress-bar[data-width]').forEach(function(bar) {
+            const progressBars = document.querySelectorAll('.progress-bar[data-width], .progress-bar-modern[data-width]');
+            
+            progressBars.forEach(function(bar, index) {
                 const width = bar.getAttribute('data-width');
-                bar.style.width = width + '%';
+                
+                // Ensure bar starts at 0
+                bar.style.width = '0%';
+                
+                // Animate after a short delay
+                setTimeout(() => {
+                    bar.style.width = width + '%';
+                }, 200 + (index * 100)); // Stagger animations
             });
+            
+            // Refresh trending data button
+            const refreshBtn = document.querySelector('.refresh-trending');
+            if (refreshBtn) {
+                refreshBtn.addEventListener('click', function() {
+                    const icon = this.querySelector('i');
+                    icon.classList.add('fa-spin');
+                    this.disabled = true;
+                    
+                    // Reload the page to refresh data
+                    setTimeout(() => {
+                        window.location.reload();
+                    }, 500);
+                });
+            }
         });
     </script>
     
