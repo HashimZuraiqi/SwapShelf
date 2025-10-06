@@ -109,6 +109,7 @@ router.get('/history', requireAuth, async (req, res) => {
 
     const items = raw.map(a => ({
       // mirror your formatActivity response used elsewhere
+      _id: a._id,
       message: a.message,
       time: new Date(a.createdAt).toISOString(),
       icon: (function () {
@@ -156,6 +157,60 @@ router.get('/history', requireAuth, async (req, res) => {
   } catch (err) {
     console.error('GET /api/users/history error:', err);
     res.status(500).json({ error: 'Failed to fetch history' });
+  }
+});
+
+/**
+ * @route   POST /api/users/history/delete
+ * @desc    Delete selected history items
+ * @access  Private
+ */
+router.post('/history/delete', requireAuth, async (req, res) => {
+  try {
+    const userId = req.session.user._id || req.session.user.id;
+    const { ids } = req.body;
+
+    if (!ids || !Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json({ error: 'No items specified for deletion' });
+    }
+
+    // Delete only items that belong to the user
+    const result = await Activity.deleteMany({
+      _id: { $in: ids },
+      user: userId
+    });
+
+    console.log(`✅ Deleted ${result.deletedCount} history items for user ${userId}`);
+    res.json({ 
+      success: true, 
+      deletedCount: result.deletedCount 
+    });
+  } catch (err) {
+    console.error('POST /api/users/history/delete error:', err);
+    res.status(500).json({ error: 'Failed to delete history items' });
+  }
+});
+
+/**
+ * @route   POST /api/users/history/delete-all
+ * @desc    Delete all history for the logged-in user
+ * @access  Private
+ */
+router.post('/history/delete-all', requireAuth, async (req, res) => {
+  try {
+    const userId = req.session.user._id || req.session.user.id;
+
+    // Delete all activities for this user
+    const result = await Activity.deleteMany({ user: userId });
+
+    console.log(`✅ Deleted all ${result.deletedCount} history items for user ${userId}`);
+    res.json({ 
+      success: true, 
+      deletedCount: result.deletedCount 
+    });
+  } catch (err) {
+    console.error('POST /api/users/history/delete-all error:', err);
+    res.status(500).json({ error: 'Failed to delete all history' });
   }
 });
 

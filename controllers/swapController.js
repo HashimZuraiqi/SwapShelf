@@ -165,6 +165,44 @@ class SwapController {
             // Keep book available for multiple requests
             // Note: Book will only be marked unavailable when a swap is accepted
             
+            // Log activity for requester (who sent the request)
+            try {
+                await Activity.create({
+                    user: requesterId,
+                    action: 'REQUEST_SWAP',
+                    message: `Sent swap request for "${requestedBook.title}" to ${ownerName}`,
+                    entityType: 'Swap',
+                    entityId: newSwap._id,
+                    meta: {
+                        swapId: newSwap._id,
+                        requestedBookTitle: requestedBook.title,
+                        ownerName: ownerName,
+                        offeredBooksCount: offeredBooks.length
+                    }
+                });
+            } catch (activityError) {
+                console.error('Error logging swap request activity:', activityError);
+            }
+            
+            // Log activity for owner (who received the request)
+            try {
+                await Activity.create({
+                    user: requestedBook.owner._id,
+                    action: 'RECEIVE_SWAP',
+                    message: `${requesterName} wants to swap for your "${requestedBook.title}"`,
+                    entityType: 'Swap',
+                    entityId: newSwap._id,
+                    meta: {
+                        swapId: newSwap._id,
+                        requestedBookTitle: requestedBook.title,
+                        requesterName: requesterName,
+                        offeredBooksCount: offeredBooks.length
+                    }
+                });
+            } catch (activityError) {
+                console.error('Error logging swap receive activity:', activityError);
+            }
+            
             res.status(201).json({
                 success: true,
                 message: 'Swap request sent successfully!',
@@ -272,6 +310,42 @@ class SwapController {
                     action: 'Accept',
                     timestamp: new Date()
                 });
+                
+                // Log activity for owner (who accepted)
+                try {
+                    await Activity.create({
+                        user: userId,
+                        action: 'ACCEPT_SWAP',
+                        message: `Accepted swap request for "${swap.requestedBook.title}" from ${swap.requesterName}`,
+                        entityType: 'Swap',
+                        entityId: swap._id,
+                        meta: {
+                            swapId: swap._id,
+                            bookTitle: swap.requestedBook.title,
+                            requesterName: swap.requesterName
+                        }
+                    });
+                } catch (activityError) {
+                    console.error('Error logging accept activity:', activityError);
+                }
+                
+                // Log activity for requester (whose request was accepted)
+                try {
+                    await Activity.create({
+                        user: swap.requester,
+                        action: 'ACCEPT_SWAP',
+                        message: `${user.fullname || user.username} accepted your swap request for "${swap.requestedBook.title}"! 🎉`,
+                        entityType: 'Swap',
+                        entityId: swap._id,
+                        meta: {
+                            swapId: swap._id,
+                            bookTitle: swap.requestedBook.title,
+                            acceptedBy: user.fullname || user.username
+                        }
+                    });
+                } catch (activityError) {
+                    console.error('Error logging accept notification activity:', activityError);
+                }
 
                 // Auto-cancel all other pending requests for the same books
                 try {
@@ -344,7 +418,43 @@ class SwapController {
                     timestamp: new Date()
                 });
                 
-                // Mark books as available again (both requested and offered)
+                // Log activity for owner (who declined)
+                try {
+                    await Activity.create({
+                        user: userId,
+                        action: 'DECLINE_SWAP',
+                        message: `Declined swap request for "${swap.requestedBook.title}" from ${swap.requesterName}`,
+                        entityType: 'Swap',
+                        entityId: swap._id,
+                        meta: {
+                            swapId: swap._id,
+                            bookTitle: swap.requestedBook.title,
+                            requesterName: swap.requesterName
+                        }
+                    });
+                } catch (activityError) {
+                    console.error('Error logging decline activity:', activityError);
+                }
+                
+                // Log activity for requester (whose request was declined)
+                try {
+                    await Activity.create({
+                        user: swap.requester,
+                        action: 'DECLINE_SWAP',
+                        message: `${user.fullname || user.username} declined your swap request for "${swap.requestedBook.title}"`,
+                        entityType: 'Swap',
+                        entityId: swap._id,
+                        meta: {
+                            swapId: swap._id,
+                            bookTitle: swap.requestedBook.title,
+                            declinedBy: user.fullname || user.username
+                        }
+                    });
+                } catch (activityError) {
+                    console.error('Error logging decline notification activity:', activityError);
+                }
+                
+                // Mark book as available again
                 await Book.findByIdAndUpdate(swap.requestedBook.id, {
                     availability: 'available'
                 });
@@ -401,9 +511,12 @@ class SwapController {
             }
             
             const user = await User.findById(userId);
+            const isRequester = swap.requester.toString() === userId;
+            const otherPartyId = isRequester ? swap.owner : swap.requester;
+            const isCounterOffer = offeredBookIds && offeredBookIds.length > 0;
             
             // If counter offer with new books
-            if (offeredBookIds && offeredBookIds.length > 0) {
+            if (isCounterOffer) {
                 const books = await Book.find({
                     _id: { $in: offeredBookIds },
                     owner: userId,
@@ -422,9 +535,43 @@ class SwapController {
                 from: userId,
                 fromName: user.fullname,
                 message,
-                action: offeredBookIds ? 'Counter Offer' : 'Message',
+                action: isCounterOffer ? 'Counter Offer' : 'Message',
                 timestamp: new Date()
             });
+            
+            // Log activity for counter offers
+            if (isCounterOffer) {
+                try {
+                    await Activity.create({
+                        user: userId,
+                        action: 'COUNTER_SWAP',
+                        message: `Made a counter offer for swap of "${swap.requestedBook.title}"`,
+                        entityType: 'Swap',
+                        entityId: swap._id,
+                        meta: {
+                            swapId: swap._id,
+                            bookTitle: swap.requestedBook.title,
+                            newBooksOffered: offeredBookIds.length
+                        }
+                    });
+                    
+                    // Notify other party
+                    await Activity.create({
+                        user: otherPartyId,
+                        action: 'COUNTER_SWAP',
+                        message: `${user.fullname || user.username} made a counter offer for "${swap.requestedBook.title}"`,
+                        entityType: 'Swap',
+                        entityId: swap._id,
+                        meta: {
+                            swapId: swap._id,
+                            bookTitle: swap.requestedBook.title,
+                            counterOfferBy: user.fullname || user.username
+                        }
+                    });
+                } catch (activityError) {
+                    console.error('Error logging counter offer activity:', activityError);
+                }
+            }
             
             swap.updatedAt = new Date();
             await swap.save();
@@ -538,6 +685,9 @@ class SwapController {
             }
             
             const user = await User.findById(userId);
+            const isRequester = swap.requester.toString() === userId;
+            const otherPartyId = isRequester ? swap.owner : swap.requester;
+            const otherPartyName = isRequester ? swap.ownerName : swap.requesterName;
             
             swap.status = 'Cancelled';
             
@@ -550,7 +700,44 @@ class SwapController {
                 timestamp: new Date()
             });
             
-            // Mark books as available again (both requested and offered)
+            // Log activity for user who cancelled
+            try {
+                await Activity.create({
+                    user: userId,
+                    action: 'CANCEL_SWAP',
+                    message: `Cancelled swap for "${swap.requestedBook.title}"`,
+                    entityType: 'Swap',
+                    entityId: swap._id,
+                    meta: {
+                        swapId: swap._id,
+                        bookTitle: swap.requestedBook.title,
+                        reason: reason
+                    }
+                });
+            } catch (activityError) {
+                console.error('Error logging cancel activity:', activityError);
+            }
+            
+            // Log activity for other party
+            try {
+                await Activity.create({
+                    user: otherPartyId,
+                    action: 'CANCEL_SWAP',
+                    message: `${user.fullname || user.username} cancelled the swap for "${swap.requestedBook.title}"`,
+                    entityType: 'Swap',
+                    entityId: swap._id,
+                    meta: {
+                        swapId: swap._id,
+                        bookTitle: swap.requestedBook.title,
+                        cancelledBy: user.fullname || user.username,
+                        reason: reason
+                    }
+                });
+            } catch (activityError) {
+                console.error('Error logging cancel notification activity:', activityError);
+            }
+            
+            // Mark book as available again
             await Book.findByIdAndUpdate(swap.requestedBook.id, {
                 availability: 'available'
             });

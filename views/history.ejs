@@ -2,14 +2,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.    </div>
-  </nav>
-
-  <main class="history-main">
-    <div class="container-narrow">
-      <div class="history-hero">
-        <h1 class="history-title"><i class="bi bi-clock-history"></i> Full Activity History</h1>
-        <p class="subtle">Everything you've done since you joined — neatly organized.</p>tle>History | BookSwap</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>History | BookSwap</title>
 
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.4.1/dist/css/bootstrap.min.css"/>
   <link rel="stylesheet" href="/css/style.css"/>
@@ -19,6 +13,20 @@
   <link href="https://fonts.googleapis.com/css?family=Montserrat:700,600,400&display=swap" rel="stylesheet">
 
   <style>
+    /* ---------- Navbar fixes ---------- */
+    body {
+      padding-top: 0;
+      margin: 0;
+    }
+    
+    .custom-navbar {
+      position: sticky !important;
+      top: 0;
+      z-index: 1000 !important;
+      background: #18191E;
+      border-bottom: 1px solid #23242a;
+    }
+
     /* ---------- Page shell ---------- */
     .history-main{min-height:100vh;padding:2.25rem 1rem 3rem;background:linear-gradient(135deg,#18191E,#15181D,#0D0E10);color:#fff}
     .container-narrow{max-width:1080px;margin:0 auto}
@@ -107,6 +115,279 @@
     .time-badge{margin-left:auto;white-space:nowrap;font-size:.9rem;font-weight:800;color:#F6B443;opacity:.95}
     .empty{text-align:center;padding:2rem 1rem;color:#b0b3b8}
     .empty i{font-size:2rem;display:block;margin-bottom:.4rem;color:#3BB7FB}
+
+    /* Delete functionality styles */
+    .delete-controls{
+      background:#23242a;
+      border:1px solid rgba(120,130,150,.1);
+      border-radius:14px;
+      padding:.8rem 1rem;
+      margin-bottom:1rem;
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      flex-wrap:wrap;
+      transition:all .3s ease;
+    }
+    .delete-controls.hidden{display:none}
+    .delete-controls.select-active{
+      background:linear-gradient(135deg,rgba(59,183,251,.08),rgba(246,180,67,.05));
+      border-color:rgba(59,183,251,.25);
+      box-shadow:0 2px 12px rgba(59,183,251,.12);
+    }
+
+    /* Primary action buttons */
+    .btn-select-mode{
+      background:linear-gradient(135deg,rgba(59,183,251,.16),rgba(246,180,67,.16));
+      border:1px solid rgba(59,183,251,.35);
+      color:#cfeeff;
+      border-radius:999px;
+      padding:.58rem 1.2rem;
+      font-weight:700;
+      font-size:.92rem;
+      transition:all .2s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+      position:relative;
+      overflow:hidden;
+    }
+    .btn-select-mode:hover{
+      background:linear-gradient(135deg,rgba(59,183,251,.26),rgba(246,180,67,.26));
+      border-color:rgba(59,183,251,.5);
+      color:#fff;
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(59,183,251,.2);
+    }
+    .btn-select-mode.active{
+      background:linear-gradient(135deg,rgba(40,167,69,.16),rgba(40,167,69,.12));
+      border-color:rgba(40,167,69,.35);
+      color:#c9f7d3;
+    }
+    .btn-select-mode.active:hover{
+      background:linear-gradient(135deg,rgba(40,167,69,.26),rgba(40,167,69,.22));
+      border-color:rgba(40,167,69,.5);
+    }
+    .btn-select-mode i{
+      font-size:1.1rem;
+      transition:transform .2s ease;
+    }
+    .btn-select-mode:hover i{
+      transform:scale(1.1);
+    }
+
+    /* Secondary action buttons */
+    .btn-action{
+      background:#1E1F23;
+      color:#e6e9ee;
+      border:1px solid #2A2D35;
+      border-radius:999px;
+      padding:.5rem 1rem;
+      font-size:.88rem;
+      font-weight:700;
+      transition:all .2s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:.45rem;
+    }
+    .btn-action:hover{
+      background:#2A2D35;
+      border-color:rgba(59,183,251,.35);
+      color:#fff;
+      transform:translateY(-1px);
+    }
+    .btn-action i{
+      font-size:1rem;
+      opacity:.9;
+    }
+
+    /* Danger buttons */
+    .btn-danger-custom{
+      background:linear-gradient(135deg,rgba(220,53,69,.18),rgba(220,53,69,.12));
+      border:1px solid rgba(220,53,69,.35);
+      color:#ffc0c6;
+      border-radius:999px;
+      padding:.58rem 1.2rem;
+      font-weight:700;
+      font-size:.92rem;
+      transition:all .2s ease;
+      display:inline-flex;
+      align-items:center;
+      gap:.5rem;
+    }
+    .btn-danger-custom:hover:not(:disabled){
+      background:linear-gradient(135deg,rgba(220,53,69,.32),rgba(220,53,69,.26));
+      border-color:rgba(220,53,69,.6);
+      color:#fff;
+      transform:translateY(-1px);
+      box-shadow:0 4px 12px rgba(220,53,69,.25);
+    }
+    .btn-danger-custom:disabled{
+      opacity:.35;
+      cursor:not-allowed;
+      filter:grayscale(.5);
+    }
+    .btn-danger-custom i{
+      font-size:1rem;
+    }
+    .btn-danger-custom .badge-count{
+      background:rgba(255,255,255,.15);
+      padding:.15rem .5rem;
+      border-radius:999px;
+      font-size:.85rem;
+      margin-left:.2rem;
+    }
+
+    /* Selection controls group */
+    .selection-group{
+      display:flex;
+      align-items:center;
+      gap:.5rem;
+      padding:.3rem .6rem;
+      background:rgba(59,183,251,.08);
+      border-radius:999px;
+      border:1px solid rgba(59,183,251,.2);
+    }
+    .selection-group .btn-action{
+      padding:.4rem .8rem;
+      font-size:.82rem;
+      background:transparent;
+      border:1px solid transparent;
+    }
+    .selection-group .btn-action:hover{
+      background:rgba(59,183,251,.12);
+      border-color:rgba(59,183,251,.3);
+    }
+
+    /* Divider */
+    .controls-divider{
+      height:24px;
+      width:1px;
+      background:linear-gradient(180deg,transparent,rgba(59,183,251,.3),transparent);
+      margin:0 .25rem;
+    }
+
+    /* Checkbox styling */
+    .checkbox-item{
+      width:22px;
+      height:22px;
+      margin-right:.65rem;
+      cursor:pointer;
+      accent-color:#3BB7FB;
+      border-radius:4px;
+      transition:all .2s ease;
+    }
+    .checkbox-item:hover{
+      transform:scale(1.1);
+    }
+    .activity-row.selectable{
+      cursor:pointer;
+      user-select:none;
+    }
+    .activity-row.selected{
+      border-color:rgba(59,183,251,.55);
+      background:linear-gradient(135deg,rgba(59,183,251,.12),rgba(246,180,67,.1));
+      box-shadow:0 0 0 2px rgba(59,183,251,.15);
+    }
+    .select-mode-active .activity-row{
+      padding-left:.5rem;
+      transition:all .2s ease;
+    }
+    .select-mode-active .activity-row:hover{
+      border-color:rgba(59,183,251,.35);
+    }
+
+    /* Animations */
+    @keyframes slideIn {
+      from {
+        opacity:0;
+        transform:translateX(-10px);
+      }
+      to {
+        opacity:1;
+        transform:translateX(0);
+      }
+    }
+    @keyframes pulse {
+      0%, 100% { transform:scale(1); }
+      50% { transform:scale(1.05); }
+    }
+    .selection-group{
+      animation:slideIn .3s ease;
+    }
+    .btn-select-mode.active i{
+      animation:pulse .5s ease;
+    }
+
+    /* Tooltip for better UX */
+    .btn-select-mode:not(.active)::after{
+      content:'Click to select specific items to delete';
+      position:absolute;
+      top:120%;
+      left:50%;
+      transform:translateX(-50%);
+      background:#23242a;
+      color:#e6e9ee;
+      padding:.4rem .8rem;
+      border-radius:8px;
+      font-size:.78rem;
+      white-space:nowrap;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .2s ease;
+      border:1px solid rgba(59,183,251,.3);
+      z-index:10;
+    }
+    .btn-select-mode:not(.active):hover::after{
+      opacity:1;
+    }
+
+    /* Toast notification */
+    .toast-notification{
+      position:fixed;
+      top:80px;
+      right:20px;
+      background:linear-gradient(135deg,rgba(40,167,69,.95),rgba(40,167,69,.85));
+      color:#fff;
+      padding:1rem 1.5rem;
+      border-radius:12px;
+      box-shadow:0 8px 24px rgba(0,0,0,.3);
+      border:1px solid rgba(40,167,69,.5);
+      z-index:10000;
+      display:flex;
+      align-items:center;
+      gap:.75rem;
+      font-weight:600;
+      animation:slideInRight .3s ease;
+      max-width:400px;
+    }
+    .toast-notification.error{
+      background:linear-gradient(135deg,rgba(220,53,69,.95),rgba(220,53,69,.85));
+      border-color:rgba(220,53,69,.5);
+    }
+    .toast-notification i{
+      font-size:1.5rem;
+    }
+    @keyframes slideInRight {
+      from {
+        opacity:0;
+        transform:translateX(100px);
+      }
+      to {
+        opacity:1;
+        transform:translateX(0);
+      }
+    }
+    @keyframes slideOutRight {
+      from {
+        opacity:1;
+        transform:translateX(0);
+      }
+      to {
+        opacity:0;
+        transform:translateX(100px);
+      }
+    }
   </style>
 </head>
 <body>
@@ -126,9 +407,54 @@
         <button class="filter-chip chip-delete" data-action="DELETE_BOOK"><i class="bi bi-trash"></i> Deleted</button>
         <button class="filter-chip chip-wishlist" data-action="ADD_WISHLIST"><i class="bi bi-heart-fill"></i> Wishlist</button>
         <button class="filter-chip chip-profile" data-action="UPDATE_PROFILE"><i class="bi bi-person-check"></i> Profile</button>
-        <button class="filter-chip chip-swap" data-action="COMPLETE_SWAP"><i class="bi bi-arrow-left-right"></i> Swaps</button>
+        <button class="filter-chip chip-swap" data-action="SWAP_ACTIVITIES"><i class="bi bi-arrow-left-right"></i> Swaps</button>
+        <button class="filter-chip chip-swap" data-action="EARN_POINTS"><i class="bi bi-trophy"></i> Badges</button>
         <div class="filter-right">
           <button id="btnClear" class="btn btn-ghost btn-sm"><i class="bi bi-broom"></i> Clear Filters</button>
+        </div>
+      </div>
+
+      <!-- Delete Controls -->
+      <div id="deleteControls" class="delete-controls hidden">
+        <!-- Main selection toggle button -->
+        <button id="btnSelectMode" class="btn-select-mode">
+          <i class="bi bi-ui-checks"></i>
+          <span>Select Items</span>
+        </button>
+
+        <!-- Selection controls (visible in select mode) -->
+        <div id="selectionGroup" class="selection-group" style="display:none">
+          <span style="font-size:.85rem;color:#b0b3b8;font-weight:600;padding:0 .3rem;">
+            <i class="bi bi-list-check"></i> <span id="totalItems">0</span> items
+          </span>
+          <span class="controls-divider"></span>
+          <button id="btnSelectAll" class="btn-action">
+            <i class="bi bi-check-all"></i> All
+          </button>
+          <button id="btnDeselectAll" class="btn-action">
+            <i class="bi bi-x-square"></i> None
+          </button>
+        </div>
+
+        <!-- Right side actions -->
+        <div style="margin-left:auto;display:flex;align-items:center;gap:.6rem;">
+          <!-- Delete selected (visible in select mode) -->
+          <button id="btnDeleteSelected" class="btn-danger-custom" style="display:none" disabled>
+            <i class="bi bi-trash"></i>
+            <span>Delete Selected</span>
+            <span class="badge-count"><span id="selectedCount">0</span></span>
+          </button>
+          
+          <!-- Delete all -->
+          <button id="btnDeleteAll" class="btn-danger-custom">
+            <i class="bi bi-trash-fill"></i>
+            <span>Clear All History</span>
+          </button>
+          
+          <!-- Cancel button (visible in select mode) -->
+          <button id="btnCancelSelect" class="btn-action" style="display:none">
+            <i class="bi bi-x-lg"></i> Cancel
+          </button>
         </div>
       </div>
 
@@ -155,38 +481,102 @@
     const clearBtn = document.getElementById('btnClear');
     const chips = Array.from(document.querySelectorAll('.filter-chip'));
 
+    // Delete controls
+    const deleteControls = document.getElementById('deleteControls');
+    const btnSelectMode = document.getElementById('btnSelectMode');
+    const selectionGroup = document.getElementById('selectionGroup');
+    const btnSelectAll = document.getElementById('btnSelectAll');
+    const btnDeselectAll = document.getElementById('btnDeselectAll');
+    const btnDeleteSelected = document.getElementById('btnDeleteSelected');
+    const btnDeleteAll = document.getElementById('btnDeleteAll');
+    const btnCancelSelect = document.getElementById('btnCancelSelect');
+    const selectedCountEl = document.getElementById('selectedCount');
+    const totalItemsEl = document.getElementById('totalItems');
+
     let allItems = [];
     let cursor = null;
 
     // Multi-select: hold selected actions; empty => ALL
     const selected = new Set();
 
+    // Selection mode and selected items
+    let selectModeActive = false;
+    const selectedItems = new Set();
+
+    // Toast notification helper
+    function showToast(message, isError = false) {
+      const toast = document.createElement('div');
+      toast.className = 'toast-notification' + (isError ? ' error' : '');
+      toast.innerHTML = `
+        <i class="bi ${isError ? 'bi-x-circle-fill' : 'bi-check-circle-fill'}"></i>
+        <span>${message}</span>
+      `;
+      document.body.appendChild(toast);
+      
+      setTimeout(() => {
+        toast.style.animation = 'slideOutRight .3s ease';
+        setTimeout(() => toast.remove(), 300);
+      }, 3000);
+    }
+
     function iconFor(action){
       switch(action){
+        // Book actions
         case 'ADD_BOOK': return {i:'bi-plus-lg',wrap:''};
         case 'UPDATE_BOOK': return {i:'bi-pencil-square',wrap:''};
         case 'DELETE_BOOK': return {i:'bi-trash',wrap:'danger'};
+        
+        // Wishlist actions
         case 'ADD_WISHLIST': return {i:'bi-heart-fill',wrap:'purple'};
         case 'REMOVE_WISHLIST': return {i:'bi-heart',wrap:''};
-        case 'MATCH_SWAP': return {i:'bi-handshake',wrap:'success'};
+        
+        // Swap request actions
+        case 'REQUEST_SWAP': return {i:'bi-send',wrap:''};
+        case 'RECEIVE_SWAP': return {i:'bi-inbox',wrap:''};
+        case 'ACCEPT_SWAP': return {i:'bi-check-circle-fill',wrap:'success'};
+        case 'DECLINE_SWAP': return {i:'bi-x-circle-fill',wrap:'danger'};
+        case 'CANCEL_SWAP': return {i:'bi-slash-circle',wrap:'danger'};
+        case 'COUNTER_SWAP': return {i:'bi-arrow-repeat',wrap:'warn'};
+        
+        // Swap progress actions
+        case 'MATCH_SWAP': return {i:'bi-calendar-check',wrap:'success'};
         case 'COMPLETE_SWAP': return {i:'bi-arrow-left-right',wrap:'success'};
-        case 'EARN_POINTS': return {i:'bi-coin',wrap:'warn'};
+        
+        // Other actions
+        case 'EARN_POINTS': return {i:'bi-trophy',wrap:'warn'};
         case 'UPDATE_PROFILE': return {i:'bi-person-check',wrap:''};
+        
         default: return {i:'bi-info-circle',wrap:''};
       }
     }
     function tagFor(action){
       switch(action){
+        // Book actions
         case 'ADD_BOOK': return {text:'ADD BOOK',cls:'tag-add'};
         case 'UPDATE_BOOK': return {text:'UPDATE BOOK',cls:'tag-profile'};
         case 'DELETE_BOOK': return {text:'DELETE BOOK',cls:'tag-delete'};
+        
+        // Wishlist actions
         case 'ADD_WISHLIST': return {text:'ADD WISHLIST',cls:'tag-wishlist'};
         case 'REMOVE_WISHLIST': return {text:'REMOVE WISHLIST',cls:'tag-wishlist'};
-        case 'MATCH_SWAP': return {text:'MATCH SWAP',cls:'tag-swap'};
-        case 'COMPLETE_SWAP': return {text:'COMPLETE SWAP',cls:'tag-swap'};
-        case 'EARN_POINTS': return {text:'EARN POINTS',cls:'tag-swap'};
-        case 'UPDATE_PROFILE': return {text:'UPDATE PROFILE',cls:'tag-profile'};
-        default: return {text:action,cls:'tag-profile'};
+        
+        // Swap request actions
+        case 'REQUEST_SWAP': return {text:'SWAP REQUEST',cls:'tag-swap'};
+        case 'RECEIVE_SWAP': return {text:'SWAP RECEIVED',cls:'tag-swap'};
+        case 'ACCEPT_SWAP': return {text:'SWAP ACCEPTED',cls:'tag-add'};
+        case 'DECLINE_SWAP': return {text:'SWAP DECLINED',cls:'tag-delete'};
+        case 'CANCEL_SWAP': return {text:'SWAP CANCELLED',cls:'tag-delete'};
+        case 'COUNTER_SWAP': return {text:'COUNTER OFFER',cls:'tag-swap'};
+        
+        // Swap progress actions
+        case 'MATCH_SWAP': return {text:'SWAP ACTIVITY',cls:'tag-swap'};
+        case 'COMPLETE_SWAP': return {text:'SWAP COMPLETED',cls:'tag-add'};
+        
+        // Other actions
+        case 'EARN_POINTS': return {text:'BADGE EARNED',cls:'tag-swap'};
+        case 'UPDATE_PROFILE': return {text:'PROFILE UPDATE',cls:'tag-profile'};
+        
+        default: return {text:action.replace(/_/g,' '),cls:'tag-profile'};
       }
     }
     function prettyTime(d){
@@ -202,12 +592,46 @@
 
     function applyFilter(items){
       if (selected.size === 0) return items; // ALL
-      return items.filter(a => selected.has(a.action));
+      
+      // Define swap-related actions
+      const swapActions = ['REQUEST_SWAP', 'RECEIVE_SWAP', 'ACCEPT_SWAP', 'DECLINE_SWAP', 
+                          'CANCEL_SWAP', 'COUNTER_SWAP', 'MATCH_SWAP', 'COMPLETE_SWAP'];
+      
+      return items.filter(a => {
+        // Check if SWAP_ACTIVITIES is selected
+        if (selected.has('SWAP_ACTIVITIES') && swapActions.includes(a.action)) {
+          return true;
+        }
+        // Check if the specific action is selected
+        if (selected.has(a.action)) {
+          return true;
+        }
+        return false;
+      });
     }
 
     function render(){
       listEl.innerHTML = '';
       const items = applyFilter(allItems);
+
+      // Show/hide delete controls based on items
+      if (allItems.length > 0) {
+        deleteControls.classList.remove('hidden');
+      } else {
+        deleteControls.classList.add('hidden');
+      }
+
+      // Update total items count
+      if (totalItemsEl) {
+        totalItemsEl.textContent = items.length;
+      }
+
+      // Update list class for select mode
+      if (selectModeActive) {
+        listEl.classList.add('select-mode-active');
+      } else {
+        listEl.classList.remove('select-mode-active');
+      }
 
       if (items.length === 0){
         emptyEl.classList.remove('d-none');
@@ -232,7 +656,14 @@
 
         const row = document.createElement('div');
         row.className = 'activity-row';
+        row.dataset.id = a._id;
+        
+        const isSelected = selectedItems.has(a._id);
+        if (isSelected) row.classList.add('selected');
+        if (selectModeActive) row.classList.add('selectable');
+
         row.innerHTML = `
+          ${selectModeActive ? `<input type="checkbox" class="checkbox-item" ${isSelected ? 'checked' : ''} data-id="${a._id}">` : ''}
           <div class="activity-icon ${wrap}"><i class="bi ${i}"></i></div>
           <div class="activity-main">
             <p class="activity-text">${a.message}</p>
@@ -243,6 +674,22 @@
           </div>
           <span class="time-badge">${prettyTime(a.createdAt || a.time || Date.now())}</span>
         `;
+
+        // Add click handler for selection
+        if (selectModeActive) {
+          const checkbox = row.querySelector('.checkbox-item');
+          checkbox.addEventListener('change', (e) => {
+            e.stopPropagation();
+            toggleItemSelection(a._id);
+          });
+          
+          row.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'INPUT') {
+              toggleItemSelection(a._id);
+            }
+          });
+        }
+
         listEl.appendChild(row);
       });
     }
@@ -311,6 +758,169 @@
 
     clearBtn.addEventListener('click', setAllActive);
     loadMoreBtn.addEventListener('click', ()=>{ if(cursor) fetchHistory(cursor); });
+
+    // ---------- Selection and Delete functionality ----------
+    function toggleItemSelection(itemId) {
+      if (selectedItems.has(itemId)) {
+        selectedItems.delete(itemId);
+      } else {
+        selectedItems.add(itemId);
+      }
+      updateSelectionUI();
+      render();
+    }
+
+    function updateSelectionUI() {
+      const count = selectedItems.size;
+      selectedCountEl.textContent = count;
+      btnDeleteSelected.disabled = count === 0;
+      
+      // Update button text based on count
+      const deleteText = btnDeleteSelected.querySelector('span:first-of-type');
+      if (count === 0) {
+        deleteText.textContent = 'Delete Selected';
+      } else if (count === 1) {
+        deleteText.textContent = 'Delete Item';
+      } else {
+        deleteText.textContent = 'Delete Items';
+      }
+      
+      // Add pulse animation when count changes
+      if (count > 0) {
+        const badge = btnDeleteSelected.querySelector('.badge-count');
+        badge.style.animation = 'none';
+        setTimeout(() => {
+          badge.style.animation = 'pulse .3s ease';
+        }, 10);
+      }
+    }
+
+    function enterSelectMode() {
+      selectModeActive = true;
+      selectedItems.clear();
+      
+      // Update button states
+      btnSelectMode.classList.add('active');
+      btnSelectMode.querySelector('span').textContent = 'Selection Mode';
+      btnSelectMode.querySelector('i').className = 'bi bi-ui-checks-grid';
+      
+      // Show selection controls
+      selectionGroup.style.display = 'flex';
+      btnDeleteSelected.style.display = 'inline-flex';
+      btnCancelSelect.style.display = 'inline-flex';
+      btnDeleteAll.style.display = 'none';
+      
+      // Add visual feedback to controls container
+      deleteControls.classList.add('select-active');
+      
+      updateSelectionUI();
+      render();
+    }
+
+    function exitSelectMode() {
+      selectModeActive = false;
+      selectedItems.clear();
+      
+      // Reset button states
+      btnSelectMode.classList.remove('active');
+      btnSelectMode.querySelector('span').textContent = 'Select Items';
+      btnSelectMode.querySelector('i').className = 'bi bi-ui-checks';
+      
+      // Hide selection controls
+      selectionGroup.style.display = 'none';
+      btnDeleteSelected.style.display = 'none';
+      btnCancelSelect.style.display = 'none';
+      btnDeleteAll.style.display = 'inline-flex';
+      
+      // Remove visual feedback from controls container
+      deleteControls.classList.remove('select-active');
+      
+      render();
+    }
+
+    btnSelectMode.addEventListener('click', enterSelectMode);
+    btnCancelSelect.addEventListener('click', exitSelectMode);
+
+    btnSelectAll.addEventListener('click', () => {
+      const items = applyFilter(allItems);
+      items.forEach(item => {
+        if (item._id) selectedItems.add(item._id);
+      });
+      updateSelectionUI();
+      render();
+    });
+
+    btnDeselectAll.addEventListener('click', () => {
+      selectedItems.clear();
+      updateSelectionUI();
+      render();
+    });
+
+    btnDeleteSelected.addEventListener('click', async () => {
+      if (selectedItems.size === 0) return;
+      
+      const count = selectedItems.size;
+      if (!confirm(`Are you sure you want to delete ${count} selected history item${count > 1 ? 's' : ''}? This action cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const idsToDelete = Array.from(selectedItems);
+        const res = await fetch('/api/users/history/delete', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ ids: idsToDelete })
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Failed to delete items');
+        }
+
+        const result = await res.json();
+        
+        // Remove deleted items from allItems
+        allItems = allItems.filter(item => !selectedItems.has(item._id));
+        selectedItems.clear();
+        
+        showToast(`Successfully deleted ${result.deletedCount} item${result.deletedCount > 1 ? 's' : ''}`);
+        exitSelectMode();
+      } catch (err) {
+        console.error('Delete error:', err);
+        showToast('Failed to delete items: ' + err.message, true);
+      }
+    });
+
+    btnDeleteAll.addEventListener('click', async () => {
+      const count = allItems.length;
+      if (!confirm(`Are you sure you want to delete ALL ${count} history items? This action cannot be undone.`)) {
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/users/history/delete-all', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        if (!res.ok) {
+          const err = await res.json();
+          throw new Error(err.error || 'Failed to delete all history');
+        }
+
+        const result = await res.json();
+        
+        // Clear all items
+        allItems = [];
+        selectedItems.clear();
+        
+        showToast(`Successfully cleared all history (${result.deletedCount} item${result.deletedCount > 1 ? 's' : ''})`);
+        render();
+      } catch (err) {
+        console.error('Delete all error:', err);
+        showToast('Failed to delete all history: ' + err.message, true);
+      }
+    });
 
     // Boot
     fetchHistory();

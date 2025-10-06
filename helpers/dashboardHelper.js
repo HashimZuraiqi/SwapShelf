@@ -14,6 +14,8 @@ const Swap = require('../models/Swap');
  */
 async function getUserStats(userId) {
     try {
+        console.log('getUserStats called for userId:', userId);
+        
         const [
             booksOwned,
             completedSwaps,
@@ -26,11 +28,11 @@ async function getUserStats(userId) {
             }),
             Swap.countDocuments({ 
                 $or: [{ requester: userId }, { owner: userId }], 
-                status: { $in: ['Completed', 'completed'] } 
+                status: 'Completed'
             }),
             Swap.countDocuments({ 
                 $or: [{ requester: userId }, { owner: userId }], 
-                status: { $in: ['Pending', 'pending', 'Accepted', 'accepted', 'In Progress', 'in-progress'] } 
+                status: { $in: ['Pending', 'Accepted', 'In Progress'] } 
             }),
             User.findById(userId).select('wishlist')
         ]);
@@ -45,6 +47,13 @@ async function getUserStats(userId) {
         };
         
         console.log('Dashboard helper returning stats:', stats);
+        console.log('Stats details:', {
+            booksOwnedCount: booksOwned,
+            completedSwapsCount: completedSwaps,
+            wishlistItemsCount: wishlistItems,
+            pendingSwapsCount: pendingSwaps
+        });
+        
         return stats;
     } catch (error) {
         console.error('Error fetching user stats:', error);

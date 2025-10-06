@@ -150,19 +150,19 @@ const getDashboardData = async (userId) => {
             $or: [{ requester: userId }, { owner: userId }]
         });
         
-        const completedSwaps = userSwaps.filter(swap => {
-            const status = swap.status ? swap.status.toLowerCase() : '';
-            return status === 'completed';
-        });
-        const activeSwaps = userSwaps.filter(swap => {
-            const status = swap.status ? swap.status.toLowerCase() : '';
-            return ['pending', 'accepted', 'in-progress'].includes(status);
-        });
+        // Match the exact status values from Swap model enum: ['Pending', 'Accepted', 'Declined', 'In Progress', 'Completed', 'Cancelled']
+        const completedSwaps = userSwaps.filter(swap => swap.status === 'Completed');
+        const activeSwaps = userSwaps.filter(swap => ['Pending', 'Accepted', 'In Progress'].includes(swap.status));
+        
+        // Get wishlist count
+        const User = require('../models/User');
+        const currentUser = await User.findById(userId).select('wishlist');
+        const wishlistCount = currentUser?.wishlist?.length || 0;
         
         const userStats = {
             booksOwned: userBooks.length,
             swapsCompleted: completedSwaps.length,
-            wishlistItems: 0, // Will be updated when wishlist is implemented
+            wishlistItems: wishlistCount,
             pendingSwaps: activeSwaps.length,
             successRate: userSwaps.length > 0 ? Math.round((completedSwaps.length / userSwaps.length) * 100) : 0
         };
@@ -312,7 +312,7 @@ const getDashboardData = async (userId) => {
                 genre: { $in: preferredGenres }
             })
             .limit(3)
-            .populate('owner', 'name email')
+            .populate('owner', 'name username email photo')
             .sort({ 'stats.views': -1, 'stats.interested': -1 });
             
             console.log(`Found ${recommendedBooksRaw.length} books matching user preferences`);
@@ -325,7 +325,7 @@ const getDashboardData = async (userId) => {
                 availability: 'available'
             })
             .limit(3)
-            .populate('owner', 'name email')
+            .populate('owner', 'name username email photo')
             .sort({ 'stats.views': -1, 'stats.interested': -1 });
             
             console.log(`Found ${recommendedBooksRaw.length} books from other users`);
@@ -337,7 +337,7 @@ const getDashboardData = async (userId) => {
                 availability: 'available'
             })
             .limit(3)
-            .populate('owner', 'name email')
+            .populate('owner', 'name username email photo')
             .sort({ 'stats.views': -1, 'stats.interested': -1 });
             
             console.log(`Found ${recommendedBooksRaw.length} books (including own books for demo)`);
@@ -422,21 +422,24 @@ const getDashboardData = async (userId) => {
             }
             
             // Ensure owner information is preserved
-            const ownerName = bookObj.ownerName || bookObj.owner?.name || bookObj.owner?.username || 'Unknown Owner';
+            const ownerName = bookObj.ownerName || bookObj.owner?.name || bookObj.owner?.username || bookObj.owner?.email?.split('@')[0] || 'Unknown Owner';
+            const ownerId = bookObj.owner?._id || bookObj.owner;
             
             console.log(`Book "${enhancedTitle}" owner info:`, {
                 ownerName: bookObj.ownerName,
                 owner: bookObj.owner,
+                ownerId: ownerId,
                 finalOwnerName: ownerName
             });
             
             return {
                 ...bookObj,
+                id: bookObj._id || bookObj.id,
                 title: enhancedTitle,
                 author: enhancedAuthor,
                 distance: 'Recommended',
                 ownerName: ownerName,
-                ownerId: bookObj.owner?._id || bookObj.owner
+                ownerId: ownerId
             };
         });
         
@@ -501,16 +504,17 @@ const getDashboardData = async (userId) => {
                 });
                 
                 // Get user's swap statistics
+                // Match the exact status values from Swap model enum: ['Pending', 'Accepted', 'Declined', 'In Progress', 'Completed', 'Cancelled']
                 const userSwaps = await Swap.find({
                     $or: [{ requester: user._id }, { owner: user._id }]
                 });
                 
                 const completedSwaps = userSwaps.filter(swap => 
-                    swap.status === 'completed' || swap.status === 'Completed'
+                    swap.status === 'Completed'
                 ).length;
                 
                 const pendingSwaps = userSwaps.filter(swap => 
-                    ['pending', 'Pending', 'accepted', 'Accepted', 'in-progress', 'In Progress'].includes(swap.status)
+                    ['Pending', 'Accepted', 'In Progress'].includes(swap.status)
                 ).length;
                 
                 // Calculate activity score based on real metrics
